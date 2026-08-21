@@ -1,0 +1,25 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "paint_brush",
+  "category": "equipment",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shiny_roots"
+    },
+    "b": {
+      "item": "minecraft:string"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shiny_paint_brush",
+    "count": 1
+  }
+}

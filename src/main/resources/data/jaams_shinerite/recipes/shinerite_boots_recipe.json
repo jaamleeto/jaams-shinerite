@@ -1,0 +1,18 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "boots",
+  "category": "equipment",
+  "pattern": [
+    "a a",
+    "a a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_boots",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "leggings",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    "a a",
+    "a a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_leggings",
+    "count": 1
+  }
+}

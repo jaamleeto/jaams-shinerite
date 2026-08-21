@@ -1,0 +1,9 @@
+{
+  "type": "jaams_shinerite:copy_nbt_stonecutting",
+  "group": "tiles",
+  "count": 1,
+  "ingredient": {
+    "item": "jaams_shinerite:shinerite_tiles"
+  },
+  "result": "jaams_shinerite:shinerite_tile_stairs"
+}

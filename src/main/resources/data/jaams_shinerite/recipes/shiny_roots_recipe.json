@@ -1,0 +1,17 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "roots",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_roots"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shiny_roots",
+    "count": 2
+  }
+}

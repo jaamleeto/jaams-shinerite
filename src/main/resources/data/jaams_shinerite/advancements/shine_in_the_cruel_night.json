@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "jaams_shinerite:shinerite_chestplate"
+    },
+    "title": {
+      "translate": "advancements.shine_in_the_cruel_night.title"
+    },
+    "description": {
+      "translate": "advancements.shine_in_the_cruel_night.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "shine_in_the_cruel_night_0": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 60
+  },
+  "parent": "jaams_shinerite:shinerite_ad"
+}

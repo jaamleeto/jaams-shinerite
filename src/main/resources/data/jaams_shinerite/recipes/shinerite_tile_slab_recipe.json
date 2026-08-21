@@ -1,0 +1,17 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "tiles",
+  "category": "building",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_tiles"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_tile_slab",
+    "count": 6
+  }
+}

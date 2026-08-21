@@ -1,0 +1,49 @@
+{
+  "target": [
+    "jaams_shinerite:shinerite_sword"
+  ],
+  "enabled": true,
+  "priority": 0,
+  "condition_mode": "and",
+  "conditions": [
+    {
+      "type": "is_enchanted"
+    }
+  ],
+  "modifiers": {
+    "slots": [
+      "mainhand"
+    ],
+    "attributes": [
+      {
+        "attribute": "minecraft:generic.attack_speed",
+        "name": "shinerite_attack_speed",
+        "amount": 0.5,
+        "operation": "addition"
+      }
+    ]
+  },
+  "modifiers_list": [
+    {
+      "slots": [
+        "mainhand"
+      ],
+      "attributes": [
+        {
+          "attribute": "minecraft:generic.attack_damage",
+          "name": "shinerite_extra_damage",
+          "amount": 1.0,
+          "operation": "addition"
+        }
+      ]
+    }
+  ],
+  "nbt": [
+    {
+      "key": "ExampleItemModifier",
+      "type": "string",
+      "value": "applied",
+      "replace": true
+    }
+  ]
+}

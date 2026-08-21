@@ -1,0 +1,17 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "nugget",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_nugget",
+    "count": 9
+  }
+}

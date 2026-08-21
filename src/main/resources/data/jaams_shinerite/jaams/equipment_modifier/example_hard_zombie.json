@@ -1,0 +1,40 @@
+{
+  "entity": [
+    "minecraft:zombie"
+  ],
+  "enabled": true,
+  "priority": 0,
+  "condition_mode": "and",
+  "global_chance": 1.0,
+  "conditions": [
+  ],
+  "items": [
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 1.0,
+      "replace_existing": true,
+      "enchantments": {
+        "jaams_shinerite:lightbringer": 2
+      },
+      "random_enchantments": false,
+      "nbt": {
+        "ExampleEquipment": "true"
+      },
+      "conditions": [],
+      "equipment": [
+        {
+          "item": "minecraft:shield",
+          "slot": "offhand",
+          "count": 1,
+          "replace_existing": true,
+          "enchantments": {},
+          "random_enchantments": false,
+          "nbt": {},
+          "conditions": []
+        }
+      ]
+    }
+  ]
+}

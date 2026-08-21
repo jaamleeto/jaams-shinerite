@@ -1,0 +1,22 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "shovel",
+  "category": "equipment",
+  "pattern": [
+    "a",
+    "b",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_shovel",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#jaams_shinerite:item/shinerite_stars",
+      "required": false
+    }
+  ]
+}

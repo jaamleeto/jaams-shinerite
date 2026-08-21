@@ -1,0 +1,37 @@
+{
+  "enabled": true,
+  "chance": 1.0,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "gameplay/fishing/treasure"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "minecraft:enchanted_book",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.33
+        },
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.33
+        },
+        {
+          "id": "jaams_shinerite:lightguard",
+          "level": 1,
+          "chance": 0.34
+        }
+      ]
+    }
+  ]
+}

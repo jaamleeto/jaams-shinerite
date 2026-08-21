@@ -1,0 +1,25 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "scraper",
+  "category": "equipment",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "b": {
+      "item": "jaams_shinerite:shinerite_nugget"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shiny_scraper",
+    "count": 1
+  }
+}

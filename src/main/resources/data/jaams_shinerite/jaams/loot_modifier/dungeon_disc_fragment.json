@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "chance": 1.0,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/stronghold_corridor"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "jaams_shinerite:disc_fragment_shiny",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.10,
+      "nbt": "",
+      "enchantments": []
+    }
+  ]
+}

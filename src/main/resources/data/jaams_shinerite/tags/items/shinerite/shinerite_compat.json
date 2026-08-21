@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_weaponry:heavy_shinerite_ingot",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:double_shinerite_ingot",
+      "required": false
+    },
+    {
+      "id": "jaams_currency:shinerite_coin",
+      "required": false
+    }
+  ]
+}

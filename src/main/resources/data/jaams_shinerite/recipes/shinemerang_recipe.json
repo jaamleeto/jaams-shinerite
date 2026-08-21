@@ -1,0 +1,24 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "shinemerang",
+  "category": "equipment",
+  "pattern": [
+    "ab",
+    "bc"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shiny_roots"
+    },
+    "b": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "c": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinemerang",
+    "count": 1
+  }
+}

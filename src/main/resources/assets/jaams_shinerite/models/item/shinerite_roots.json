@@ -1,0 +1,28 @@
+{
+  "parent": "item/generated",
+  "forge_data": {
+    "layers": {
+      "0": {
+        "block_light": 15,
+        "sky_light": 15
+      }
+    }
+  },
+  "loader": "forge:item_layers",
+  "render_types": {},
+  "textures": {
+    "layer0": "jaams_shinerite:item/shinerite_roots"
+  },
+  "display": {
+      "thirdperson_righthand": {
+          "rotation": [ 0, 0, 0 ],
+          "translation": [ 0, 0, 1 ],
+          "scale": [ 0.55, 0.55, 0.55 ]
+      },
+      "firstperson_righthand": {
+          "rotation": [ 0, -90, 25 ],
+          "translation": [ 1.13, 0, 1.13],
+          "scale": [ 0.68, 0.68, 0.68 ]
+        }
+    }
+}

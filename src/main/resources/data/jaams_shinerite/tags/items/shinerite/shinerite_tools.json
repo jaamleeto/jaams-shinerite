@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:shinerite_sword",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_axe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_pickaxe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_hoe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_shovel",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shiny_scraper",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shiny_paint_brush",
+      "required": false
+    }
+  ]
+}

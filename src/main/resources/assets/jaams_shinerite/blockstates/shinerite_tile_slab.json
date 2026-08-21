@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "jaams_shinerite:block/shinerite_tile_slab"
+    },
+    "type=top": {
+      "model": "jaams_shinerite:block/shinerite_tile_slab_top"
+    },
+    "type=double": {
+      "model": "jaams_shinerite:block/shinerite_tile_slab_full"
+    }
+  }
+}

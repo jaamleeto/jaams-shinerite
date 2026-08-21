@@ -1,0 +1,19 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "chestplate",
+  "category": "equipment",
+  "pattern": [
+    "a a",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_chestplate",
+    "count": 1
+  }
+}

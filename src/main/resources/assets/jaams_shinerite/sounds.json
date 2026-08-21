@@ -1,0 +1,288 @@
+{
+  "eats_glow_roots": {
+    "subtitle": "subtitles.eats_glow_roots",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:eats_glow_roots",
+        "stream": false
+      }
+    ]
+  },
+  "eats_glow_salad": {
+    "subtitle": "subtitles.eats_glow_salad",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:eats_glow_salad",
+        "stream": false
+      }
+    ]
+  },
+  "shinerite_tool_hit": {
+    "subtitle": "subtitles.shinerite_tool_hit",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinerite_tool_hit",
+        "stream": false
+      }
+    ]
+  },
+  "shinemerang_shoot": {
+    "subtitle": "subtitles.shinemerang_shoot",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinemerang_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "shinemerang_shoot_resonates": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinemerang_shoot_resonates",
+        "stream": false
+      }
+    ]
+  },
+  "shinemerang_hit": {
+    "subtitle": "subtitles.shinemerang_hit",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinemerang_hit",
+        "stream": false
+      }
+    ]
+  },
+  "shinemerang_ground": {
+    "subtitle": "subtitles.shinemerang_ground",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinemerang_ground",
+        "stream": false
+      }
+    ]
+  },
+  "shinerite_star_shoot": {
+    "subtitle": "subtitles.shinerite_star_shoot",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinerite_star_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "shinerite_star_shoot_resonates": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinerite_star_shoot_resonates",
+        "stream": false
+      }
+    ]
+  },
+  "shinerite_star_hit": {
+    "subtitle": "subtitles.shinerite_star_hit",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinerite_star_hit",
+        "stream": false
+      }
+    ]
+  },
+  "shinerite_star_ground": {
+    "subtitle": "subtitles.shinerite_star_ground",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:shinerite_star_ground",
+        "stream": false
+      }
+    ]
+  },
+  "empty_sound": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:empty_sound",
+        "stream": false
+      }
+    ]
+  },
+  "lightsteal_hit": {
+    "subtitle": "subtitles.lightsteal_hit",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:lightsteal_hit",
+        "stream": false
+      }
+    ]
+  },
+  "music_disc_blade": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_blade",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_bloody": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_bloody",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_california": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_california",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_family": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_family",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_gurenge": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_gurenge",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_holy": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_holy",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_hunter": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_hunter",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_lithium": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_lithium",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_never": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_never",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_revenge": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_revenge",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_sadness": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_sadness",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_sake": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_sake",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_shiny": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_shiny",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_special": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_special",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_spy": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_spy",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_toxicity": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_toxicity",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc_war": {
+    "sounds": [
+      {
+        "name": "jaams_shinerite:music_disc_war",
+        "stream": true
+      }
+    ]
+  },
+  "projectile_ground": {
+    "subtitle": "subtitles.projectile_ground",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:projectile_ground",
+        "stream": false
+      }
+    ]
+  },
+  "projectile_return": {
+    "subtitle": "subtitles.projectile_return",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:projectile_return",
+        "stream": false
+      }
+    ]
+  },
+  "projectile_hit": {
+    "subtitle": "subtitles.projectile_hit",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:projectile_hit",
+        "stream": false
+      }
+    ]
+  },
+  "projectile_throw": {
+    "subtitle": "subtitles.projectile_throw",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:projectile_throw",
+        "stream": false
+      }
+    ]
+  }
+}

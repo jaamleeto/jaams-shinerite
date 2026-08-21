@@ -1,0 +1,28 @@
+{
+    "target": [
+        "jaams_shinerite:shinemerang"
+    ],
+    "priority": 0,
+    "condition_mode": "and",
+    "conditions": [],
+    "active_traits": [
+        "throwback",
+        "radiant_collector"
+    ],
+    "projectile_traits": {
+        "throwback": {
+            "enabled": true,
+            "return_on_block_hit": true,
+            "return_on_entity_hit": true,
+            "return_on_max_range": true,
+            "min_range": 5.0,
+            "max_range": 20.0,
+            "return_speed": 1.0
+        },
+        "radiant_collector": {
+            "enabled": true,
+            "max_mounted_entities": 3,
+            "glow_on_collected_items": true
+        }
+    }
+}

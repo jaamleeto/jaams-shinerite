@@ -1,0 +1,22 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "sword",
+  "category": "equipment",
+  "pattern": [
+    "a",
+    "a",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_sword",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "jaams_shinerite:shinerite_helmet",
+    "jaams_shinerite:shinerite_chestplate",
+    "jaams_shinerite:shinerite_leggings",
+    "jaams_shinerite:shinerite_boots"
+  ]
+}

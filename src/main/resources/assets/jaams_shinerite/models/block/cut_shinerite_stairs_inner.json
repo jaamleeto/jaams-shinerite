@@ -1,0 +1,10 @@
+{
+  "parent": "jaams_shinerite:block/shinerite_inner_stairs",
+  "textures": {
+    "particle": "jaams_shinerite:block/cut_shinerite",
+    "bottom": "jaams_shinerite:block/cut_shinerite",
+    "top": "jaams_shinerite:block/cut_shinerite",
+    "side": "jaams_shinerite:block/cut_shinerite"
+  },
+  "render_type": "solid"
+}

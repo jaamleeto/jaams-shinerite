@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "jaams_shinerite:shinerite_block",
+    "jaams_shinerite:shinerite_ore",
+    "jaams_shinerite:deepslate_shinerite_ore",
+    "jaams_shinerite:nether_shinerite_ore",
+    "jaams_shinerite:raw_shinerite_block",
+    "jaams_shinerite:cut_shinerite",
+    "jaams_shinerite:cut_shinerite_stairs",
+    "jaams_shinerite:cut_shinerite_slab",
+    "jaams_shinerite:shinerite_tiles",
+    "jaams_shinerite:shinerite_tile_stairs",
+    "jaams_shinerite:shinerite_tile_slab"
+  ]
+}

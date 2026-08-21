@@ -1,0 +1,19 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "music_disc",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:disc_fragment_shiny"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:music_disc_shiny",
+    "count": 1
+  }
+}

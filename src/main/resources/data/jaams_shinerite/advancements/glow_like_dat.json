@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "jaams_shinerite:glow_salad"
+    },
+    "title": {
+      "translate": "advancements.glow_like_dat.title"
+    },
+    "description": {
+      "translate": "advancements.glow_like_dat.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "glow_like_dat_0": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 60
+  },
+  "parent": "jaams_shinerite:shinerite_ad"
+}

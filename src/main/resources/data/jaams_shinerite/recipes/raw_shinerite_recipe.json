@@ -1,0 +1,17 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "raw",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:raw_shinerite_block"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:raw_shinerite",
+    "count": 9
+  }
+}

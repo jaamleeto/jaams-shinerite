@@ -1,0 +1,9 @@
+{
+  "type": "jaams_shinerite:copy_nbt_stonecutting",
+  "group": "cut_stairs",
+  "count": 1,
+  "ingredient": {
+    "item": "jaams_shinerite:cut_shinerite"
+  },
+  "result": "jaams_shinerite:cut_shinerite_stairs"
+}

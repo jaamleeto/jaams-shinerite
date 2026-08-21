@@ -1,0 +1,22 @@
+# Gradle build system ignores
+.gradle/
+build/
+bin/
+
+# Other IDE related folders
+.idea/
+.settings/
+.vscode/
+.zed/
+
+
+
+# Minecraft client/server files
+run/
+
+# MacOS system files
+.DS_STORE
+
+# Other Files (In Eclipse)
+.classpath
+.project

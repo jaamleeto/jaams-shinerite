@@ -1,0 +1,23 @@
+{
+  "display": {
+    "background": "minecraft:textures/block/deepslate.png",
+    "icon": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "title": {
+      "translate": "advancements.shinerite_ad.title"
+    },
+    "description": {
+      "translate": "advancements.shinerite_ad.descr"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "shinerite_ad_0": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

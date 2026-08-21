@@ -1,0 +1,141 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:shinerite_sword",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_axe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_pickaxe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_hoe",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_shovel",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_star",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinemerang",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_dagger",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_knuckle",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_cleaver",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_ring",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_kama",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_claw",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_machete",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_katar",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_hammer",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_battle_axe",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_sickle",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_longsword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_zweihander",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_greatsword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_broadsword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_buster_sword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_katana",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_butterfly_sword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_hook_sword",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_scythe",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_greathammer",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_spear",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_twinblade",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_saw_cleaver",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_dagger_reverse",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_saw_cleaver_unfolded",
+      "required": false
+    },
+    {
+      "id": "jaams_weaponry:shinerite_pistol",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "required": true,
+  "package": "net.jaams.shinerite.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.jaams_shinerite.refmap.json",
+  "mixins": [
+    "block.PistonBaseBlockMixin",
+    "block.FlowerPotBlockMixin",
+    "common.ItemStackMixin",
+    "recipe.RepairItemRecipeMixin",
+    "common.ItemEntityMixin",
+    "item.SuspiciousStewItemMixin",
+    "block.JukeboxBlockEntityMixin",
+    "common.ItemTooltipMixin",
+    "item.RecordItemMixin",
+    "trait.TraitThrowableMixin",
+    "trait.TraitFrailglowMixin",
+    "mob.ZombieMixin",
+    "mob.DrownedMixin",
+    "mob.SkeletonMixin",
+    "mob.WitherSkeletonMixin",
+    "mob.PillagerMixin",
+    "mob.VindicatorMixin",
+    "mob.VexMixin",
+    "mob.PiglinMixin",
+    "mob.PiglinBruteMixin",
+    "mob.PiglinAiMixin"
+  ],
+  "client": [
+    "client.HumanoidArmorLayerMixin",
+    "client.ItemModelMixin",
+    "client.ItemRendererMixin",
+    "client.EntityRenderDispatcherMixin",
+    "particle.BreakingItemParticleMixin",
+    "particle.TerrainParticleMixin",
+    "client.GuiGraphicsMixin",
+    "client.ClientTextTooltipMixin",
+    "client.LevelRendererMixin"
+  ],
+  "minVersion": "0.8"
+}

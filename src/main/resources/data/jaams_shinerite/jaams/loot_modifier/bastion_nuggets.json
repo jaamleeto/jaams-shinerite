@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "chance": 1.0,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "minecraft:chests/bastion_treasure"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "jaams_shinerite:shinerite_nugget",
+      "count_min": 1,
+      "count_max": 4,
+      "chance": 0.30,
+      "nbt": "",
+      "enchantments": []
+    }
+  ]
+}

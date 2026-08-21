@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:cut_shinerite_slab",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_tile_slab",
+      "required": false
+    }
+  ]
+}

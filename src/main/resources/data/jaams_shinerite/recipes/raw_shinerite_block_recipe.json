@@ -1,0 +1,19 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "raw_block",
+  "category": "building",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:raw_shinerite"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:raw_shinerite_block",
+    "count": 1
+  }
+}

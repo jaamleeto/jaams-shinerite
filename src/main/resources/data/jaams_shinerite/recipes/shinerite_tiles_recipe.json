@@ -1,0 +1,21 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "tiles",
+  "category": "building",
+  "pattern": [
+    "ab",
+    "ba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:deepslate"
+    },
+    "b": {
+      "item": "jaams_shinerite:cut_shinerite"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_tiles",
+    "count": 4
+  }
+}

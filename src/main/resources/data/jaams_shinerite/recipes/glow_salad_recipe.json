@@ -1,0 +1,23 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shapeless",
+  "group": "food",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:glow_ink_sac"
+    },
+    {
+      "item": "minecraft:glow_berries"
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots"
+    },
+    {
+      "item": "minecraft:bowl"
+    }
+  ],
+  "result": {
+    "item": "jaams_shinerite:glow_salad",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "jaams_shinerite:copy_nbt_stonecutting",
+  "group": "cut_slab",
+  "count": 8,
+  "ingredient": {
+    "item": "jaams_shinerite:shinerite_block"
+  },
+  "result": "jaams_shinerite:cut_shinerite_slab"
+}

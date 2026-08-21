@@ -1,0 +1,91 @@
+{
+  "enabled": true,
+  "chance": 1.0,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "minecraft:chests/simple_dungeon"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_hoe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_star",
+      "count_min": 1,
+      "count_max": 3,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": []
+    }
+  ]
+}

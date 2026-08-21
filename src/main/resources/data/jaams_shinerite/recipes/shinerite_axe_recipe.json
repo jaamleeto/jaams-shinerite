@@ -1,0 +1,22 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "axe",
+  "category": "equipment",
+  "pattern": [
+    "aa",
+    "ab",
+    " b"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_axe",
+    "count": 1
+  }
+}

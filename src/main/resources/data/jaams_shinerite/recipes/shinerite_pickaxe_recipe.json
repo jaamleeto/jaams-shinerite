@@ -1,0 +1,22 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "pickaxe",
+  "category": "equipment",
+  "pattern": [
+    "aaa",
+    " b ",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_ingot"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_pickaxe",
+    "count": 1
+  }
+}

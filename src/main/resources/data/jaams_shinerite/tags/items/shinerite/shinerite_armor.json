@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:shinerite_helmet",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_chestplate",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_leggings",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_boots",
+      "required": false
+    }
+  ]
+}

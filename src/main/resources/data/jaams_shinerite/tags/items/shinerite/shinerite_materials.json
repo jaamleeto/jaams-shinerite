@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:shinerite_ingot",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:raw_shinerite",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_nugget",
+      "required": false
+    }
+  ]
+}

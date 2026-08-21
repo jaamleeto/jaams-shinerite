@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "jaams_shinerite:unicode/mod_tab.png",
+      "ascent": 9,
+      "height": 11,
+      "chars": ["\uFFF0"]
+    }
+  ]
+}

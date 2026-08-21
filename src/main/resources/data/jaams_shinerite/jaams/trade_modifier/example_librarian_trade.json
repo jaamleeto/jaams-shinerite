@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "chance": 1.0,
+  "condition_mode": "and",
+  "conditions": [],
+  "target": [
+    "minecraft:librarian"
+  ],
+  "trades": [
+    {
+      "sell_item": "jaams_shinerite:shinerite_ingot",
+      "sell_count": 1,
+      "sell_nbt": "",
+      "sell_enchantments": [],
+      "cost_item": "minecraft:emerald",
+      "cost_count": 8,
+      "max_uses": 12,
+      "xp": 5,
+      "villager_level": 2,
+      "price_multiplier_affects_price": true
+    }
+  ]
+}

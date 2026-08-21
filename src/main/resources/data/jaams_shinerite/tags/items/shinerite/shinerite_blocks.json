@@ -1,0 +1,49 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "jaams_shinerite:shinerite_block",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_ore",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:deepslate_shinerite_ore",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:nether_shinerite_ore",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:raw_shinerite_block",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:cut_shinerite",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:cut_shinerite_stairs",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:cut_shinerite_slab",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_tiles",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_tile_stairs",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_tile_slab",
+      "required": false
+    }
+  ]
+}
