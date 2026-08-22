@@ -32,7 +32,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import org.joml.Vector3f;
 
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -80,14 +82,18 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		}
 		ItemStack itemstack = player.getItemInHand(hand);
 		Item item = itemstack.getItem();
+		boolean applyGesture = player.isCrouching() && itemstack.isEmpty();
 		if (InteractionsConfig.BLOCK_INTERACTIONS.get()) {
 			InteractionResult result = handleShineriteInteractions(state, world, pos, player, itemstack, item, blockEntity);
 			if (result != InteractionResult.PASS) {
 				return result;
 			}
-			if (blockEntity.isWaxed()) {
+			if (blockEntity.isCoated()) {
 				return InteractionResult.PASS;
 			}
+		}
+		if (applyGesture) {
+			return InteractionResult.PASS;
 		}
 		if (isPottablePlant(itemstack)) {
 			return super.use(state, world, pos, player, hand, hit);
@@ -97,30 +103,38 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 
 	private InteractionResult handleShineriteInteractions(BlockState state, Level world, BlockPos pos, Player player, ItemStack itemstack, Item item, BaseShineriteBlockEntity blockEntity) {
 		int blockColor = blockEntity.getColor();
-		if (blockEntity.isWaxed()) {
-			if (MechanicsConfig.WAXING.get() && InteractionsConfig.BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
-				blockEntity.setWaxed(false);
+		if (blockEntity.isCoated()) {
+			if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
+				blockEntity.setCoated(false);
 				world.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
 				if (!player.isCreative()) {
 					ModUtils.reduceItemStack(player, itemstack);
 				}
-				ModUtils.generateWaxRemovalParticles(world, pos, state, world.random);
+				ModUtils.generateCoatedRemovalParticles(world, pos, state, world.random);
 				return InteractionResult.SUCCESS;
 			}
 			if (item instanceof ShinyPaintBrushItem || item instanceof DyeItem || item == Items.HONEYCOMB || item == Items.INK_SAC || item == Items.GLOW_INK_SAC) {
 				long currentTime = world.getGameTime();
-				if (currentTime - blockEntity.getLastWaxParticleTime() >= 30) {
-					ModUtils.generateWaxParticles(world, pos, state, world.random);
-					blockEntity.setLastWaxParticleTime(currentTime);
+				if (currentTime - blockEntity.getLastCoatedParticleTime() >= 30) {
+					ModUtils.generateCoatedParticles(world, pos, state, world.random);
+					blockEntity.setLastCoatedParticleTime(currentTime);
 				}
 				return InteractionResult.CONSUME;
 			}
 			return InteractionResult.PASS;
 		}
-		if (MechanicsConfig.WASHING.get() && InteractionsConfig.BLOCK_WASHING.get() && item == Items.POTION && blockColor != -1) {
+		if (MechanicsConfig.IMBUING.get() && itemstack.isEmpty() && player.isCrouching() && blockEntity.isImbued()) {
+			return blockEntity.registerDirectContact(player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+		}
+		if (MechanicsConfig.WASHING.get() && InteractionsConfig.BLOCK_WASHING.get() && item == Items.POTION && (blockColor != -1 || blockEntity.isImbued())) {
 			Potion potion = PotionUtils.getPotion(itemstack);
 			if (potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) {
-				ModUtils.applyDye(world, pos, state, -1);
+				if (blockColor != -1) {
+					ModUtils.applyDye(world, pos, state, -1);
+				}
+				if (blockEntity.isImbued()) {
+					blockEntity.clearImbuedState();
+				}
 				if (!player.isCreative()) {
 					itemstack.shrink(1);
 					player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
@@ -132,7 +146,7 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_DYEING.get()) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_DYEING.get() && !blockEntity.isImbued()) {
 			if (item instanceof ShinyPaintBrushItem brush && brush.hasColor(itemstack)) {
 				int color = brush.getColor(itemstack);
 				if (color == blockColor || (color == DyeColor.BLACK.getTextColor() && blockColor == ModUtils.lightenColor(DyeColor.BLACK.getTextColor()))) {
@@ -159,23 +173,40 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem && blockColor != -1) {
-			ModUtils.applyDye(world, pos, state, -1);
-			if (!player.isCreative()) {
-				ModUtils.reduceItemStack(player, itemstack);
+		if (InteractionsConfig.BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
+			if (MechanicsConfig.IMBUING.get() && blockEntity.isImbued()) {
+				blockEntity.clearImbuedState();
+				if (blockColor != -1) {
+					ModUtils.applyDye(world, pos, state, -1);
+				}
+				if (!player.isCreative()) {
+					ModUtils.reduceItemStack(player, itemstack);
+				}
+				world.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 0.8F);
+				if (world instanceof ServerLevel serverLevel) {
+					serverLevel.sendParticles(new DustParticleOptions(new Vector3f(1.0F, 1.0F, 1.0F), 1.0F),
+						pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 15, 0.35, 0.25, 0.35, 0.05);
+				}
+				return InteractionResult.SUCCESS;
 			}
-			return InteractionResult.SUCCESS;
+			if (MechanicsConfig.DYEING.get() && blockColor != -1) {
+				ModUtils.applyDye(world, pos, state, -1);
+				if (!player.isCreative()) {
+					ModUtils.reduceItemStack(player, itemstack);
+				}
+				return InteractionResult.SUCCESS;
+			}
 		}
-		if (MechanicsConfig.WAXING.get() && InteractionsConfig.BLOCK_WAXING.get() && item == Items.HONEYCOMB) {
-			blockEntity.setWaxed(true);
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_COATING.get() && item == Items.HONEYCOMB) {
+			blockEntity.setCoated(true);
 			if (!player.isCreative()) {
 				ModUtils.reduceItemStack(player, itemstack);
 			}
-			ModUtils.generateWaxParticles(world, pos, state, world.random);
+			ModUtils.generateCoatedParticles(world, pos, state, world.random);
 			world.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
 			return InteractionResult.SUCCESS;
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_LIGHTENING.get() && item == Items.GLOW_INK_SAC && blockColor != -1) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_LIGHTENING.get() && item == Items.GLOW_INK_SAC && blockColor != -1 && !blockEntity.isImbued()) {
 			int newColor = ModUtils.lightenColor(blockColor);
 			if (newColor == blockColor) {
 				return InteractionResult.PASS;
@@ -188,7 +219,7 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 			ModUtils.generateDustParticles(world, pos, newColor);
 			return InteractionResult.SUCCESS;
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_DARKENING.get() && item == Items.INK_SAC) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.BLOCK_DARKENING.get() && item == Items.INK_SAC && !blockEntity.isImbued()) {
 			int newColor = blockColor == -1 ? 0xCDCDCD : ModUtils.darkenColor(blockColor);
 			if (newColor == blockColor) {
 				return InteractionResult.PASS;
@@ -213,6 +244,9 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 	}
 
 	private InteractionResult removePlant(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BaseShineriteBlockEntity blockEntity) {
+		if (world.isClientSide) {
+			return InteractionResult.SUCCESS;
+		}
 		ItemStack plant = createPlantItem(blockEntity);
 		if (player.getItemInHand(hand).isEmpty()) {
 			player.setItemInHand(hand, plant);
@@ -221,10 +255,13 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		}
 		world.setBlock(pos, Blocks.FLOWER_POT.defaultBlockState(), 3);
 		world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-		if (!world.isClientSide && world instanceof ServerLevel serverLevel) {
+		if (world instanceof ServerLevel serverLevel) {
 			ModUtils.generateBlockTransitionParticles(serverLevel, pos, state, blockEntity.getColor(), 40, 1.0F);
+			if (blockEntity.isImbued()) {
+				ModUtils.generateImbuedBurstParticles(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, blockEntity.getImbuedColor(), 40);
+			}
 		}
-		return InteractionResult.sidedSuccess(world.isClientSide);
+		return InteractionResult.CONSUME;
 	}
 
 	private static ItemStack createPlantItem(BaseShineriteBlockEntity blockEntity) {
@@ -237,8 +274,15 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				plant.getOrCreateTag().putInt("color", color);
 			}
 		}
-		if (blockEntity.isWaxed()) {
-			plant.getOrCreateTag().putBoolean("Waxed", true);
+		if (blockEntity.isCoated()) {
+			plant.getOrCreateTag().putBoolean("Coated", true);
+		}
+		if (blockEntity.isImbued()) {
+			plant.getOrCreateTag().put("ImbuedEffects", blockEntity.getImbuedEffects());
+			plant.getOrCreateTag().putInt("ImbuedUses", blockEntity.getImbuedUses());
+			plant.getOrCreateTag().putInt("MaxImbuedUses", blockEntity.getMaxImbuedUses());
+			plant.getOrCreateTag().putInt("ImbuedColor", blockEntity.getImbuedColor());
+			ModUtils.applyDyeColor(plant, blockEntity.getImbuedColor());
 		}
 		return plant;
 	}

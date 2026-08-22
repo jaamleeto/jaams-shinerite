@@ -44,6 +44,18 @@
     {
       "id": "jaams_shinerite:shinerite_tile_slab",
       "required": false
+    },
+    {
+      "id": "jaams_shinerite:shineritia",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shiny_roots",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_roots",
+      "required": false
     }
   ]
 }

@@ -194,7 +194,7 @@ public class ImbuedItemHandler {
 		};
 		double offsetX = (world.random.nextDouble() - 0.5) * entity.getBbWidth();
 		double offsetZ = (world.random.nextDouble() - 0.5) * entity.getBbWidth();
-		((ServerLevel) world).sendParticles(new CustomEffectParticleData(r, g, b, 0.2F),
+		((ServerLevel) world).sendParticles(new CustomEffectParticleData(r, g, b, 0.25F),
 			entity.getX() + offsetX, offsetY, entity.getZ() + offsetZ, 1, 0.1, 0.1, 0.1, 0.02);
 	}
 }

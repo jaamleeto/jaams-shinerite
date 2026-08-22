@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_nether",
+  "features": "jaams_shinerite:nether_shinerite_colored_ore_generation",
+  "step": "underground_ores"
+}

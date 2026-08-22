@@ -78,15 +78,15 @@ public class ShineriteOreBlock extends BaseShineriteBlock {
 			}
 		}
 		int color = -1;
-		boolean isWaxed = false;
+		boolean isCoated = false;
 		BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 		if (blockEntity != null) {
 			CompoundTag tag = blockEntity.saveWithoutMetadata();
 			if (tag.contains("Color", Tag.TAG_INT)) {
 				color = tag.getInt("Color");
 			}
-			if (tag.contains("Waxed", Tag.TAG_BYTE)) {
-				isWaxed = tag.getBoolean("Waxed");
+			if (tag.contains("Coated", Tag.TAG_BYTE)) {
+				isCoated = tag.getBoolean("Coated");
 			}
 		}
 		if (hasSilkTouch) {
@@ -95,8 +95,8 @@ public class ShineriteOreBlock extends BaseShineriteBlock {
 				CompoundTag tag = blockStack.getOrCreateTag();
 				tag.putInt("color", color);
 			}
-			if (isWaxed) {
-				blockStack.getOrCreateTag().putBoolean("Waxed", true);
+			if (isCoated) {
+				blockStack.getOrCreateTag().putBoolean("Coated", true);
 			}
 			return Collections.singletonList(blockStack);
 		} else {
@@ -105,8 +105,8 @@ public class ShineriteOreBlock extends BaseShineriteBlock {
 				CompoundTag tag = dropStack.getOrCreateTag();
 				tag.putInt("color", color);
 			}
-			if (isWaxed) {
-				dropStack.getOrCreateTag().putBoolean("Waxed", true);
+			if (isCoated) {
+				dropStack.getOrCreateTag().putBoolean("Coated", true);
 			}
 			int fortuneLevel = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool) : 0;
 			int dropCount = calculateDropCount(fortuneLevel, random);

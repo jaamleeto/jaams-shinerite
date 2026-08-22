@@ -104,7 +104,7 @@ public class DarkenItemRecipe extends CustomRecipe {
 	}
 
 	private boolean isValidDyeableStackForDarken(ItemStack stack) {
-		if (ModUtils.isWaxed(stack) || ModUtils.isImbued(stack)) {
+		if (ModUtils.isCoated(stack) || ModUtils.isImbued(stack)) {
 			return false;
 		}
 		int currentColor = ModUtils.getCurrentColor(stack);

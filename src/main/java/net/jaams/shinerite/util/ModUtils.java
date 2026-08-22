@@ -311,15 +311,15 @@ public class ModUtils {
 		return false;
 	}
 
-	public static boolean isWaxableItem(ItemStack stack) {
-		if (!MechanicsConfig.WAXING.get()) {
+	public static boolean isCoatableItem(ItemStack stack) {
+		if (!MechanicsConfig.COATING.get()) {
 			return false;
 		}
 		CompoundTag tag = stack.getTag();
-		if (tag != null && tag.contains("Waxeable")) {
-			return tag.getBoolean("Waxeable");
+		if (tag != null && tag.contains("coatable")) {
+			return tag.getBoolean("coatable");
 		}
-		return stack.is(ModTags.WAXABLES);
+		return stack.is(ModTags.COATABLES);
 	}
 
 	public static boolean isDyeableItem(ItemStack stack) {
@@ -352,11 +352,11 @@ public class ModUtils {
 		return tag != null && tag.contains("ImbuedEffects", Tag.TAG_LIST);
 	}
 
-	public static boolean isWaxed(ItemStack stack) {
-		if (!MechanicsConfig.WAXING.get()) {
+	public static boolean isCoated(ItemStack stack) {
+		if (!MechanicsConfig.COATING.get()) {
 			return false;
 		}
-		return stack.getOrCreateTag().getBoolean("Waxed");
+		return stack.getOrCreateTag().getBoolean("Coated");
 	}
 
 	public static Component formatDuration(int ticks, ChatFormatting color) {
@@ -980,7 +980,7 @@ public class ModUtils {
 		}
 	}
 
-	public static void generateWaxParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
+	public static void generateCoatedParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
 		if (!(world instanceof ServerLevel serverWorld)) {
 			return;
 		}
@@ -997,7 +997,7 @@ public class ModUtils {
 		}
 	}
 
-	public static void generateWaxRemovalParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
+	public static void generateCoatedRemovalParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
 		if (!(world instanceof ServerLevel serverWorld)) {
 			return;
 		}
@@ -1040,7 +1040,7 @@ public class ModUtils {
 	public static boolean imbueBlockWithThrownPotion(Level world, BlockPos pos, BaseShineriteBlockEntity blockEntity, ItemStack potionStack) {
 		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.BLOCK_IMBUING.get())
 			return false;
-		if (blockEntity.isImbued() || (blockEntity.isWaxed() && !MechanicsConfig.IMBUED_BLOCK_WAXED_CAN_IMBUE.get()))
+		if (blockEntity.isImbued() || blockEntity.getColor() != -1 || (blockEntity.isCoated() && !MechanicsConfig.IMBUED_BLOCK_COATED_CAN_IMBUE.get()))
 			return false;
 		Potion potion = PotionUtils.getPotion(potionStack);
 		if (potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion == Potions.MUNDANE || potion.getEffects().isEmpty())
@@ -1065,7 +1065,7 @@ public class ModUtils {
 		return true;
 	}
 
-	public static void generateClientWaxParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
+	public static void generateClientCoatedParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
 		if (!(world instanceof ClientLevel clientLevel)) {
 			return;
 		}
@@ -1179,6 +1179,33 @@ public class ModUtils {
 			double offsetZ = (serverLevel.random.nextDouble() - 0.5) * 0.5;
 			serverLevel.sendParticles(new DustParticleOptions(new Vector3f(red, green, blue), particleSize), entity.getX() + offsetX, entity.getY(), entity.getZ() + offsetZ, 1, velocityX, velocityY, velocityZ, 0.0);
 		}
+	}
+
+	public static void generateImbuedBurstParticles(ServerLevel serverLevel, double x, double y, double z, int color, int count) {
+		float red, green, blue;
+		if (color == -1) {
+			red = 1.0F;
+			green = 1.0F;
+			blue = 1.0F;
+		} else {
+			red = ((color >> 16) & 255) / 255.0F;
+			green = ((color >> 8) & 255) / 255.0F;
+			blue = (color & 255) / 255.0F;
+		}
+		RandomSource random = serverLevel.random;
+		for (int i = 0; i < count; i++) {
+			double angle = random.nextDouble() * Math.PI * 2.0;
+			double radius = random.nextDouble() * 0.45;
+			double offsetX = Math.cos(angle) * radius;
+			double offsetZ = Math.sin(angle) * radius;
+			double offsetY = random.nextDouble() * 0.15;
+			double speedY = random.nextDouble() * 0.18 + 0.1;
+			double driftX = Math.cos(angle) * random.nextDouble() * 0.05 + (random.nextDouble() - 0.5) * 0.03;
+			double driftZ = Math.sin(angle) * random.nextDouble() * 0.05 + (random.nextDouble() - 0.5) * 0.03;
+			serverLevel.sendParticles(new CustomEffectParticleData(red, green, blue, 0.2F), x + offsetX, y + offsetY, z + offsetZ, 1,
+				driftX, speedY, driftZ, 0.0);
+		}
+		serverLevel.sendParticles(ParticleTypes.SPLASH, x, y + 0.2, z, Math.max(6, count / 4), 0.45, 0.15, 0.45, 0.05);
 	}
 
 	public static int calculateDyeColor(int baseColor, DyeItem dyeItem) {

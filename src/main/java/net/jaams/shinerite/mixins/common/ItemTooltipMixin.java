@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.network.chat.Component;
 
-import net.jaams.shinerite.tooltip.trait.WaxeableItemTooltip;
+import net.jaams.shinerite.tooltip.trait.CoatableItemTooltip;
 import net.jaams.shinerite.tooltip.item.ShinyScraperItemTooltip;
 import net.jaams.shinerite.tooltip.item.ShinyRootsItemTooltip;
 import net.jaams.shinerite.tooltip.item.ShinyPaintBrushItemTooltip;
@@ -31,7 +31,7 @@ public abstract class ItemTooltipMixin {
 	@Inject(method = "appendHoverText", at = @At("HEAD"))
 	private void addCustomTooltipsHead(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag, CallbackInfo ci) {
 		ImbuableItemTooltip.add(stack, tooltip, flag);
-		WaxeableItemTooltip.add(stack, tooltip, flag);
+		CoatableItemTooltip.add(stack, tooltip, flag);
 		FrailglowItemTooltip.add(stack, tooltip);
 		GlowSaladItemTooltip.add(stack, tooltip);
 		ShinyRootsItemTooltip.add(stack, tooltip);

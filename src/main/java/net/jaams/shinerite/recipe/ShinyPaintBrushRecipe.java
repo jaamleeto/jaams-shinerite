@@ -121,7 +121,7 @@ public class ShinyPaintBrushRecipe extends CustomRecipe {
 	}
 
 	private boolean isValidDyeableStack(ItemStack stack) {
-		if (ModUtils.isWaxed(stack) || ModUtils.isImbued(stack)) {
+		if (ModUtils.isCoated(stack) || ModUtils.isImbued(stack)) {
 			return false;
 		}
 		return true;

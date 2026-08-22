@@ -22,11 +22,11 @@ public class BaseShineriteBlockItem extends BlockItem implements IDyeableItem {
 		return false;
 	}
 
-	public boolean isWaxed(ItemStack stack) {
-		return stack.getOrCreateTag().getBoolean("Waxed");
+	public boolean isCoated(ItemStack stack) {
+		return stack.getOrCreateTag().getBoolean("Coated");
 	}
 
-	public void setWaxed(ItemStack stack, boolean waxed) {
-		stack.getOrCreateTag().putBoolean("Waxed", waxed);
+	public void setCoated(ItemStack stack, boolean coated) {
+		stack.getOrCreateTag().putBoolean("Coated", coated);
 	}
 }

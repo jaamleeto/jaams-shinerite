@@ -102,7 +102,7 @@ public class LightenItemRecipe extends CustomRecipe {
 	}
 
 	private boolean isValidDyeableStackForLighten(ItemStack stack) {
-		if (ModUtils.isWaxed(stack) || ModUtils.isImbued(stack)) {
+		if (ModUtils.isCoated(stack) || ModUtils.isImbued(stack)) {
 			return false;
 		}
 		int currentColor = ModUtils.getCurrentColor(stack);

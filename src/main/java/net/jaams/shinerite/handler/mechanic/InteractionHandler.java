@@ -46,12 +46,12 @@ public class InteractionHandler {
 	public static final int DEFAULT_COLOR = -1;
 	public static final int BASE_IMBUED_USES = 5;
 
-	private static boolean isWaxableItemExtended(ItemStack stack) {
-		return ModUtils.isWaxableItem(stack);
+	private static boolean isCoatableItemExtended(ItemStack stack) {
+		return ModUtils.isCoatableItem(stack);
 	}
 
 	private static boolean isScrapableItem(ItemStack stack) {
-		return ModUtils.isWaxableItem(stack);
+		return ModUtils.isCoatableItem(stack);
 	}
 
 	@SubscribeEvent
@@ -69,12 +69,12 @@ public class InteractionHandler {
 			}
 			return;
 		}
-		if (MechanicsConfig.WAXING.get() && InteractionsConfig.HAND_WAXING.get()) {
-			if (isWaxableItemExtended(mainHandStack) && offHandStack.is(Items.HONEYCOMB)) {
-				handleWaxingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.HAND_COATING.get()) {
+			if (isCoatableItemExtended(mainHandStack) && offHandStack.is(Items.HONEYCOMB)) {
+				handleCoatedInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
-			} else if (isWaxableItemExtended(offHandStack) && mainHandStack.is(Items.HONEYCOMB)) {
-				handleWaxingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
+			} else if (isCoatableItemExtended(offHandStack) && mainHandStack.is(Items.HONEYCOMB)) {
+				handleCoatedInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
 		}
@@ -93,14 +93,14 @@ public class InteractionHandler {
 			boolean dyeWithDyeItem = InteractionsConfig.HAND_DYEING_DYE.get();
 			boolean dyeWithBrush = InteractionsConfig.HAND_DYEING_BRUSH.get();
 			if ((dyeWithDyeItem || dyeWithBrush)) {
-				if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isWaxed(mainHandStack)) {
+				if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isCoated(mainHandStack)) {
 					boolean validSecondary = (dyeWithDyeItem && offHandStack.getItem() instanceof DyeItem) || (dyeWithBrush && offHandStack.getItem() instanceof ShinyPaintBrushItem);
 					if (validSecondary) {
 						handleDyeingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 						return;
 					}
 				}
-				if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isWaxed(offHandStack)) {
+				if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isCoated(offHandStack)) {
 					boolean validSecondary = (dyeWithDyeItem && mainHandStack.getItem() instanceof DyeItem) || (dyeWithBrush && mainHandStack.getItem() instanceof ShinyPaintBrushItem);
 					if (validSecondary) {
 						handleDyeingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
@@ -110,30 +110,30 @@ public class InteractionHandler {
 			}
 		}
 		if (MechanicsConfig.DYEING.get() && InteractionsConfig.HAND_LIGHTENING.get()) {
-			if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isWaxed(mainHandStack) && offHandStack.is(Items.GLOW_INK_SAC)) {
+			if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isCoated(mainHandStack) && offHandStack.is(Items.GLOW_INK_SAC)) {
 				handleLighteningInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
 			}
-			if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isWaxed(offHandStack) && mainHandStack.is(Items.GLOW_INK_SAC)) {
+			if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isCoated(offHandStack) && mainHandStack.is(Items.GLOW_INK_SAC)) {
 				handleLighteningInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
 		}
 		if (MechanicsConfig.DYEING.get() && InteractionsConfig.HAND_DARKENING.get()) {
-			if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isWaxed(mainHandStack) && offHandStack.is(Items.INK_SAC)) {
+			if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isCoated(mainHandStack) && offHandStack.is(Items.INK_SAC)) {
 				handleDarkeningInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
 			}
-			if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isWaxed(offHandStack) && mainHandStack.is(Items.INK_SAC)) {
+			if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isCoated(offHandStack) && mainHandStack.is(Items.INK_SAC)) {
 				handleDarkeningInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
 		}
 		if (MechanicsConfig.IMBUING.get() && InteractionsConfig.HAND_IMBUING.get()) {
-			if (ModUtils.isImbueableItem(mainHandStack) && !ModUtils.isWaxed(mainHandStack) && !hasCustomColor(mainHandStack) && offHandStack.is(Items.POTION) && PotionUtils.getPotion(offHandStack) != Potions.WATER) {
+			if (ModUtils.isImbueableItem(mainHandStack) && !ModUtils.isCoated(mainHandStack) && !hasCustomColor(mainHandStack) && offHandStack.is(Items.POTION) && PotionUtils.getPotion(offHandStack) != Potions.WATER) {
 				handleImbuingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
-			} else if (ModUtils.isImbueableItem(offHandStack) && !ModUtils.isWaxed(offHandStack) && !hasCustomColor(offHandStack) && mainHandStack.is(Items.POTION) && PotionUtils.getPotion(mainHandStack) != Potions.WATER) {
+			} else if (ModUtils.isImbueableItem(offHandStack) && !ModUtils.isCoated(offHandStack) && !hasCustomColor(offHandStack) && mainHandStack.is(Items.POTION) && PotionUtils.getPotion(mainHandStack) != Potions.WATER) {
 				handleImbuingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
@@ -142,44 +142,44 @@ public class InteractionHandler {
 			boolean mainIsWashable = ModUtils.isImbueableItem(mainHandStack) || (MechanicsConfig.DYEING.get() && ModUtils.isDyeableItem(mainHandStack));
 			if (mainIsWashable && offHandStack.is(Items.POTION)) {
 				Potion potion = PotionUtils.getPotion(offHandStack);
-				if ((potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) && !ModUtils.isWaxed(mainHandStack)) {
+				if ((potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) && !ModUtils.isCoated(mainHandStack)) {
 					handleWaterBottleInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				}
 			}
 			boolean offIsWashable = ModUtils.isImbueableItem(offHandStack) || (MechanicsConfig.DYEING.get() && ModUtils.isDyeableItem(offHandStack));
 			if (offIsWashable && mainHandStack.is(Items.POTION)) {
 				Potion potion = PotionUtils.getPotion(mainHandStack);
-				if ((potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) && !ModUtils.isWaxed(offHandStack)) {
+				if ((potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) && !ModUtils.isCoated(offHandStack)) {
 					handleWaterBottleInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				}
 			}
 		}
 	}
 
-	private static void handleWaxingInteraction(Level level, Player player, ItemStack shineriteStack, ItemStack honeycombStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
-		if (ModUtils.isWaxed(shineriteStack)) {
+	private static void handleCoatedInteraction(Level level, Player player, ItemStack shineriteStack, ItemStack honeycombStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
+		if (ModUtils.isCoated(shineriteStack)) {
 			return;
 		}
 		cancelEvent(event, level);
 		handleItemInteraction(level, player, shineriteStack, honeycombStack, hand, (targetItem) -> {
-			targetItem.getOrCreateTag().putBoolean("Waxed", true);
+			targetItem.getOrCreateTag().putBoolean("Coated", true);
 			level.playSound(null, player.blockPosition(), SoundEvents.HONEYCOMB_WAX_ON, SoundSource.PLAYERS, 1.0F, 1.0F);
 			generateParticles(level, player, hand, ParticleTypes.WAX_ON, 5, 0.3, 0.3, 0.3, 0.05);
 		});
 	}
 
 	private static void handleScrapingInteraction(Level level, Player player, ItemStack targetStack, ItemStack scraperStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
-		boolean isWaxed = ModUtils.isWaxed(targetStack);
+		boolean isCoated = ModUtils.isCoated(targetStack);
 		boolean isImbued = ModUtils.isImbued(targetStack);
 		boolean hasColor = ModUtils.getCurrentColor(targetStack) != DEFAULT_COLOR;
-		if (!isWaxed && !isImbued && !hasColor) {
+		if (!isCoated && !isImbued && !hasColor) {
 			return;
 		}
 		cancelEvent(event, level);
 		if (!level.isClientSide()) {
 			int originalSlot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
 			boolean isSingleItem = targetStack.getCount() == 1;
-			ItemStack resultStack = processScraping(level, player, targetStack, scraperStack, hand, isWaxed, isImbued, hasColor);
+			ItemStack resultStack = processScraping(level, player, targetStack, scraperStack, hand, isCoated, isImbued, hasColor);
 			handleResultStack(player, targetStack, resultStack, originalSlot, isSingleItem);
 		}
 	}
@@ -284,11 +284,6 @@ public class InteractionHandler {
 			tag.putInt("ImbuedColor", potionColor);
 			ModUtils.applyDyeColor(targetItem, potionColor);
 			level.playSound(null, player.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0F, 1.15F);
-			generateCustomEffectParticles(level, player, hand, potionColor, 12, 0.6, 0.6, 0.6, 0.12);
-			if (targetItem.getItem() instanceof ArmorItem) {
-				generateCustomEffectParticles(level, player, hand, potionColor, 20, 0.9, 1.0, 0.9, 0.08);
-				level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.4F, 1.7F);
-			}
 			if (!player.getAbilities().instabuild) {
 				potionStack.shrink(1);
 				addOrDropItem(player, new ItemStack(Items.GLASS_BOTTLE));
@@ -299,25 +294,25 @@ public class InteractionHandler {
 	private static void handleDualScraperInteraction(Level level, Player player, ItemStack mainHandStack, ItemStack offHandStack, PlayerInteractEvent.RightClickItem event) {
 		boolean hasColorMain = ModUtils.getCurrentColor(mainHandStack) != DEFAULT_COLOR;
 		boolean hasColorOff = ModUtils.getCurrentColor(offHandStack) != DEFAULT_COLOR;
-		boolean isWaxedMain = ModUtils.isWaxed(mainHandStack);
-		boolean isWaxedOff = ModUtils.isWaxed(offHandStack);
+		boolean isCoatedMain = ModUtils.isCoated(mainHandStack);
+		boolean isCoatedOff = ModUtils.isCoated(offHandStack);
 		boolean isImbuedMain = ModUtils.isImbued(mainHandStack);
 		boolean isImbuedOff = ModUtils.isImbued(offHandStack);
-		if (!hasColorMain && !hasColorOff && !isWaxedMain && !isWaxedOff && !isImbuedMain && !isImbuedOff) {
+		if (!hasColorMain && !hasColorOff && !isCoatedMain && !isCoatedOff && !isImbuedMain && !isImbuedOff) {
 			return;
 		}
 		cancelEvent(event, level);
 		if (!level.isClientSide()) {
-			if (hasColorMain || isWaxedMain || isImbuedMain) {
+			if (hasColorMain || isCoatedMain || isImbuedMain) {
 				int mainHandSlot = player.getInventory().selected;
 				boolean isSingleItemMain = mainHandStack.getCount() == 1;
-				ItemStack resultStack = processScraping(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, isWaxedMain, isImbuedMain, hasColorMain);
+				ItemStack resultStack = processScraping(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, isCoatedMain, isImbuedMain, hasColorMain);
 				handleResultStack(player, mainHandStack, resultStack, mainHandSlot, isSingleItemMain);
 			}
-			if (hasColorOff || isWaxedOff || isImbuedOff) {
+			if (hasColorOff || isCoatedOff || isImbuedOff) {
 				int offHandSlot = 40;
 				boolean isSingleItemOff = offHandStack.getCount() == 1;
-				ItemStack resultStack = processScraping(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, isWaxedOff, isImbuedOff, hasColorOff);
+				ItemStack resultStack = processScraping(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, isCoatedOff, isImbuedOff, hasColorOff);
 				handleResultStack(player, offHandStack, resultStack, offHandSlot, isSingleItemOff);
 			}
 		}
@@ -398,10 +393,10 @@ public class InteractionHandler {
 		}
 	}
 
-	public static ItemStack processScraping(Level level, Player player, ItemStack targetStack, ItemStack scraperStack, InteractionHand hand, boolean isWaxed, boolean isImbued, boolean hasColor) {
+	public static ItemStack processScraping(Level level, Player player, ItemStack targetStack, ItemStack scraperStack, InteractionHand hand, boolean isCoated, boolean isImbued, boolean hasColor) {
 		ItemStack resultStack = targetStack.getCount() > 1 ? targetStack.split(1) : targetStack;
-		if (isWaxed) {
-			resultStack.getOrCreateTag().remove("Waxed");
+		if (isCoated) {
+			resultStack.getOrCreateTag().remove("Coated");
 			level.playSound(null, player.blockPosition(), SoundEvents.AXE_WAX_OFF, SoundSource.PLAYERS, 1.0F, 1.0F);
 			generateParticles(level, player, hand, ParticleTypes.WAX_OFF, 5, 0.3, 0.3, 0.3, 0.05);
 		} else if (isImbued) {

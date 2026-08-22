@@ -243,7 +243,7 @@ public class ProjectileImpactHandler {
 			if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 				continue;
 			}
-			if (MechanicsConfig.WAXING.get() && ModUtils.isWaxed(stack))
+			if (MechanicsConfig.COATING.get() && ModUtils.isCoated(stack))
 				continue;
 			boolean modified = false;
 			if (ModUtils.isImbued(stack)) {
@@ -275,7 +275,7 @@ public class ProjectileImpactHandler {
 			if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 				continue;
 			}
-			if (MechanicsConfig.WAXING.get() && ModUtils.isWaxed(stack))
+			if (MechanicsConfig.COATING.get() && ModUtils.isCoated(stack))
 				continue;
 			boolean modified = false;
 			if (ModUtils.isImbued(stack)) {
@@ -308,10 +308,10 @@ public class ProjectileImpactHandler {
 			if (!ModUtils.isWashableItem(weaponItem))
 				continue;
 			CompoundTag tag = weaponItem.getTag();
-			if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
+if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 				continue;
 			}
-			if (MechanicsConfig.WAXING.get() && ModUtils.isWaxed(weaponItem))
+			if (MechanicsConfig.COATING.get() && ModUtils.isCoated(weaponItem))
 				continue;
 			boolean modified = false;
 			if (ModUtils.isImbued(weaponItem)) {
@@ -349,7 +349,7 @@ public class ProjectileImpactHandler {
 		if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 			return;
 		}
-		if (MechanicsConfig.WAXING.get() && ModUtils.isWaxed(backItem))
+		if (MechanicsConfig.COATING.get() && ModUtils.isCoated(backItem))
 			return;
 		boolean modified = false;
 		if (ModUtils.isImbued(backItem)) {
@@ -404,7 +404,7 @@ public class ProjectileImpactHandler {
 		AABB aabb = potion.getBoundingBox().inflate(radius);
 		for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, aabb, e -> e.position().distanceTo(pos) <= distanceFactor)) {
 			ItemStack stack = ie.getItem();
-			if (!ModUtils.isImbueableItem(stack) || ModUtils.isImbued(stack))
+			if (!ModUtils.isImbueableItem(stack) || ModUtils.isImbued(stack) || InteractionHandler.hasCustomColor(stack))
 				continue;
 			imbueItemStack(level, stack, potionStack, ie, pos, totalAffected);
 			ie.setItem(stack);
@@ -421,7 +421,7 @@ public class ProjectileImpactHandler {
 			if (!nbt.contains("WeaponItem", 10))
 				continue;
 			ItemStack weapon = ItemStack.of(nbt.getCompound("WeaponItem"));
-			if (!ModUtils.isImbueableItem(weapon) || ModUtils.isImbued(weapon))
+			if (!ModUtils.isImbueableItem(weapon) || ModUtils.isImbued(weapon) || InteractionHandler.hasCustomColor(weapon))
 				continue;
 			imbueItemStack(level, weapon, potionStack, arrow, pos, totalAffected);
 			nbt.put("WeaponItem", weapon.save(new CompoundTag()));
@@ -470,21 +470,30 @@ public class ProjectileImpactHandler {
 		if (hit.getDirection() == Direction.UP) {
 			BlockPos above = pos.above();
 			blockEntity = level.getBlockEntity(above);
-			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && (!MechanicsConfig.WAXING.get() || !shineriteBE.isWaxed()) && level.getBlockState(above).getBlock() instanceof ShineritiaBlock) {
+			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && (!MechanicsConfig.COATING.get() || !shineriteBE.isCoated()) && level.getBlockState(above).getBlock() instanceof ShineritiaBlock) {
 				targetPos = above;
 				targetState = level.getBlockState(targetPos);
 			}
 		} else if (hit.getDirection() == Direction.DOWN) {
 			BlockPos below = pos.below();
 			blockEntity = level.getBlockEntity(below);
-			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && (!MechanicsConfig.WAXING.get() || !shineriteBE.isWaxed()) && level.getBlockState(below).getBlock() instanceof ShineriteRootsBlock) {
+			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && (!MechanicsConfig.COATING.get() || !shineriteBE.isCoated()) && level.getBlockState(below).getBlock() instanceof ShineriteRootsBlock) {
 				targetPos = below;
 				targetState = level.getBlockState(targetPos);
 			}
 		}
 		if (targetPos != null && targetState != null && blockEntity instanceof BaseShineriteBlockEntity shineriteBE) {
+			boolean colorRemoved = false;
+			boolean imbuementRemoved = false;
 			if (MechanicsConfig.DYEING.get() && shineriteBE.getColor() != -1) {
 				ModUtils.applyDye(level, targetPos, targetState, -1);
+				colorRemoved = true;
+			}
+			if (shineriteBE.isImbued()) {
+				shineriteBE.clearImbuedState();
+				imbuementRemoved = true;
+			}
+			if (colorRemoved || imbuementRemoved) {
 				blockEntity.setChanged();
 				if (level instanceof ServerLevel serverLevel) {
 					serverLevel.getChunkSource().blockChanged(targetPos);

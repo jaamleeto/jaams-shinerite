@@ -5,10 +5,10 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.jaams.shinerite.util.ModEnums;
 
 public class RecipesConfig {
-	// Wax Recipe
-	public static ForgeConfigSpec.ConfigValue<Boolean> WAX_ITEM_RECIPE;
-	public static ForgeConfigSpec.ConfigValue<Boolean> WAX_ITEM_RECIPE_3X3_MODE;
-	public static ForgeConfigSpec.ConfigValue<Boolean> WAX_ITEM_RECIPE_FREE_MODE;
+	// Coat Recipe
+	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE;
+	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE_3X3_MODE;
+	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE_FREE_MODE;
 	// Water Bottle Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> WATER_BOTTLE_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> WATER_BOTTLE_RECIPE_3X3_MODE;
@@ -89,10 +89,10 @@ public class RecipesConfig {
 				.defineEnum("Repair Item Recipe Imbuement Mode", ModEnums.RepairImbuementMode.MERGE);
 		builder.pop();
 		builder.pop();
-		builder.push("Wax Item Recipe");
-		WAX_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite waxing crafting recipe entirely").define("Wax Item Recipe", true);
-		WAX_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Wax Item Recipe Bulk Mode", true);
-		WAX_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Wax Item Recipe Free Mode", true);
+		builder.push("Coat Item Recipe");
+		COAT_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite coating crafting recipe entirely").define("Coating Item Recipe", true);
+		COAT_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Coat Item Recipe Bulk Mode", true);
+		COAT_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Coat Item Recipe Free Mode", true);
 		builder.pop();
 		builder.push("Water Bottle Recipe");
 		WATER_BOTTLE_RECIPE = builder.comment("Master switch: Enable or disable the special water bottle cleaning recipe entirely").define("Water Bottle Recipe", true);

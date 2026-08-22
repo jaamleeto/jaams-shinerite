@@ -108,7 +108,7 @@ public class WaterBottleRecipe extends CustomRecipe {
 	}
 
 	private boolean isValidCleanableStack(ItemStack stack) {
-		if (ModUtils.isWaxed(stack)) {
+		if (ModUtils.isCoated(stack)) {
 			return false;
 		}
 		boolean hasImbuement = ModUtils.isImbued(stack);

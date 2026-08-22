@@ -29,7 +29,7 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue CAULDRON_WASH_COLOR;
 	public static ForgeConfigSpec.BooleanValue CAULDRON_WASH_IMBUEMENT;
 	// Hand interactions
-	public static ForgeConfigSpec.BooleanValue HAND_WAXING;
+	public static ForgeConfigSpec.BooleanValue HAND_COATING;
 	public static ForgeConfigSpec.BooleanValue HAND_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue HAND_DUAL_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue HAND_DYEING_DYE;
@@ -43,14 +43,14 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_LIGHTENING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_DARKENING;
-	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_WAXING;
+	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_COATING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_WASHING;
 	// Block interactions 
 	public static ForgeConfigSpec.BooleanValue BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_LIGHTENING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_DARKENING;
-	public static ForgeConfigSpec.BooleanValue BLOCK_WAXING;
+	public static ForgeConfigSpec.BooleanValue BLOCK_COATING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_WASHING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_IMBUING;
@@ -89,8 +89,8 @@ public class InteractionsConfig {
 		builder.pop();
 		builder.push("Hand Interactions");
 		HAND_INTERACTIONS = builder.comment("Master switch: Enable or disable ALL hand interactions").define("Hand Interactions", true);
-		builder.push("Waxing");
-		HAND_WAXING = builder.define("Waxing", true);
+		builder.push("Coating");
+		HAND_COATING = builder.define("Coating", true);
 		builder.pop();
 		builder.push("Scraping");
 		HAND_SCRAPING = builder.define("Scraping", true);
@@ -122,7 +122,7 @@ public class InteractionsConfig {
 		DISPENSER_BLOCK_DYEING = builder.define("Dyeing", true);
 		DISPENSER_BLOCK_LIGHTENING = builder.define("Lightening", true);
 		DISPENSER_BLOCK_DARKENING = builder.define("Darkening", true);
-		DISPENSER_BLOCK_WAXING = builder.define("Waxing", true);
+		DISPENSER_BLOCK_COATING = builder.define("Coating", true);
 		DISPENSER_BLOCK_SCRAPING = builder.define("Scraping", true);
 		DISPENSER_BLOCK_WASHING = builder.define("Washing", true);
 		builder.pop();
@@ -133,7 +133,7 @@ public class InteractionsConfig {
 		BLOCK_DYEING = builder.define("Dyeing", true);
 		BLOCK_LIGHTENING = builder.define("Lightening", true);
 		BLOCK_DARKENING = builder.define("Darkening", true);
-		BLOCK_WAXING = builder.define("Waxing", true);
+		BLOCK_COATING = builder.define("Coating", true);
 		BLOCK_SCRAPING = builder.define("Scraping", true);
 		BLOCK_WASHING = builder.define("Washing", true);
 		BLOCK_IMBUING = builder.define("Imbuing", true);

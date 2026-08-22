@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 public class ModTags {
 	// Compat
 	public static final TagKey<Item> IMBUABLES = create("compat/imbuables");
-	public static final TagKey<Item> WAXABLES = create("compat/waxables");
+	public static final TagKey<Item> COATABLES = create("compat/coatables");
 	public static final TagKey<Item> DYEABLES = create("compat/dyeables");
 	public static final TagKey<Item> WASHABLES = create("compat/washables");
 	// Shinerite
@@ -25,6 +25,10 @@ public class ModTags {
 	// Weapons
 	public static final TagKey<Item> SHINEMERANGS = create("item/shinemerangs");
 	public static final TagKey<Item> SHINERITE_STARS = create("item/shinerite_stars");
+	// Enchantable
+	public static final TagKey<Item> ENCHANTABLE_LIGHTBRINGER = create("enchantable/lightbringer");
+	public static final TagKey<Item> ENCHANTABLE_LIGHTSTEAL = create("enchantable/lightsteal");
+	public static final TagKey<Item> ENCHANTABLE_LIGHTGUARD = create("enchantable/lightguard");
 	// Traits
 	public static final TagKey<Item> FRAILGLOW = create("trait/frailglow");
 

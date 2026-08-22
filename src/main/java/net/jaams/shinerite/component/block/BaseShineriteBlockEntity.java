@@ -27,15 +27,16 @@ import net.minecraft.core.BlockPos;
 
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.particle.CustomEffectParticleData;
+import net.jaams.shinerite.util.ModUtils;
 
 public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntityTicker<BaseShineriteBlockEntity> {
 	private static final float APPLY_SOUND_VOLUME = 0.8F;
 	private static final float APPLY_SOUND_PITCH = 1.25F;
 
 	private int color = -1;
-	private boolean waxed = false;
+	private boolean coated = false;
 	private int ticksUnderRain;
-	private long lastWaxParticleTime = 0;
+	private long lastCoatedParticleTime = 0;
 	private ListTag imbuedEffects = null;
 	private int imbuedUses = 0;
 	private int maxImbuedUses = 0;
@@ -62,17 +63,17 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		}
 	}
 
-	public long getLastWaxParticleTime() {
-		return lastWaxParticleTime;
+	public long getLastCoatedParticleTime() {
+		return lastCoatedParticleTime;
 	}
 
-	public void setLastWaxParticleTime(long time) {
-		this.lastWaxParticleTime = time;
+	public void setLastCoatedParticleTime(long time) {
+		this.lastCoatedParticleTime = time;
 	}
 
-	public void setWaxed(boolean waxed) {
-		if (this.waxed != waxed) {
-			this.waxed = waxed;
+	public void setCoated(boolean coated) {
+		if (this.coated != coated) {
+			this.coated = coated;
 			if (this.level != null) {
 				setChanged();
 				if (!this.level.isClientSide) {
@@ -82,8 +83,8 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		}
 	}
 
-	public boolean isWaxed() {
-		return this.waxed;
+	public boolean isCoated() {
+		return this.coated;
 	}
 
 	public boolean isImbued() {
@@ -137,7 +138,6 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		if (level.isClientSide)
 			return;
 		tickWashing(level, pos, state);
-		tickImbuedEffects(level, pos, state);
 		tickImbuedAmbientParticles(level, pos);
 	}
 
@@ -156,7 +156,9 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		}
 	}
 	private void tickWashing(Level level, BlockPos pos, BlockState state) {
-		if (!MechanicsConfig.WASHING.get() || !MechanicsConfig.WASHING_AFFECT_BLOCKS.get() || isWaxed() || getColor() == -1) {
+		boolean hasColor = getColor() != -1;
+		boolean imbued = MechanicsConfig.IMBUING.get() && isImbued();
+		if (!MechanicsConfig.WASHING.get() || !MechanicsConfig.WASHING_AFFECT_BLOCKS.get() || isCoated() || (!hasColor && !imbued)) {
 			ticksUnderRain = 0;
 			return;
 		}
@@ -178,56 +180,108 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		ticksUnderRain++;
 		int ticksPerStep = MechanicsConfig.WASHING_TICKS_PER_STEP.get();
 		if (ticksUnderRain >= ticksPerStep) {
-			if (MechanicsConfig.WASHING_THUNDERSTORM_BOOST.get() && level.isThundering()) {
-				lightenColorUnderRainOrWater();
+			if (imbued) {
+				decayImbuementUnderRainOrWater();
 			}
-			lightenColorUnderRainOrWater();
-			if (isImbued()) {
-				clearImbuedState();
+			if (hasColor) {
+				if (MechanicsConfig.WASHING_THUNDERSTORM_BOOST.get() && level.isThundering()) {
+					lightenColorUnderRainOrWater();
+				}
+				lightenColorUnderRainOrWater();
 			}
 			ticksUnderRain = level.random.nextInt(Math.max(0, ticksPerStep / 5));
 		}
 	}
 
-	private void tickImbuedEffects(Level level, BlockPos pos, BlockState state) {
-		if (!MechanicsConfig.IMBUING.get() || !isImbued())
+	private void decayImbuementUnderRainOrWater() {
+		int uses = imbuedUses - 1;
+		if (uses <= 0) {
+			clearImbuedState();
+			spawnImbuementRemovalFeedback();
 			return;
-		VoxelShape shape = state.getShape(level, pos);
-		AABB blockAABB = shape.isEmpty() ? new AABB(pos) : shape.bounds().move(pos);
-		AABB searchAABB = blockAABB.inflate(0.01);
-		var entities = level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class, searchAABB);
-		if (entities.isEmpty())
-			return;
-		int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
-		boolean appliedToAny = false;
-		for (net.minecraft.world.entity.LivingEntity target : entities) {
-			if (!target.getBoundingBox().intersects(searchAABB))
-				continue;
-			if (target instanceof net.minecraft.world.entity.player.Player && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_PLAYERS.get())
-				continue;
-			if (target instanceof net.minecraft.world.entity.animal.Animal && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_PASSIVE.get())
-				continue;
-			if (target instanceof net.minecraft.world.entity.monster.Monster && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_HOSTILE.get())
-				continue;
-			for (int i = 0; i < imbuedEffects.size(); i++) {
-				CompoundTag effectData = imbuedEffects.getCompound(i);
-				net.minecraft.world.effect.MobEffectInstance savedEffect = net.minecraft.world.effect.MobEffectInstance.load(effectData);
-				if (savedEffect == null)
-					continue;
-				net.minecraft.world.effect.MobEffect effect = savedEffect.getEffect();
-				int finalDuration = Math.max(minTicks, savedEffect.getDuration());
-				if (effect.isInstantenous()) {
-					effect.applyInstantenousEffect(null, null, target, savedEffect.getAmplifier(), 1.0);
-				} else {
-					target.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect, finalDuration, savedEffect.getAmplifier(), savedEffect.isAmbient(), savedEffect.isVisible(), savedEffect.showIcon()));
-				}
-			}
-			appliedToAny = true;
 		}
-		if (!appliedToAny)
+		int newImbuedColor = imbuedColor;
+		if (newImbuedColor != -1) {
+			float progress = uses / (float) Math.max(1, maxImbuedUses);
+			newImbuedColor = lightenImbuedColor(newImbuedColor, 1.0F - progress);
+		}
+		setImbuedState(imbuedEffects, uses, maxImbuedUses, newImbuedColor);
+	}
+
+	private void spawnImbuementRemovalFeedback() {
+		if (this.level == null)
 			return;
+		this.level.playSound(null, worldPosition, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 0.8F);
+		if (this.level instanceof ServerLevel serverLevel) {
+			serverLevel.sendParticles(new DustParticleOptions(new Vector3f(1.0F, 1.0F, 1.0F), 1.0F),
+				worldPosition.getX() + 0.5, worldPosition.getY() + 0.6, worldPosition.getZ() + 0.5, 10, 0.3, 0.25, 0.3, 0.05);
+		}
+	}
+
+	private static int lightenImbuedColor(int color, float fraction) {
+		int r = (color >> 16) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = color & 0xFF;
+		int minR = r / 2;
+		int minG = g / 2;
+		int minB = b / 2;
+		r = (int) (r + (255 - r) * fraction * 0.15f);
+		g = (int) (g + (255 - g) * fraction * 0.15f);
+		b = (int) (b + (255 - b) * fraction * 0.15f);
+		r = Math.max(minR, Math.min(255, r));
+		g = Math.max(minG, Math.min(255, g));
+		b = Math.max(minB, Math.min(255, b));
+		return (r << 16) | (g << 8) | b;
+	}
+
+	public boolean registerDirectContact(net.minecraft.world.entity.LivingEntity target) {
+		return registerDirectContact(target, false);
+	}
+
+	public boolean registerDirectContact(net.minecraft.world.entity.LivingEntity target, boolean fromLanding) {
+		if (this.level == null || this.level.isClientSide || !MechanicsConfig.IMBUING.get() || !isImbued())
+			return false;
+		if (!isEligibleTarget(target))
+			return false;
+		if (fromLanding && this.level instanceof ServerLevel serverLevel) {
+			ModUtils.generateImbuedBurstParticles(serverLevel, target.getX(), target.getY(), target.getZ(), imbuedColor, 50);
+		}
+		applyImbuedEffectsTo(target);
+		consumeAppliedImbuement(this.level, worldPosition);
+		return true;
+	}
+
+	private boolean isEligibleTarget(net.minecraft.world.entity.LivingEntity target) {
+		if (target instanceof net.minecraft.world.entity.player.Player && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_PLAYERS.get())
+			return false;
+		if (target instanceof net.minecraft.world.entity.animal.Animal && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_PASSIVE.get())
+			return false;
+		if (target instanceof net.minecraft.world.entity.monster.Monster && !MechanicsConfig.IMBUED_BLOCK_APPLY_TO_HOSTILE.get())
+			return false;
+		return true;
+	}
+
+	private void applyImbuedEffectsTo(net.minecraft.world.entity.LivingEntity target) {
+		int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
+		for (int i = 0; i < imbuedEffects.size(); i++) {
+			CompoundTag effectData = imbuedEffects.getCompound(i);
+			net.minecraft.world.effect.MobEffectInstance savedEffect = net.minecraft.world.effect.MobEffectInstance.load(effectData);
+			if (savedEffect == null)
+				continue;
+			net.minecraft.world.effect.MobEffect effect = savedEffect.getEffect();
+			int finalDuration = Math.max(minTicks, savedEffect.getDuration());
+			if (effect.isInstantenous()) {
+				effect.applyInstantenousEffect(null, null, target, savedEffect.getAmplifier(), 1.0);
+			} else {
+				target.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect, finalDuration, savedEffect.getAmplifier(), savedEffect.isAmbient(), savedEffect.isVisible(), savedEffect.showIcon()));
+			}
+		}
+	}
+
+	private void consumeAppliedImbuement(Level level, BlockPos pos) {
 		spawnApplyFeedback(level, pos);
 		clearImbuedState();
+		setColor(-1);
 	}
 
 	private void spawnApplyFeedback(Level level, BlockPos pos) {
@@ -308,7 +362,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 	protected void saveAdditional(CompoundTag tag) {
 		super.saveAdditional(tag);
 		tag.putInt("Color", this.color);
-		tag.putBoolean("Waxed", this.waxed);
+		tag.putBoolean("Coated", this.coated);
 		tag.putInt("TicksUnderRain", this.ticksUnderRain);
 		if (this.imbuedEffects != null && !this.imbuedEffects.isEmpty()) {
 			tag.put("ImbuedEffects", this.imbuedEffects);
@@ -324,8 +378,8 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		if (tag.contains("Color", Tag.TAG_INT)) {
 			this.color = tag.getInt("Color");
 		}
-		if (tag.contains("Waxed", Tag.TAG_BYTE)) {
-			this.waxed = tag.getBoolean("Waxed");
+		if (tag.contains("Coated", Tag.TAG_BYTE)) {
+			this.coated = tag.getBoolean("Coated");
 		}
 		if (tag.contains("TicksUnderRain", Tag.TAG_INT)) {
 			this.ticksUnderRain = tag.getInt("TicksUnderRain");
@@ -359,6 +413,20 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		CompoundTag tag = pkt.getTag();
 		if (tag != null) {
 			this.load(tag);
+		}
+		requestTintRefresh();
+	}
+
+	@Override
+	public void handleUpdateTag(CompoundTag tag) {
+		super.handleUpdateTag(tag);
+		requestTintRefresh();
+	}
+
+	private void requestTintRefresh() {
+		if (this.level instanceof net.minecraft.client.multiplayer.ClientLevel) {
+			net.minecraft.client.Minecraft.getInstance().levelRenderer.setSectionDirtyWithNeighbors(
+				this.worldPosition.getX() >> 4, this.worldPosition.getY() >> 4, this.worldPosition.getZ() >> 4);
 		}
 	}
 

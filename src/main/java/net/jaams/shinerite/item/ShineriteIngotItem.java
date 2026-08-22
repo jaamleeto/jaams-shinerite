@@ -5,7 +5,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 
-import net.jaams.shinerite.configuration.common.MechanicsConfig;
+import net.jaams.shinerite.configuration.common.AssortedCommonConfig;
 import net.jaams.shinerite.dyeable.IDyeableItem;
 
 public class ShineriteIngotItem extends Item implements IDyeableItem {
@@ -20,11 +20,15 @@ public class ShineriteIngotItem extends Item implements IDyeableItem {
 
 	@Override
 	public boolean isPiglinCurrency(ItemStack stack) {
-		return isGoldenTinted(stack);
+		return AssortedCommonConfig.BARTERING.get() && isYellowTinted(stack);
 	}
 
 	public static boolean isGoldenTinted(ItemStack stack) {
-		if (!MechanicsConfig.BARTERING.get() || !(stack.getItem() instanceof IDyeableItem dyeable) || !dyeable.hasColor(stack))
+		return AssortedCommonConfig.BARTERING.get() && isYellowTinted(stack);
+	}
+
+	public static boolean isYellowTinted(ItemStack stack) {
+		if (!(stack.getItem() instanceof IDyeableItem dyeable) || !dyeable.hasColor(stack))
 			return false;
 		int color = dyeable.getColor(stack);
 		float r = (color >> 16 & 255) / 255f;

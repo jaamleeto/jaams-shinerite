@@ -95,10 +95,10 @@ public class ShinyScraperRecipe extends CustomRecipe {
 		if (stack.getItem() instanceof ShinyScraperItem) {
 			return false;
 		}
-		if (!ModUtils.isWaxableItem(stack) && !ModUtils.isImbueableItem(stack)) {
+		if (!ModUtils.isCoatableItem(stack) && !ModUtils.isImbueableItem(stack)) {
 			return false;
 		}
-		if (ModUtils.isWaxed(stack)) {
+		if (ModUtils.isCoated(stack)) {
 			return true;
 		}
 		if (ModUtils.isImbued(stack)) {
@@ -151,8 +151,8 @@ public class ShinyScraperRecipe extends CustomRecipe {
 	}
 
 	private void cleanItem(ItemStack item) {
-		if (ModUtils.isWaxed(item)) {
-			item.removeTagKey("Waxed");
+		if (ModUtils.isCoated(item)) {
+			item.removeTagKey("Coated");
 		} else if (ModUtils.isImbued(item)) {
 			ModUtils.removeImbuement(item);
 			ModUtils.removeColor(item);

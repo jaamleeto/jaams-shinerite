@@ -44,7 +44,7 @@ public class CauldronInteractionHandler {
 		if (!ModUtils.isWashableItem(stack)) {
 			return;
 		}
-		if (MechanicsConfig.WAXING.get() && ModUtils.isWaxed(stack)) {
+		if (MechanicsConfig.COATING.get() && ModUtils.isCoated(stack)) {
 			return;
 		}
 		boolean canWashColor = MechanicsConfig.DYEING.get() && InteractionsConfig.CAULDRON_WASH_COLOR.get();

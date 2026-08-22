@@ -43,22 +43,27 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 		}
 		Item item = stack.getItem();
 		int blockColor = blockEntity.getColor();
-		if (blockEntity.isWaxed()) {
-			if (MechanicsConfig.WAXING.get() && InteractionsConfig.DISPENSER_BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
-				blockEntity.setWaxed(false);
+		if (blockEntity.isCoated()) {
+			if (MechanicsConfig.COATING.get() && InteractionsConfig.DISPENSER_BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
+				blockEntity.setCoated(false);
 				world.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
-				ModUtils.generateWaxRemovalParticles(world, pos, state, world.random);
+				ModUtils.generateCoatedRemovalParticles(world, pos, state, world.random);
 				blockEntity.setChanged();
 				world.setBlock(pos, state, 3);
 				return ModUtils.reduceDispenserItemStack(source, stack);
 			}
-			ModUtils.generateWaxParticles(world, pos, state, world.random);
+			ModUtils.generateCoatedParticles(world, pos, state, world.random);
 			return stack;
 		}
-		if (MechanicsConfig.WASHING.get() && InteractionsConfig.DISPENSER_BLOCK_WASHING.get() && item == Items.POTION && blockColor != -1) {
+		if (MechanicsConfig.WASHING.get() && InteractionsConfig.DISPENSER_BLOCK_WASHING.get() && item == Items.POTION && (blockColor != -1 || blockEntity.isImbued())) {
 			Potion potion = PotionUtils.getPotion(stack);
 			if (potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) {
-				applyDye(world, pos, state, -1);
+				if (blockColor != -1) {
+					applyDye(world, pos, state, -1);
+				}
+				if (blockEntity.isImbued()) {
+					blockEntity.clearImbuedState();
+				}
 				stack.shrink(1);
 				world.playSound(null, pos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0F, 1.0F);
 				if (world instanceof ServerLevel serverLevel) {
@@ -71,7 +76,7 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 				return stack;
 			}
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_DYEING.get()) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_DYEING.get() && !blockEntity.isImbued()) {
 			if (item instanceof ShinyPaintBrushItem brush && brush.hasColor(stack)) {
 				int color = brush.getColor(stack);
 				if (color == blockColor || (color == DyeColor.BLACK.getTextColor() && blockColor == ModUtils.lightenColor(DyeColor.BLACK.getTextColor()))) {
@@ -97,22 +102,36 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 				return stack;
 			}
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem && blockColor != -1) {
-			applyDye(world, pos, state, -1);
-			blockEntity.setChanged();
-			world.setBlock(pos, state, 3);
-			return ModUtils.reduceDispenserItemStack(source, stack);
+		if (InteractionsConfig.DISPENSER_BLOCK_SCRAPING.get() && item instanceof ShinyScraperItem) {
+			if (MechanicsConfig.IMBUING.get() && blockEntity.isImbued()) {
+				blockEntity.clearImbuedState();
+				if (blockColor != -1) {
+					applyDye(world, pos, state, -1);
+				} else {
+					blockEntity.setChanged();
+					world.setBlock(pos, state, 3);
+				}
+				world.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 0.8F);
+				ModUtils.generateDispenserDustParticles(world, pos, state, new Vector3f(1.0F, 1.0F, 1.0F));
+				return ModUtils.reduceDispenserItemStack(source, stack);
+			}
+			if (MechanicsConfig.DYEING.get() && blockColor != -1) {
+				applyDye(world, pos, state, -1);
+				blockEntity.setChanged();
+				world.setBlock(pos, state, 3);
+				return ModUtils.reduceDispenserItemStack(source, stack);
+			}
 		}
-		if (MechanicsConfig.WAXING.get() && InteractionsConfig.DISPENSER_BLOCK_WAXING.get() && item == Items.HONEYCOMB) {
-			blockEntity.setWaxed(true);
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.DISPENSER_BLOCK_COATING.get() && item == Items.HONEYCOMB) {
+			blockEntity.setCoated(true);
 			stack.shrink(1);
 			blockEntity.setChanged();
 			world.setBlock(pos, state, 3);
 			world.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
-			ModUtils.generateWaxParticles(world, pos, state, world.random);
+			ModUtils.generateCoatedParticles(world, pos, state, world.random);
 			return stack;
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_LIGHTENING.get() && item == Items.GLOW_INK_SAC && blockColor != -1) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_LIGHTENING.get() && item == Items.GLOW_INK_SAC && blockColor != -1 && !blockEntity.isImbued()) {
 			int newColor = ModUtils.lightenColor(blockColor);
 			if (newColor == blockColor) {
 				return stack;
@@ -125,7 +144,7 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 			ModUtils.generateDispenserDustParticles(world, pos, state, new Vector3f((newColor >> 16 & 255) / 255.0F, (newColor >> 8 & 255) / 255.0F, (newColor & 255) / 255.0F));
 			return stack;
 		}
-		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_DARKENING.get() && item == Items.INK_SAC) {
+		if (MechanicsConfig.DYEING.get() && InteractionsConfig.DISPENSER_BLOCK_DARKENING.get() && item == Items.INK_SAC && !blockEntity.isImbued()) {
 			int newColor = blockColor == -1 ? 0x404040 : ModUtils.darkenColor(blockColor);
 			if (newColor == blockColor) {
 				return stack;

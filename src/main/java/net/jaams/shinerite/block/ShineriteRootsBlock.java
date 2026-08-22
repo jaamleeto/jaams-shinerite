@@ -27,6 +27,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.RandomSource;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 
@@ -35,6 +36,7 @@ import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.dyeable.IDyeableItem;
 import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
 import net.jaams.shinerite.component.block.BaseShineriteBlock;
+import net.jaams.shinerite.util.ModUtils;
 
 import java.util.List;
 import java.util.Collections;
@@ -130,23 +132,11 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 			boolean isShears = tool != null && tool.getItem() == Items.SHEARS;
 			if (hasSilkTouch || isShears) {
 				ItemStack blockStack = new ItemStack(this);
-				int color = shineriteBaseBlockEntity.getColor();
-				if (color != -1 && blockStack.getItem() instanceof IDyeableItem dyeableItem) {
-					dyeableItem.setColor(blockStack, color);
-				}
-				if (shineriteBaseBlockEntity.isWaxed()) {
-					blockStack.getOrCreateTag().putBoolean("Waxed", true);
-				}
+				applyStateToStack(shineriteBaseBlockEntity, blockStack);
 				return Collections.singletonList(blockStack);
 			} else {
 				ItemStack rawStack = new ItemStack(ModItems.SHINY_ROOTS.get());
-				int color = shineriteBaseBlockEntity.getColor();
-				if (color != -1 && rawStack.getItem() instanceof IDyeableItem dyeableItem) {
-					dyeableItem.setColor(rawStack, color);
-				}
-				if (shineriteBaseBlockEntity.isWaxed()) {
-					rawStack.getOrCreateTag().putBoolean("Waxed", true);
-				}
+				applyStateToStack(shineriteBaseBlockEntity, rawStack);
 				int fortuneLevel = tool != null ? EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool) : 0;
 				int dropCount = calculateDropCount(fortuneLevel, random);
 				rawStack.setCount(dropCount);
@@ -154,6 +144,24 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 			}
 		}
 		return super.getDrops(state, builder);
+	}
+
+	private static void applyStateToStack(BaseShineriteBlockEntity blockEntity, ItemStack stack) {
+		int color = blockEntity.getColor();
+		if (color != -1 && stack.getItem() instanceof IDyeableItem dyeableItem) {
+			dyeableItem.setColor(stack, color);
+		}
+		if (blockEntity.isCoated()) {
+			stack.getOrCreateTag().putBoolean("Coated", true);
+		}
+		if (blockEntity.isImbued()) {
+			CompoundTag stackTag = stack.getOrCreateTag();
+			stackTag.put("ImbuedEffects", blockEntity.getImbuedEffects());
+			stackTag.putInt("ImbuedUses", blockEntity.getImbuedUses());
+			stackTag.putInt("MaxImbuedUses", blockEntity.getMaxImbuedUses());
+			stackTag.putInt("ImbuedColor", blockEntity.getImbuedColor());
+			ModUtils.applyDyeColor(stack, blockEntity.getImbuedColor());
+		}
 	}
 
 	private int calculateDropCount(int fortuneLevel, RandomSource random) {

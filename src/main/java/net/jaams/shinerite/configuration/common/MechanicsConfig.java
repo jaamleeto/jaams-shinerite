@@ -3,10 +3,9 @@ package net.jaams.shinerite.configuration.common;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class MechanicsConfig {
-	public static ForgeConfigSpec.BooleanValue WAXING;
+	public static ForgeConfigSpec.BooleanValue COATING;
 	public static ForgeConfigSpec.BooleanValue IMBUING;
 	public static ForgeConfigSpec.BooleanValue DYEING;
-	public static ForgeConfigSpec.BooleanValue BARTERING;
 	public static ForgeConfigSpec.BooleanValue WASHING;
 	// Washing details
 	public static ForgeConfigSpec.BooleanValue WASHING_RAIN;
@@ -39,7 +38,7 @@ public class MechanicsConfig {
 	public static ForgeConfigSpec.BooleanValue IMBUED_ARMOR_RETALIATE_HOSTILE_ONLY;
 	// Imbued blocks
 	public static ForgeConfigSpec.IntValue IMBUED_BLOCK_PARTICLE_INTERVAL;
-	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_WAXED_CAN_IMBUE;
+	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_COATED_CAN_IMBUE;
 	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_APPLY_TO_HOSTILE;
 	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_APPLY_TO_PASSIVE;
 	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_APPLY_TO_PLAYERS;
@@ -75,7 +74,7 @@ public class MechanicsConfig {
 		builder.pop();
 		builder.push("Imbued Blocks");
 		IMBUED_BLOCK_PARTICLE_INTERVAL = builder.comment("Ticks between ambient potion particles on imbued blocks, higher = better performance (20 = 1 second)").defineInRange("Block Particle Interval", 10, 1, 200);
-		IMBUED_BLOCK_WAXED_CAN_IMBUE = builder.comment("Allow waxed blocks to be imbued with potions").define("Waxed Blocks Can Be Imbued", true);
+		IMBUED_BLOCK_COATED_CAN_IMBUE = builder.comment("Allow coated blocks to be imbued with potions").define("Coated Blocks Can Be Imbued", true);
 		IMBUED_BLOCK_APPLY_TO_HOSTILE = builder.comment("Imbued blocks apply effects to hostile mobs").define("Block Apply to Hostile", true);
 		IMBUED_BLOCK_APPLY_TO_PASSIVE = builder.comment("Imbued blocks apply effects to passive animals").define("Block Apply to Passive", true);
 		IMBUED_BLOCK_APPLY_TO_PLAYERS = builder.comment("Imbued blocks apply effects to players").define("Block Apply to Players", true);
@@ -95,11 +94,8 @@ public class MechanicsConfig {
 		WASHING_RAIN_SIDES = builder.define("Washing Rain From Block Sides", false);
 		WASHING_TICKS_PER_STEP = builder.defineInRange("Washing Ticks Decay", 50, 10, 600);
 		builder.pop();
-		builder.push("Waxing");
-		WAXING = builder.define("Waxing", true);
-		builder.pop();
-		builder.push("Bartering");
-		BARTERING = builder.comment("Piglins treat yellow-dyed Shinerite Ingots as gold currency for bartering").define("Bartering", true);
+		builder.push("Coating");
+		COATING = builder.define("Coating", true);
 		builder.pop();
 		builder.pop(); // Global Mechanics Handler
 	}

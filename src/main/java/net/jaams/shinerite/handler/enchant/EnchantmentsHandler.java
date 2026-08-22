@@ -117,6 +117,7 @@ public class EnchantmentsHandler {
 		Level world = target.level();
 		handleLightguard(target, attacker, world);
 		handleArmorImbuedEffects(target, attacker, world);
+		handleArmorImbuedStrikeOnTarget(target, attacker, world);
 	}
 
 	private static void handleLightguard(LivingEntity target, LivingEntity attacker, Level world) {
@@ -153,6 +154,46 @@ public class EnchantmentsHandler {
 	}
 
 	private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+
+	private static void handleArmorImbuedStrikeOnTarget(LivingEntity target, LivingEntity attacker, Level world) {
+		if (!MechanicsConfig.IMBUING.get() || world.isClientSide()) {
+			return;
+		}
+		if (target == attacker) {
+			return;
+		}
+		int redSum = 0, greenSum = 0, blueSum = 0, coloredPieces = 0;
+		for (EquipmentSlot slot : ARMOR_SLOTS) {
+			ItemStack armor = attacker.getItemBySlot(slot);
+			if (armor.isEmpty() || !ModUtils.isImbued(armor)) {
+				continue;
+			}
+			CompoundTag tag = armor.getTag();
+			if (tag == null) {
+				continue;
+			}
+			int uses = tag.getInt("ImbuedUses");
+			int maxUses = tag.getInt("MaxImbuedUses");
+			if (uses <= 0 || maxUses <= 0) {
+				continue;
+			}
+			int imbuedColor = tag.getInt("ImbuedColor");
+			if (imbuedColor == -1) {
+				continue;
+			}
+			redSum += (imbuedColor >> 16) & 255;
+			greenSum += (imbuedColor >> 8) & 255;
+			blueSum += imbuedColor & 255;
+			coloredPieces++;
+		}
+		if (coloredPieces <= 0) {
+			return;
+		}
+		float r = redSum / (coloredPieces * 255.0F);
+		float g = greenSum / (coloredPieces * 255.0F);
+		float b = blueSum / (coloredPieces * 255.0F);
+		ShineriteAttackHandler.spawnCritBurst(world, target, r, g, b, 0.15f, 6);
+	}
 
 	private static void handleArmorImbuedEffects(LivingEntity target, LivingEntity attacker, Level world) {
 		if (!MechanicsConfig.IMBUING.get() || !MechanicsConfig.IMBUED_ARMOR_RETALIATE_ON_HIT.get() || world.isClientSide())

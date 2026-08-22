@@ -3,11 +3,12 @@ package net.jaams.shinerite.configuration.common;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class TraitsConfig {
-	// Global toggles 
-	public static ForgeConfigSpec.BooleanValue FRAILGLOW;
+	// Projectile Traits Global Toggles
 	public static ForgeConfigSpec.BooleanValue THROWABLE;
 	public static ForgeConfigSpec.BooleanValue THROWBACK;
 	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR;
+	// Item Traits Global Toggles
+	public static ForgeConfigSpec.BooleanValue FRAILGLOW;
 	// Frailglow
 	public static ForgeConfigSpec.DoubleValue FRAILGLOW_BREAK_CHANCE;
 	public static ForgeConfigSpec.BooleanValue FRAILGLOW_GLOWING_ON_BREAK;
@@ -25,32 +26,24 @@ public class TraitsConfig {
 
 	public static void register(ForgeConfigSpec.Builder builder) {
 		builder.push("Weapon Traits Handler");
-		// Global toggles
 		builder.push("Traits Global Toggles");
-		FRAILGLOW = builder.comment("Master switch for the mod's Frailglow trait").define("Frailglow", true);
-		THROWABLE = builder.comment("Master switch for the mod's Throwable trait").define("Throwable", true);
-		THROWBACK = builder.comment("Master switch for the mod's Throwback projectile trait").define("Throwback", true);
-		RADIANT_COLLECTOR = builder.comment("Master switch for the mod's Radiant Collector projectile trait trait").define("Radiant Collector", true);
+		builder.comment("These global toggles have PRIORITY over any per-item NBT/JSON configuration. Disabling a trait here disables it entirely regardless of item data.");
+		builder.push("Projectile Traits Toggles");
+		THROWABLE = builder.comment("Enable or disable the Throwable trait globally").define("Throwable", true);
+		THROWBACK = builder.comment("Enable or disable the Throwback trait globally").define("Throwback", true);
+		RADIANT_COLLECTOR = builder.comment("Enable or disable the Radiant Collector trait globally").define("Radiant Collector", true);
 		builder.pop();
-		// Item Traits Settings
-		builder.push("Item Traits Settings");
-		// Frailglow
-		builder.push("Frailglow");
-		FRAILGLOW_BREAK_CHANCE = builder.comment("Chance for the item to break when hitting an entity (0.0 = never, 1.0 = always)").defineInRange("Break Chance", 0.3, 0.0, 1.0);
-		FRAILGLOW_GLOWING_ON_BREAK = builder.comment("Player receives Glowing effect when the item breaks").define("Glowing On Break", true);
-		FRAILGLOW_GLOW_DURATION = builder.comment("Duration of the Glowing effect in ticks when Frailglow item breaks (20 ticks = 1 second)").defineInRange("Glow Duration", 60, 10, 1200);
-		FRAILGLOW_GLOW_AMPLIFIER = builder.comment("Amplifier/level of the Glowing effect (0 = level I, 1 = level II, etc.)").defineInRange("Glow Amplifier", 0, 0, 10);
+		builder.push("Item Traits Toggles");
+		builder.comment("These global toggles have PRIORITY over per-item NBT/JSON configuration.");
+		FRAILGLOW = builder.comment("Enable or disable the Frailglow trait globally").define("Frailglow", true);
 		builder.pop();
-		// Throwable 
+		builder.pop();
+		builder.push("Projectile Traits Settings");
 		builder.push("Throwable");
 		ThrowableConfig.register(builder);
 		builder.pop();
-		builder.pop();
-		// Projectile Traits Settings
-		builder.push("Projectile Traits Settings");
-		// Throwback
 		builder.push("Throwback");
-		builder.push("Shinemerang");
+		builder.push("Shinemerang Projectile");
 		THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE = builder.comment("Minimum distance before the Shinemerang projectile starts returning").defineInRange("Min Range", 5, 1, 50);
 		THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE = builder.comment("Maximum distance the Shinemerang projectile can travel before forced return").defineInRange("Max Range", 20, 3, 100);
 		THROWBACK_SHINEMERANG_PROJECTILE_ON_MAX_RANGE = builder.comment("Whether the Shinemerang returns automatically at max distance").define("Return On Max Range", true);
@@ -58,12 +51,19 @@ public class TraitsConfig {
 		THROWBACK_SHINEMERANG_PROJECTILE_ON_BLOCK = builder.comment("Whether the Shinemerang returns immediately after hitting a block").define("Return On Block Hit", true);
 		builder.pop();
 		builder.pop();
-		// Radiant Collector
 		builder.push("Radiant Collector");
-		builder.push("Shinemerang");
+		builder.push("Shinemerang Projectile");
 		RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_MAX_ITEMS = builder.comment("Maximum number of items the Shinemerang can pick up and bring back").defineInRange("Max Collected Items", 3, 0, 6);
 		RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_GLOW = builder.comment("Whether collected items glow while being carried by Shinemerang").define("Glow On Collected Items", true);
 		builder.pop();
+		builder.pop();
+		builder.pop();
+		builder.push("Item Traits Settings");
+		builder.push("Frailglow");
+		FRAILGLOW_BREAK_CHANCE = builder.comment("Chance for the item to break when hitting an entity (0.0 = never, 1.0 = always)").defineInRange("Break Chance", 0.3, 0.0, 1.0);
+		FRAILGLOW_GLOWING_ON_BREAK = builder.comment("Player receives Glowing effect when the item breaks").define("Glowing On Break", true);
+		FRAILGLOW_GLOW_DURATION = builder.comment("Duration of the Glowing effect in ticks when Frailglow item breaks (20 ticks = 1 second)").defineInRange("Glow Duration", 60, 10, 1200);
+		FRAILGLOW_GLOW_AMPLIFIER = builder.comment("Amplifier/level of the Glowing effect (0 = level I, 1 = level II, etc.)").defineInRange("Glow Amplifier", 0, 0, 10);
 		builder.pop();
 		builder.pop();
 		builder.pop();

@@ -12,19 +12,19 @@ import net.jaams.shinerite.configuration.client.TooltipsConfig;
 
 import java.util.List;
 
-public final class WaxeableItemTooltip {
+public final class CoatableItemTooltip {
 	public static void add(ItemStack stack, List<Component> tooltip, TooltipFlag flag) {
-		if (!MechanicsConfig.WAXING.get())
+		if (!MechanicsConfig.COATING.get())
 			return;
-		if (!TooltipsConfig.TOOLTIP_WAXEABLE_TRAIT.get())
+		if (!TooltipsConfig.TOOLTIP_COATABLE_TRAIT.get())
 			return;
-		if (!ModUtils.isWaxableItem(stack))
+		if (!ModUtils.isCoatableItem(stack))
 			return;
-		boolean showTrait = TooltipsConfig.TOOLTIP_WAXEABLE_TRAIT.get() && (!TooltipsConfig.TOOLTIP_WAXEABLE_TRAIT_ADVANCED_ONLY.get() || flag.isAdvanced());
+		boolean showTrait = TooltipsConfig.TOOLTIP_COATABLE_TRAIT.get() && (!TooltipsConfig.TOOLTIP_COATABLE_TRAIT_ADVANCED_ONLY.get() || flag.isAdvanced());
 		if (showTrait) {
-			tooltip.add(Component.translatable("tooltip.jaams_shinerite.trait.waxeable").withStyle(ChatFormatting.AQUA));
+			tooltip.add(Component.translatable("tooltip.jaams_shinerite.trait.coatable").withStyle(ChatFormatting.AQUA));
 			if (Screen.hasShiftDown()) {
-				tooltip.add(Component.translatable("tooltip.jaams_shinerite.trait.waxeable.desc").withStyle(ChatFormatting.GRAY));
+				tooltip.add(Component.translatable("tooltip.jaams_shinerite.trait.coatable.desc").withStyle(ChatFormatting.GRAY));
 			}
 		}
 	}

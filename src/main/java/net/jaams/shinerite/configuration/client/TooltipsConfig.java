@@ -15,10 +15,10 @@ public class TooltipsConfig {
 	// Dyeing
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_DYED_STATUS;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COLOR_HEX_COLORED;
-	// Waxing
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_WAXED_STATUS;
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_WAXEABLE_TRAIT;
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_WAXEABLE_TRAIT_ADVANCED_ONLY;
+	// Coating
+	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATED_STATUS;
+	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATABLE_TRAIT;
+	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATABLE_TRAIT_ADVANCED_ONLY;
 	// Imbuing
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUABLE_TRAIT;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUABLE_TRAIT_ADVANCED_ONLY;
@@ -44,14 +44,16 @@ public class TooltipsConfig {
 		EXCLUDED_ALT_TOOLTIPS_ITEMS = builder.comment("List of item IDs excluded from Alt key tooltips added by the mod").defineList("Excluded Descriptions Tooltips Items", List.of(), obj -> obj instanceof String);
 		builder.pop();
 		builder.push("Tooltips Misc Settings");
+		builder.pop();
+		builder.push("Item Features Tooltips");
 		builder.push("Dyeing Tooltips");
 		TOOLTIP_DYED_STATUS = builder.comment("Show 'Dyed' text in normal tooltips when the item has color").define("Show Dyed Status", true);
 		TOOLTIP_COLOR_HEX_COLORED = builder.comment("true = The #RRGGBB code is colored with the item's actual color\nfalse = always gray").define("Color Hex With Item Color", true);
 		builder.pop();
-		builder.push("Waxing Tooltips");
-		TOOLTIP_WAXED_STATUS = builder.comment("Show 'Waxed' text when the item is waxed").define("Show Waxed Status", true);
-		TOOLTIP_WAXEABLE_TRAIT = builder.comment("Show the 'Waxeable' trait in tooltips").define("Show Waxeable Trait", true);
-		TOOLTIP_WAXEABLE_TRAIT_ADVANCED_ONLY = builder.comment("If true: 'Waxeable' trait only appears in advanced tooltips\nIf false: appears in normal tooltips too").define("Waxeable Trait Advanced Only", true);
+		builder.push("Coating Tooltips");
+		TOOLTIP_COATED_STATUS = builder.comment("Show 'Coated' text when the item is coated").define("Show Coated Status", true);
+		TOOLTIP_COATABLE_TRAIT = builder.comment("Show the 'coatable' trait in tooltips").define("Show coatable Trait", true);
+		TOOLTIP_COATABLE_TRAIT_ADVANCED_ONLY = builder.comment("If true: 'coatable' trait only appears in advanced tooltips\nIf false: appears in normal tooltips too").define("coatable Trait Advanced Only", true);
 		builder.pop();
 		builder.push("Imbuing Tooltips");
 		TOOLTIP_IMBUABLE_TRAIT = builder.comment("Show the 'Imbuable' trait in tooltips").define("Show Imbuable Trait", true);
@@ -61,14 +63,22 @@ public class TooltipsConfig {
 		builder.pop();
 		builder.pop();
 		builder.push("Weapon Traits Tooltips");
+		builder.push("Projectile Traits Tooltips");
 		builder.push("Throwable");
 		TOOLTIP_THROWING_PROPERTIES = builder.comment("Show the 'Throwing Properties' section in tooltips added by the mod").define("Show Throwing Properties", true);
 		TOOLTIP_THROWING_MODE = builder.comment("Show the 'Throwing Mode' section in tooltips added by the mod").define("Show Throwing Mode", true);
+		builder.pop();
+		builder.push("Throwback");
 		TOOLTIP_THROWBACK_PROPERTIES = builder.comment("Show the 'Throwback' properties section in tooltips").define("Show Throwback Properties", true);
+		builder.pop();
+		builder.push("Radiant Collector");
 		TOOLTIP_COLLECTOR_PROPERTIES = builder.comment("Show the 'Radiant Collector' properties section in tooltips").define("Show Radiant Collector Properties", true);
 		builder.pop();
+		builder.pop();
+		builder.push("Item Traits Tooltips");
 		builder.push("Frailglow");
 		TOOLTIP_FRAILGLOW_PROPERTIES = builder.comment("Show the 'Frailglow Properties' section in tooltips").define("Show Frailglow Properties", true);
+		builder.pop();
 		builder.pop();
 		builder.pop();
 		builder.pop();

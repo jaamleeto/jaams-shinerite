@@ -1,4 +1,4 @@
-package net.jaams.shinerite.world;
+package net.jaams.shinerite.feature;
 
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 
 import net.jaams.shinerite.init.ModBlocks;
 import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
+import net.jaams.shinerite.configuration.common.WorldGenConfig;
 
 import com.mojang.serialization.Codec;
 
@@ -32,6 +33,9 @@ public class ShineriteRootsFeature extends Feature<NoneFeatureConfiguration> {
 		}
 		BlockPos pos = context.origin();
 		RandomSource random = context.random();
+		if (!WorldGenConfig.SHINERITE_ROOTS.get()) {
+			return false;
+		}
 		BlockState currentState = level.getBlockState(pos);
 		if (!isValidCeiling(currentState)) {
 			return false;

@@ -7,11 +7,13 @@ import net.jaams.shinerite.configuration.client.ProjectileClientConfig;
 import net.jaams.shinerite.configuration.client.ItemStatusBarConfig;
 import net.jaams.shinerite.configuration.client.CreativeTabConfig;
 import net.jaams.shinerite.configuration.client.CameraEffectsConfig;
+import net.jaams.shinerite.configuration.client.AssortedClientConfig;
 
 public class JaamsShineriteClientConfiguration {
 	public static final ForgeConfigSpec SPEC;
 	static {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		AssortedClientConfig.register(builder);
 		CameraEffectsConfig.register(builder);
 		CreativeTabConfig.register(builder);
 		ItemStatusBarConfig.register(builder);

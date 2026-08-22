@@ -64,12 +64,12 @@ public class ColorMechanicsHandler {
 		return MechanicsConfig.WASHING_TICKS_PER_STEP.get();
 	}
 
-	private static boolean isWaxingEnabled() {
-		return MechanicsConfig.WAXING.get();
+	private static boolean isCoatingEnabled() {
+		return MechanicsConfig.COATING.get();
 	}
 
-	private static boolean isWaxedProtected(ItemStack stack) {
-		return ModUtils.isWaxed(stack);
+	private static boolean isCoatedProtected(ItemStack stack) {
+		return ModUtils.isCoated(stack);
 	}
 
 	@SubscribeEvent
@@ -247,7 +247,7 @@ public class ColorMechanicsHandler {
 				return false;
 			}
 		}
-		if (isWaxedProtected(stack))
+		if (isCoatedProtected(stack))
 			return false;
 		boolean rainEnabled = MechanicsConfig.WASHING_RAIN.get();
 		boolean waterEnabled = MechanicsConfig.WASHING_WATER.get();
@@ -262,7 +262,7 @@ public class ColorMechanicsHandler {
 	}
 
 	private static boolean isArmorExposedToDecay(ItemStack stack, Level level, LivingEntity entity, EquipmentSlot slot) {
-		if (isWaxedProtected(stack))
+		if (isCoatedProtected(stack))
 			return false;
 		boolean rainEnabled = MechanicsConfig.WASHING_RAIN.get();
 		boolean waterEnabled = MechanicsConfig.WASHING_WATER.get();
@@ -318,7 +318,7 @@ public class ColorMechanicsHandler {
 			if (tag.contains("WashableImbued") && !tag.getBoolean("WashableImbued")) {
 				return currentColor;
 			}
-			if (!tag.contains("Waxed")) {
+if (!tag.contains("Coated")) {
 				int uses = tag.getInt("ImbuedUses");
 				int maxUses = tag.getInt("MaxImbuedUses");
 				uses--;
@@ -337,8 +337,8 @@ public class ColorMechanicsHandler {
 				}
 			}
 		}
-		if (!tag.contains("Waxed")) {
-			int stepsToWhite = calculateStepsToWhite(currentColor);
+if (!tag.contains("Coated")) {
+				int stepsToWhite = calculateStepsToWhite(currentColor);
 			int newColor = lightenColor(currentColor, 1.0f / stepsToWhite);
 			if (newColor >= 0xFFFFFF || newColor == currentColor) {
 				ModUtils.removeColor(stack);
