@@ -40,7 +40,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 
-import net.jaams.shinerite.util.ModUtils;
+import net.jaams.shinerite.compat.BackItemCompat;
 import net.jaams.shinerite.util.ModUtils;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.configuration.common.InteractionsConfig;
@@ -333,14 +333,9 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 	}
 
 	private static void processBackItemWaterPotion(LivingEntity entity, Level level) {
-		CompoundTag entityNBT = entity.serializeNBT();
-		CompoundTag forgeCaps = entityNBT.getCompound("ForgeCaps");
-		if (!forgeCaps.contains("jaams_mechanics:back_item"))
+		if (!BackItemCompat.isAvailable())
 			return;
-		CompoundTag backItemNBT = forgeCaps.getCompound("jaams_mechanics:back_item");
-		if (!backItemNBT.contains("backItem", 10))
-			return;
-		ItemStack backItem = ItemStack.of(backItemNBT.getCompound("backItem"));
+		ItemStack backItem = BackItemCompat.getBackItem(entity);
 		if (backItem.isEmpty())
 			return;
 		if (!ModUtils.isWashableItem(backItem))
@@ -364,11 +359,7 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 			modified = true;
 		}
 		if (modified) {
-			backItemNBT.put("backItem", backItem.save(new CompoundTag()));
-			forgeCaps.put("jaams_mechanics:back_item", backItemNBT);
-			entityNBT.put("ForgeCaps", forgeCaps);
-			entity.deserializeNBT(entityNBT);
-			ColorMechanicsHandler.sendBackItemUpdateToClient(entity);
+			BackItemCompat.setBackItem(entity, backItem);
 		}
 	}
 

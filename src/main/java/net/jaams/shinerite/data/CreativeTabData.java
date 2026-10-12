@@ -10,6 +10,7 @@ public class CreativeTabData {
     public List<Entry> entries = new ArrayList<>();
 
     public static class Entry {
+        public String tab_id;
         public String item;
         public String nbt;
         public boolean remove = false;

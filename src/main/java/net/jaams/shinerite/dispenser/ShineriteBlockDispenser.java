@@ -13,9 +13,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
@@ -28,6 +31,9 @@ import net.jaams.shinerite.item.ShinyPaintBrushItem;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.configuration.common.InteractionsConfig;
 import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
+import net.jaams.shinerite.particle.CustomEffectParticleData;
+
+import java.util.List;
 
 public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 	@Override
@@ -54,6 +60,35 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 			}
 			ModUtils.generateCoatedParticles(world, pos, state, world.random);
 			return stack;
+		}
+		if ((MechanicsConfig.IMBUED_BLOCK_COATED_CAN_IMBUE.get() || !blockEntity.isCoated()) && MechanicsConfig.IMBUING.get() && InteractionsConfig.DISPENSER_BLOCK_IMBUING.get() && item == Items.POTION && !blockEntity.isImbued() && blockColor == -1) {
+			Potion potion = PotionUtils.getPotion(stack);
+			if (potion != Potions.WATER && potion != Potions.AWKWARD && potion != Potions.THICK && potion != Potions.MUNDANE && !potion.getEffects().isEmpty()) {
+				List<MobEffectInstance> effects = new java.util.ArrayList<>();
+				if (potion != Potions.EMPTY) {
+					effects.addAll(potion.getEffects());
+				}
+				effects.addAll(PotionUtils.getCustomEffects(stack));
+				if (!effects.isEmpty()) {
+					int potionColor = PotionUtils.getColor(stack);
+					ListTag effectsTag = new ListTag();
+					for (MobEffectInstance effect : effects) {
+						MobEffectInstance savedEffect = new MobEffectInstance(effect.getEffect(), Math.max(1, effect.getDuration() / 2), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon());
+						effectsTag.add(savedEffect.save(new CompoundTag()));
+					}
+					blockEntity.setImbuedState(effectsTag, 1, 1, potionColor);
+					stack.shrink(1);
+					world.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 1.15F);
+					if (world instanceof ServerLevel serverLevel) {
+						serverLevel.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 10, 0.2, 0.2, 0.2, 0.0);
+						serverLevel.sendParticles(new CustomEffectParticleData(((potionColor >> 16) & 255) / 255.0F, ((potionColor >> 8) & 255) / 255.0F, (potionColor & 255) / 255.0F, 0.3F), pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 15, 0.35, 0.25, 0.35, 0.12);
+						serverLevel.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.GLASS_BOTTLE)), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 10, 0.2, 0.2, 0.2, 0.1);
+					}
+					blockEntity.setChanged();
+					world.setBlock(pos, state, 3);
+					return stack;
+				}
+			}
 		}
 		if (MechanicsConfig.WASHING.get() && InteractionsConfig.DISPENSER_BLOCK_WASHING.get() && item == Items.POTION && (blockColor != -1 || blockEntity.isImbued())) {
 			Potion potion = PotionUtils.getPotion(stack);

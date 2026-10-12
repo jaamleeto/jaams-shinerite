@@ -2,6 +2,7 @@ package net.jaams.shinerite.block;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -82,7 +83,6 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		}
 		ItemStack itemstack = player.getItemInHand(hand);
 		Item item = itemstack.getItem();
-		boolean applyGesture = player.isCrouching() && itemstack.isEmpty();
 		if (InteractionsConfig.BLOCK_INTERACTIONS.get()) {
 			InteractionResult result = handleShineriteInteractions(state, world, pos, player, itemstack, item, blockEntity);
 			if (result != InteractionResult.PASS) {
@@ -91,9 +91,6 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 			if (blockEntity.isCoated()) {
 				return InteractionResult.PASS;
 			}
-		}
-		if (applyGesture) {
-			return InteractionResult.PASS;
 		}
 		if (isPottablePlant(itemstack)) {
 			return super.use(state, world, pos, player, hand, hit);
@@ -122,9 +119,6 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				return InteractionResult.CONSUME;
 			}
 			return InteractionResult.PASS;
-		}
-		if (MechanicsConfig.IMBUING.get() && itemstack.isEmpty() && player.isCrouching() && blockEntity.isImbued()) {
-			return blockEntity.registerDirectContact(player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
 		}
 		if (MechanicsConfig.WASHING.get() && InteractionsConfig.BLOCK_WASHING.get() && item == Items.POTION && (blockColor != -1 || blockEntity.isImbued())) {
 			Potion potion = PotionUtils.getPotion(itemstack);
@@ -247,6 +241,14 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		if (world.isClientSide) {
 			return InteractionResult.SUCCESS;
 		}
+		SoundEvent removeSound = null;
+		if (blockEntity.isImbued()) {
+			removeSound = SoundEvents.BREWING_STAND_BREW;
+		} else if (blockEntity.isCoated()) {
+			removeSound = SoundEvents.HONEYCOMB_WAX_ON;
+		} else if (blockEntity.getColor() != -1) {
+			removeSound = SoundEvents.DYE_USE;
+		}
 		ItemStack plant = createPlantItem(blockEntity);
 		if (player.getItemInHand(hand).isEmpty()) {
 			player.setItemInHand(hand, plant);
@@ -255,8 +257,13 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		}
 		world.setBlock(pos, Blocks.FLOWER_POT.defaultBlockState(), 3);
 		world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+		if (removeSound != null) {
+			world.playSound(null, pos, removeSound, SoundSource.BLOCKS, 1.0F, 1.0F);
+		}
 		if (world instanceof ServerLevel serverLevel) {
-			ModUtils.generateBlockTransitionParticles(serverLevel, pos, state, blockEntity.getColor(), 40, 1.0F);
+			if (!blockEntity.isImbued() && blockEntity.getColor() != -1) {
+				ModUtils.generateBlockTransitionParticles(serverLevel, pos, state, blockEntity.getColor(), 40, 1.0F);
+			}
 			if (blockEntity.isImbued()) {
 				ModUtils.generateImbuedBurstParticles(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, blockEntity.getImbuedColor(), 40);
 			}

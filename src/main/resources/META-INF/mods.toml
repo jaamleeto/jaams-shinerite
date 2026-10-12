@@ -4,7 +4,7 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="jaams_shinerite"
-version="1.0.0"
+version="1.1.0"
 displayName="Jaam's Shinerite"
 displayURL="https://discord.gg/ApZgFR7zZv"
 logoFile="jaams_shinerite_banner.png"
@@ -32,3 +32,7 @@ catalogueItemIcon="jaams_shinerite:shinerite_ingot"
 catalogueBackground="jaams_shinerite_background.png"
 configuredBackground="minecraft:textures/block/deepslate.png"
 # End of user code block dependencies configuration
+
+[[mixins]]
+config="mixins.jaams_shinerite.epicfight.json"
+requiredMods=["epicfight"]

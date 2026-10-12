@@ -44,7 +44,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 
 	public BaseShineriteBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
-		this.ticksUnderRain = level != null ? level.random.nextInt(MechanicsConfig.WASHING_TICKS_PER_STEP.get()) : 0;
+		this.ticksUnderRain = 0;
 	}
 
 	public int getColor() {
@@ -135,8 +135,9 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 
 	@Override
 	public void tick(Level level, BlockPos pos, BlockState state, BaseShineriteBlockEntity blockEntity) {
-		if (level.isClientSide)
+		if (level == null || level.isClientSide || state.isAir()) {
 			return;
+		}
 		tickWashing(level, pos, state);
 		tickImbuedAmbientParticles(level, pos);
 	}

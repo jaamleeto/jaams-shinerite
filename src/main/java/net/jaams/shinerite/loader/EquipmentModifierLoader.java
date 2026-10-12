@@ -3,10 +3,13 @@ package net.jaams.shinerite.loader;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import net.jaams.shinerite.sync.NetworkSyncable;
+
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -32,11 +35,13 @@ import net.minecraft.world.entity.monster.Zombie;
 
 import net.jaams.shinerite.data.EquipmentData;
 import net.jaams.shinerite.data.EquipmentData.ItemEntry;
+import net.jaams.shinerite.JaamsShineriteMod;
 import net.jaams.shinerite.data.EquipmentData.EquipEntry;
 import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonElement;
@@ -45,12 +50,13 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener {
+@Mod.EventBusSubscriber(modid = JaamsShineriteMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener implements NetworkSyncable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final EquipmentModifierLoader INSTANCE = new EquipmentModifierLoader();
     private volatile Map<ResourceLocation, EquipmentData> modifiers = new ConcurrentHashMap<>();
     private volatile Map<ResourceLocation, List<EquipmentData>> entityCache = new ConcurrentHashMap<>();
+    private volatile Map<String, String> sources = new ConcurrentHashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(EquipmentModifierLoader.class);
 
     private EquipmentModifierLoader() {
@@ -60,29 +66,65 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener {
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> resources, ResourceManager rm, ProfilerFiller prof) {
         if (resources == null) { LOGGER.warn("EquipmentModifierLoader apply called with null resources"); return; }
-        Map<ResourceLocation, EquipmentData> map = new ConcurrentHashMap<>();
-        int count = 0, errors = 0;
+        Map<String, String> srcs = new ConcurrentHashMap<>();
         for (var entry : resources.entrySet()) {
             if (entry == null || entry.getKey() == null || entry.getValue() == null) continue;
-            ResourceLocation id = entry.getKey();
             try {
-                EquipmentData data = GSON.fromJson(entry.getValue(), EquipmentData.class);
+                srcs.put(entry.getKey().toString(), GSON.toJson(entry.getValue()));
+            } catch (Exception ignored) {
+            }
+        }
+        rebuild(srcs);
+    }
+
+    private void rebuild(Map<String, String> srcs) {
+        Map<ResourceLocation, EquipmentData> map = new ConcurrentHashMap<>();
+        int count = 0, errors = 0;
+        for (var entry : srcs.entrySet()) {
+            String id = entry.getKey();
+            if (!JaamsShineriteMod.isOwnNamespace(id)) {
+                continue;
+            }
+            try {
+                EquipmentData data = GSON.fromJson(com.google.gson.JsonParser.parseString(entry.getValue()), EquipmentData.class);
                 if (data == null) { LOGGER.warn("Equipment modifier {} returned null", id); errors++; continue; }
                 if (data.entity == null || data.entity.isEmpty()) { LOGGER.warn("Equipment modifier {} has no 'entity'", id); errors++; continue; }
                 if (data.items == null || data.items.isEmpty()) { LOGGER.warn("Equipment modifier {} has no 'items'", id); errors++; continue; }
-                if (data.enabled != null && !data.enabled) { LOGGER.info("Equipment modifier {} is disabled, skipping", id); continue; }
+                if (data.enabled != null && !data.enabled) { continue; }
                 boolean bad = false;
                 for (ItemEntry ie : data.items) {
                     if (ie.item == null || ie.item.isEmpty()) { LOGGER.warn("Equipment modifier {} has item entry with no 'item'", id); bad = true; break; }
                 }
                 if (bad) { errors++; continue; }
-                map.put(id, data);
+                map.put(ResourceLocation.parse(id), data);
                 count++;
             } catch (Exception e) { errors++; LOGGER.error("Failed to load equipment modifier: {}", id, e); }
         }
         this.modifiers = map;
         this.entityCache = new ConcurrentHashMap<>();
+        this.sources = new ConcurrentHashMap<>(srcs);
         LOGGER.info("Loaded {} equipment modifiers ({} errors)", count, errors);
+    }
+
+    @Override
+    public String getSyncId() {
+        return "equipment_modifier";
+    }
+
+    @Override
+    public Map<String, String> getSourcesSnapshot() {
+        return new HashMap<>(sources);
+    }
+
+    @Override
+    public void applyNetworkSync(Map<String, String> srcs) {
+        if (srcs == null) return;
+        rebuild(srcs);
+    }
+
+    @SubscribeEvent
+    public static void onTagsUpdated(TagsUpdatedEvent event) {
+        INSTANCE.entityCache.clear();
     }
 
     public List<EquipmentData> getForEntityType(EntityType<?> type) {
@@ -225,7 +267,64 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener {
 
     public boolean evaluateItemConditions(List<EquipmentData.ItemCondition> conditions, String mode, ItemStack stack) {
         if (conditions == null || conditions.isEmpty()) return true;
-        return net.jaams.shinerite.condition.ConditionEvaluator.evaluateAll(conditions, mode, stack);
+        boolean and = "and".equalsIgnoreCase(mode);
+        for (var cond : conditions) {
+            boolean met = evalItemCondition(cond, stack);
+            if (and && !met) return false;
+            if (!and && met) return true;
+        }
+        return and;
+    }
+
+    private boolean evalItemCondition(EquipmentData.ItemCondition cond, ItemStack stack) {
+        if (cond == null || cond.type == null) return false;
+        boolean result;
+        switch (cond.type.toLowerCase(Locale.ROOT)) {
+            case "enchantment": {
+                if (cond.enchantment == null || stack == null) { result = false; break; }
+                ResourceLocation eid = ResourceLocation.tryParse(cond.enchantment);
+                if (eid == null) { result = false; break; }
+                Enchantment ench = ForgeRegistries.ENCHANTMENTS.getValue(eid);
+                if (ench == null) { result = false; break; }
+                result = EnchantmentHelper.getTagEnchantmentLevel(ench, stack) >= cond.level;
+                break;
+            }
+            case "nbt": {
+                if (cond.key == null || stack == null || !stack.hasTag()) { result = false; break; }
+                CompoundTag tag = stack.getTag();
+                boolean nbtResult;
+                switch (cond.nbt_key != null ? cond.nbt_key.toLowerCase(Locale.ROOT) : "") {
+                    case "boolean": nbtResult = tag.getBoolean(cond.key) == cond.nbt_boolean_value; break;
+                    case "int": nbtResult = tag.getInt(cond.key) == cond.nbt_int_value; break;
+                    case "string": nbtResult = cond.nbt_string_value != null && cond.nbt_string_value.equals(tag.getString(cond.key)); break;
+                    default: nbtResult = false; break;
+                }
+                result = nbtResult;
+                break;
+            }
+            case "tag": {
+                if (cond.tag == null || stack == null) { result = false; break; }
+                ResourceLocation tid = ResourceLocation.tryParse(cond.tag);
+                result = tid != null && stack.is(TagKey.create(Registries.ITEM, tid));
+                break;
+            }
+            case "item": {
+                if (cond.item == null || stack == null) { result = false; break; }
+                ResourceLocation iid = ResourceLocation.tryParse(cond.item);
+                ResourceLocation sid = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                result = iid != null && sid != null && sid.equals(iid);
+                break;
+            }
+            case "mod": {
+                if (cond.mod_id == null || stack == null) { result = false; break; }
+                ResourceLocation sid = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                result = sid != null && cond.mod_id.equals(sid.getNamespace());
+                break;
+            }
+            case "rarity": result = cond.rarity != null && stack != null && stack.getRarity().name().equalsIgnoreCase(cond.rarity); break;
+            default: result = false; break;
+        }
+        return result;
     }
 
     public boolean evaluateEntityConditions(EquipmentData data, Mob mob) {
@@ -242,73 +341,83 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener {
 
     private boolean evalEntityCondition(EquipmentData.EntityCondition cond, Mob mob) {
         if (cond == null || cond.type == null) return false;
-        return switch (cond.type.toLowerCase(Locale.ROOT)) {
-            case "difficulty" -> {
-                if (!(mob.level() instanceof ServerLevel sl)) yield false;
+        boolean result;
+        switch (cond.type.toLowerCase(Locale.ROOT)) {
+            case "difficulty": {
+                if (!(mob.level() instanceof ServerLevel sl)) { result = false; break; }
                 String cur = sl.getCurrentDifficultyAt(mob.blockPosition()).getDifficulty().name().toLowerCase(Locale.ROOT);
-                yield cur.equals(cond.difficulty.toLowerCase(Locale.ROOT));
+                result = cur.equals(cond.difficulty.toLowerCase(Locale.ROOT));
+                break;
             }
-            case "biome" -> {
-                if (cond.biome == null || !(mob.level() instanceof ServerLevel sl)) yield false;
+            case "biome": {
+                if (cond.biome == null || !(mob.level() instanceof ServerLevel sl)) { result = false; break; }
                 var holder = sl.getBiome(mob.blockPosition());
                 ResourceLocation key = holder.unwrapKey().map(k -> k.location()).orElse(null);
-                if (key == null) yield false;
+                if (key == null) { result = false; break; }
                 if (cond.biome.startsWith("#")) {
                     ResourceLocation tid = ResourceLocation.tryParse(cond.biome.substring(1));
-                    yield tid != null && holder.is(TagKey.create(Registries.BIOME, tid));
+                    result = tid != null && holder.is(TagKey.create(Registries.BIOME, tid));
+                    break;
                 }
                 ResourceLocation bid = ResourceLocation.tryParse(cond.biome);
-                yield bid != null && bid.equals(key);
+                result = bid != null && bid.equals(key);
+                break;
             }
-            case "time_of_day" -> { long t = mob.level().getDayTime() % 24000; yield t >= cond.time_min && t <= cond.time_max; }
-            case "light_level" -> { int l = mob.level().getMaxLocalRawBrightness(mob.blockPosition()); yield l >= cond.light_level_min && l <= cond.light_level_max; }
-            case "mod_loaded" -> cond.mod_id != null && net.minecraftforge.fml.ModList.get().isLoaded(cond.mod_id);
-            case "entity_type" -> {
-                if (cond.entity_type == null) yield false;
+            case "time_of_day": { long t = mob.level().getDayTime() % 24000; result = t >= cond.time_min && t <= cond.time_max; break; }
+            case "light_level": { int l = mob.level().getMaxLocalRawBrightness(mob.blockPosition()); result = l >= cond.light_level_min && l <= cond.light_level_max; break; }
+            case "mod_loaded": result = cond.mod_id != null && net.minecraftforge.fml.ModList.get().isLoaded(cond.mod_id); break;
+            case "entity_type": {
+                if (cond.entity_type == null) { result = false; break; }
                 ResourceLocation mid = ForgeRegistries.ENTITY_TYPES.getKey(mob.getType());
-                if (mid == null) yield false;
+                if (mid == null) { result = false; break; }
                 if (cond.entity_type.startsWith("#")) {
                     ResourceLocation tid = ResourceLocation.tryParse(cond.entity_type.substring(1));
-                    yield tid != null && mob.getType().is(TagKey.create(Registries.ENTITY_TYPE, tid));
+                    result = tid != null && mob.getType().is(TagKey.create(Registries.ENTITY_TYPE, tid));
+                    break;
                 }
                 ResourceLocation target = ResourceLocation.tryParse(cond.entity_type);
-                yield target != null && target.equals(mid);
+                result = target != null && target.equals(mid);
+                break;
             }
-            case "on_fire" -> mob.isOnFire();
-            case "health_below" -> mob.getHealth() < cond.health_value;
-            case "health_above" -> mob.getHealth() > cond.health_value;
-            case "has_effect" -> {
-                if (cond.effect == null) yield false;
+            case "on_fire": result = mob.isOnFire(); break;
+            case "health_below": result = mob.getHealth() < cond.health_value; break;
+            case "health_above": result = mob.getHealth() > cond.health_value; break;
+            case "has_effect": {
+                if (cond.effect == null) { result = false; break; }
                 ResourceLocation eid = ResourceLocation.tryParse(cond.effect);
-                if (eid == null) yield false;
+                if (eid == null) { result = false; break; }
                 var eff = ForgeRegistries.MOB_EFFECTS.getValue(eid);
-                yield eff != null && mob.hasEffect(eff);
+                result = eff != null && mob.hasEffect(eff);
+                break;
             }
-            case "in_water" -> mob.isInWater();
-            case "in_block" -> mob.isInWall();
-            case "is_baby" -> {
-                if (mob instanceof AgeableMob ageable) yield ageable.isBaby();
-                if (mob instanceof Zombie zombie) yield zombie.isBaby();
-                if (mob instanceof net.minecraft.world.entity.monster.piglin.Piglin piglin) yield piglin.isBaby();
-                yield false;
+            case "in_water": result = mob.isInWater(); break;
+            case "in_block": result = mob.isInWall(); break;
+            case "is_baby": {
+                if (mob instanceof AgeableMob ageable) { result = ageable.isBaby(); break; }
+                if (mob instanceof Zombie zombie) { result = zombie.isBaby(); break; }
+                if (mob instanceof net.minecraft.world.entity.monster.piglin.Piglin piglin) { result = piglin.isBaby(); break; }
+                result = false;
+                break;
             }
-            case "moon_phase" -> { int p = mob.level().getMoonPhase(); yield p >= cond.moon_phase_min && p <= cond.moon_phase_max; }
-            case "distance_to_player_below" -> distToPlayer(mob) <= cond.distance_value;
-            case "distance_to_player_above" -> distToPlayer(mob) >= cond.distance_value;
-            case "structure" -> {
-                if (cond.structure == null || !(mob.level() instanceof ServerLevel sl)) yield false;
+            case "moon_phase": { int p = mob.level().getMoonPhase(); result = p >= cond.moon_phase_min && p <= cond.moon_phase_max; break; }
+            case "distance_to_player_below": result = distToPlayer(mob) <= cond.distance_value; break;
+            case "distance_to_player_above": result = distToPlayer(mob) >= cond.distance_value; break;
+            case "structure": {
+                if (cond.structure == null || !(mob.level() instanceof ServerLevel sl)) { result = false; break; }
                 ResourceLocation sid = ResourceLocation.tryParse(cond.structure);
-                if (sid == null) yield false;
+                if (sid == null) { result = false; break; }
                 var chunk = sl.getChunk(mob.blockPosition());
                 boolean found = false;
                 for (var ref : chunk.getAllReferences().entrySet()) {
                     ResourceLocation key = sl.registryAccess().registryOrThrow(Registries.STRUCTURE).getKey(ref.getKey());
                     if (sid.equals(key)) { found = true; break; }
                 }
-                yield found;
+                result = found;
+                break;
             }
-            default -> false;
-        };
+            default: result = false; break;
+        }
+        return result;
     }
 
     private double distToPlayer(Mob mob) {

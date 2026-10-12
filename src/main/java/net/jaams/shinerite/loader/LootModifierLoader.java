@@ -3,7 +3,10 @@ package net.jaams.shinerite.loader;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import net.jaams.shinerite.sync.NetworkSyncable;
+
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 
@@ -11,22 +14,29 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.Difficulty;
 
 import net.jaams.shinerite.data.LootModifierData;
+import net.jaams.shinerite.JaamsShineriteMod;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonElement;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class LootModifierLoader extends SimpleJsonResourceReloadListener {
+@Mod.EventBusSubscriber(modid = JaamsShineriteMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class LootModifierLoader extends SimpleJsonResourceReloadListener implements NetworkSyncable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final LootModifierLoader INSTANCE = new LootModifierLoader();
     private volatile Map<ResourceLocation, LootModifierData> modifiers = new ConcurrentHashMap<>();
+    private volatile Map<String, String> sources = new ConcurrentHashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(LootModifierLoader.class);
 
     private LootModifierLoader() {
@@ -40,14 +50,29 @@ public class LootModifierLoader extends SimpleJsonResourceReloadListener {
             LOGGER.warn("LootModifierLoader apply called with null resources");
             return;
         }
+        Map<String, String> srcs = new ConcurrentHashMap<>();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet()) {
+            if (entry == null || entry.getKey() == null || entry.getValue() == null) continue;
+            try {
+                srcs.put(entry.getKey().toString(), GSON.toJson(entry.getValue()));
+            } catch (Exception ignored) {
+            }
+        }
+        rebuild(srcs);
+    }
+
+    private void rebuild(Map<String, String> srcs) {
         Map<ResourceLocation, LootModifierData> newModifiers = new ConcurrentHashMap<>();
         int count = 0;
         int errors = 0;
-        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet()) {
-            if (entry == null || entry.getKey() == null || entry.getValue() == null) continue;
-            ResourceLocation fileId = entry.getKey();
+        for (Map.Entry<String, String> entry : srcs.entrySet()) {
+            String fileId = entry.getKey();
+            if (!JaamsShineriteMod.isOwnNamespace(fileId)) {
+                continue;
+            }
             try {
-                LootModifierData data = GSON.fromJson(entry.getValue(), LootModifierData.class);
+                LootModifierData data = GSON.fromJson(com.google.gson.JsonParser.parseString(entry.getValue()),
+                        LootModifierData.class);
                 if (data == null) {
                     LOGGER.warn("Loot modifier file {} returned null data", fileId);
                     errors++;
@@ -59,10 +84,9 @@ public class LootModifierLoader extends SimpleJsonResourceReloadListener {
                     continue;
                 }
                 if (data.enabled != null && !data.enabled) {
-                    LOGGER.info("Loot modifier file {} is disabled, skipping", fileId);
                     continue;
                 }
-                newModifiers.put(fileId, data);
+                newModifiers.put(ResourceLocation.parse(fileId), data);
                 count++;
             } catch (Exception e) {
                 errors++;
@@ -70,7 +94,25 @@ public class LootModifierLoader extends SimpleJsonResourceReloadListener {
             }
         }
         this.modifiers = newModifiers;
+        this.sources = new ConcurrentHashMap<>(srcs);
         LOGGER.info("Loaded {} loot modifiers ({} errors)", count, errors);
+    }
+
+    @Override
+    public String getSyncId() {
+        return "loot_modifier";
+    }
+
+    @Override
+    public Map<String, String> getSourcesSnapshot() {
+        return new HashMap<>(sources);
+    }
+
+    @Override
+    public void applyNetworkSync(Map<String, String> srcs) {
+        if (srcs == null)
+            return;
+        rebuild(srcs);
     }
 
     public List<LootModifierData> getForLootTable(ResourceLocation lootTableId) {
@@ -95,16 +137,60 @@ public class LootModifierLoader extends SimpleJsonResourceReloadListener {
     public boolean evaluateConditions(LootModifierData data, net.minecraft.world.level.storage.loot.LootContext context) {
         if (data == null) return false;
         if (data.conditions == null || data.conditions.isEmpty()) return true;
-        return net.jaams.shinerite.condition.ConditionEvaluator.evaluateAll(data.conditions, data.condition_mode,
-                resolveStack(context));
+
+        boolean isOrMode = "or".equalsIgnoreCase(data.condition_mode);
+        for (LootModifierData.Condition cond : data.conditions) {
+            if (cond == null || cond.type == null) continue;
+            boolean met = evaluateSingleCondition(cond, context);
+            if (isOrMode && met) return true;
+            if (!isOrMode && !met) return false;
+        }
+        return !isOrMode;
     }
 
-    private net.minecraft.world.item.ItemStack resolveStack(net.minecraft.world.level.storage.loot.LootContext context) {
-        if (context == null) return null;
-        var param = context.getParamOrNull(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY);
-        if (param instanceof net.minecraft.world.entity.player.Player player && !player.getMainHandItem().isEmpty()) {
-            return player.getMainHandItem();
+    private boolean evaluateSingleCondition(LootModifierData.Condition cond, net.minecraft.world.level.storage.loot.LootContext context) {
+        String type = cond.type.toLowerCase().trim();
+        switch (type) {
+            case "mod_loaded":
+                return cond.mod_id != null && ModList.get().isLoaded(cond.mod_id);
+            case "mod_not_loaded":
+                return cond.mod_id != null && !ModList.get().isLoaded(cond.mod_id);
+            case "advancement":
+                if (cond.advancement == null) return false;
+                ServerPlayer player = getPlayer(context);
+                if (player == null) return false;
+                ResourceLocation advId = ResourceLocation.tryParse(cond.advancement);
+                if (advId == null) return false;
+                var advancement = player.getServer().getAdvancements().getAdvancement(advId);
+                if (advancement == null) return false;
+                var done = player.getAdvancements().getOrStartProgress(advancement);
+                return done.isDone();
+            case "difficulty":
+                if (cond.difficulty == null) return false;
+                ServerLevel level = context.getLevel();
+                if (level == null) return false;
+                Difficulty diff = level.getDifficulty();
+                return diff.name().equalsIgnoreCase(cond.difficulty);
+            case "dimension":
+                if (cond.dimension == null) return false;
+                ServerLevel dimLevel = context.getLevel();
+                if (dimLevel == null) return false;
+                ResourceLocation dimId = dimLevel.dimension().location();
+                return dimId.toString().equals(cond.dimension);
+            case "gamestage":
+                if (cond.gamestage == null) return false;
+                if (!ModList.get().isLoaded("gamestages")) return false;
+                return false;
+            default:
+                return true;
         }
+    }
+
+    private ServerPlayer getPlayer(net.minecraft.world.level.storage.loot.LootContext context) {
+        var killer = context.getParamOrNull(net.minecraft.world.level.storage.loot.parameters.LootContextParams.KILLER_ENTITY);
+        if (killer instanceof ServerPlayer sp) return sp;
+        var thisEntity = context.getParamOrNull(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY);
+        if (thisEntity instanceof ServerPlayer sp) return sp;
         return null;
     }
 

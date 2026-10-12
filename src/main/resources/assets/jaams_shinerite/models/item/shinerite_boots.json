@@ -2,6 +2,12 @@
   "parent": "minecraft:item/generated",
   "overrides": [
     {
+      "model": "jaams_shinerite:item/shinerite_boots_shinerite_trim",
+      "predicate": {
+        "minecraft:trim_type": 1.1
+      }
+    },
+    {
       "model": "jaams_shinerite:item/shinerite_boots_quartz_trim",
       "predicate": {
         "minecraft:trim_type": 0.1

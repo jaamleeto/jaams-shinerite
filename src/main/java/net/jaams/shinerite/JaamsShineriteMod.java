@@ -36,13 +36,13 @@ import net.jaams.shinerite.init.ModRecipes;
 import net.jaams.shinerite.init.ModParticles;
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.packet.CustomJukeboxPacket;
+import net.jaams.shinerite.network.SyncModDataMessage;
 import net.jaams.shinerite.loot.LootModifiers;
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.init.ModEntities;
 import net.jaams.shinerite.init.ModEnchantments;
 import net.jaams.shinerite.registry.ShineriteFeaturesRegister;
-import net.jaams.shinerite.dispenser.ShineriteStarDispenser;
 import net.jaams.shinerite.dispenser.ShineriteBlockDispenser;
 
 import java.util.function.Supplier;
@@ -58,6 +58,12 @@ import java.util.AbstractMap;
 public class JaamsShineriteMod {
 	public static final Logger LOGGER = LogManager.getLogger(JaamsShineriteMod.class);
 	public static final String MODID = "jaams_shinerite";
+
+	public static boolean isOwnNamespace(String location) {
+		int i = location.indexOf(':');
+		String ns = i >= 0 ? location.substring(0, i) : "";
+		return MODID.equals(ns);
+	}
 
 	public JaamsShineriteMod() {
 		// Start of user code block mod constructor
@@ -107,7 +113,6 @@ public class JaamsShineriteMod {
 	// Start of user code block mod methods
 	private void commonSetup(final FMLCommonSetupEvent event) {
 		((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(ForgeRegistries.BLOCKS.getKey(ModBlocks.SHINERITIA.get()), () -> ModBlocks.POTTED_SHINERITIA.get());
-		DispenserBlock.registerBehavior(ModItems.SHINERITE_STAR.get(), new ShineriteStarDispenser());
 		for (DyeColor dyeColor : DyeColor.values()) {
 			Item dyeItem = DyeItem.byColor(dyeColor);
 			DispenserBlock.registerBehavior(dyeItem, new ShineriteBlockDispenser());
@@ -120,6 +125,7 @@ public class JaamsShineriteMod {
 		DispenserBlock.registerBehavior(Items.POTION, new ShineriteBlockDispenser());
 		addNetworkMessage(GlowColorPacket.class, GlowColorPacket::encode, GlowColorPacket::decode, GlowColorPacket::handle);
 		addNetworkMessage(CustomJukeboxPacket.class, CustomJukeboxPacket::encode, CustomJukeboxPacket::decode, CustomJukeboxPacket::handle);
+		addNetworkMessage(SyncModDataMessage.class, SyncModDataMessage::encode, SyncModDataMessage::decode, SyncModDataMessage::handle);
 	}
 
 	// End of user code block mod methods

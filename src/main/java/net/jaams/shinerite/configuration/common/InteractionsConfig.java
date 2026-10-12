@@ -46,6 +46,7 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_COATING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_WASHING;
+	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_IMBUING;
 	// Block interactions 
 	public static ForgeConfigSpec.BooleanValue BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_LIGHTENING;
@@ -125,6 +126,7 @@ public class InteractionsConfig {
 		DISPENSER_BLOCK_COATING = builder.define("Coating", true);
 		DISPENSER_BLOCK_SCRAPING = builder.define("Scraping", true);
 		DISPENSER_BLOCK_WASHING = builder.define("Washing", true);
+		DISPENSER_BLOCK_IMBUING = builder.define("Imbuing", true);
 		builder.pop();
 		builder.pop();
 		builder.push("Block Interactions");

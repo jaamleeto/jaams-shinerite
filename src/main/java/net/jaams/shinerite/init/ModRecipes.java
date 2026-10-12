@@ -26,6 +26,8 @@ import net.jaams.shinerite.recipe.CopyNBTStonecutterRecipeSerializer;
 import net.jaams.shinerite.recipe.CopyNBTStonecutterRecipe;
 import net.jaams.shinerite.recipe.CopyNBTSmithingRecipeSerializer;
 import net.jaams.shinerite.recipe.CopyNBTSmithingRecipe;
+import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipeSerializer;
+import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
 import net.jaams.shinerite.recipe.CopyNBTSmeltingRecipeSerializer;
 import net.jaams.shinerite.recipe.CopyNBTSmeltingRecipe;
 import net.jaams.shinerite.recipe.CopyNBTShapelessRecipeSerializer;
@@ -63,6 +65,7 @@ public class ModRecipes {
 	public static final RegistryObject<RecipeSerializer<ShineriteStewRecipe>> SHINERITE_STEW_SERIALIZER = RECIPE_SERIALIZERS.register("shinerite_stew", ShineriteStewRecipeSerializer::new);
 	public static final RegistryObject<RecipeType<CopyNBTSmithingRecipe>> COPY_NBT_SMITHING_TYPE = RECIPE_TYPES.register("copy_nbt_smithing", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_smithing")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTSmithingRecipe>> COPY_NBT_SMITHING_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_smithing", CopyNBTSmithingRecipeSerializer::new);
+	public static final RegistryObject<RecipeSerializer<ShineriteTrimSmithingRecipe>> SHINERITE_TRIM_SERIALIZER = RECIPE_SERIALIZERS.register("shinerite_trim", ShineriteTrimSmithingRecipeSerializer::new);
 
 	public static void register(IEventBus bus) {
 		RECIPE_TYPES.register(bus);

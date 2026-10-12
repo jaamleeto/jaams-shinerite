@@ -12,6 +12,7 @@
     "item.SuspiciousStewItemMixin",
     "block.JukeboxBlockEntityMixin",
     "common.ItemTooltipMixin",
+    "common.DispenseItemBehaviorMixin",
     "item.RecordItemMixin",
     "trait.TraitThrowableMixin",
     "trait.TraitFrailglowMixin",

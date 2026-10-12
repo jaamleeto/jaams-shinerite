@@ -59,7 +59,7 @@ public class ShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration
 	}
 
 	private boolean placeOreWithColor(WorldGenLevel level, BlockPos pos, int color) {
-		if (!level.setBlock(pos, oreBlock, 2 | 16)) {
+		if (!level.setBlock(pos, oreBlock, 3)) {
 			return false;
 		}
 		if (!level.getBlockState(pos).is(ModBlocks.SHINERITE_ORE.get())) {
@@ -68,6 +68,10 @@ public class ShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
 			shineriteBlockEntity.setColor(color);
+			shineriteBlockEntity.setChanged();
+			if (!level.isClientSide()) {
+				shineriteBlockEntity.sync();
+			}
 			return true;
 		}
 		return false;

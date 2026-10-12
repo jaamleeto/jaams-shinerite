@@ -59,7 +59,7 @@ public class NetherShineriteColoredOreFeature extends Feature<NoneFeatureConfigu
 	}
 
 	private boolean placeOreWithColor(WorldGenLevel level, BlockPos pos, int color) {
-		if (!level.setBlock(pos, oreBlock, 2 | 16)) {
+		if (!level.setBlock(pos, oreBlock, 3)) {
 			return false;
 		}
 		if (!level.getBlockState(pos).is(ModBlocks.NETHER_SHINERITE_ORE.get())) {
@@ -68,6 +68,10 @@ public class NetherShineriteColoredOreFeature extends Feature<NoneFeatureConfigu
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
 			shineriteBlockEntity.setColor(color);
+			shineriteBlockEntity.setChanged();
+			if (!level.isClientSide()) {
+				shineriteBlockEntity.sync();
+			}
 			return true;
 		}
 		return false;

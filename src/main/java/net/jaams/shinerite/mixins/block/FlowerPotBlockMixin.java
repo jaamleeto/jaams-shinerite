@@ -15,6 +15,9 @@ import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -23,6 +26,7 @@ import net.jaams.shinerite.block.PottedShineritiaBlock;
 import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
 import net.jaams.shinerite.dyeable.IDyeableItem;
 import net.jaams.shinerite.particle.CustomEffectParticleData;
+import net.jaams.shinerite.util.ModUtils;
 
 @Mixin(FlowerPotBlock.class)
 public abstract class FlowerPotBlockMixin {
@@ -54,6 +58,19 @@ public abstract class FlowerPotBlockMixin {
 			}
 			shineriteBlockEntity.setChanged();
 			level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
+			if (!level.isClientSide) {
+				SoundEvent placeSound = null;
+				if (ModUtils.isImbued(stack)) {
+					placeSound = SoundEvents.BREWING_STAND_BREW;
+				} else if (stack.hasTag() && stack.getTag().getBoolean("Coated")) {
+					placeSound = SoundEvents.HONEYCOMB_WAX_ON;
+				} else if ((stack.getItem() instanceof IDyeableItem dyeableItem && dyeableItem.hasColor(stack)) || (stack.hasTag() && stack.getTag().contains("color", 3))) {
+					placeSound = SoundEvents.DYE_USE;
+				}
+				if (placeSound != null) {
+					level.playSound(null, pos, placeSound, SoundSource.BLOCKS, 1.0F, 1.0F);
+				}
+			}
 		}
 	}
 }

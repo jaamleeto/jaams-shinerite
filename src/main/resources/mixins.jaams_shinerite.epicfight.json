@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "package": "net.jaams.shinerite.mixins",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "mixins.jaams_shinerite.refmap.json",
+    "mixins": [],
+    "client": [
+        "compat.EpicFightArmorRenderMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "minVersion": "0.8"
+}

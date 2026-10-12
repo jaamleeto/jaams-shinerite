@@ -3,10 +3,13 @@ package net.jaams.shinerite.loader;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import net.jaams.shinerite.sync.NetworkSyncable;
+
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -22,23 +25,28 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.registries.Registries;
 
 import net.jaams.shinerite.data.TraitModifierData;
+import net.jaams.shinerite.condition.ConditionEvaluator;
+import net.jaams.shinerite.JaamsShineriteMod;
 import java.util.Map;
 import java.util.Locale;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class TraitModifierLoader extends SimpleJsonResourceReloadListener {
+@Mod.EventBusSubscriber(modid = JaamsShineriteMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class TraitModifierLoader extends SimpleJsonResourceReloadListener implements NetworkSyncable {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final TraitModifierLoader INSTANCE = new TraitModifierLoader();
     private static final Logger LOGGER = LogManager.getLogger(TraitModifierLoader.class);
     private volatile Map<ResourceLocation, TraitModifierData> modifiers = new ConcurrentHashMap<>();
     private volatile Map<ResourceLocation, List<TraitModifierData>> itemCache = new ConcurrentHashMap<>();
+    private volatile Map<String, String> sources = new ConcurrentHashMap<>();
 
     private TraitModifierLoader() {
         super(GSON, "jaams/trait_modifier");
@@ -55,14 +63,30 @@ public class TraitModifierLoader extends SimpleJsonResourceReloadListener {
             LOGGER.warn("TraitModifierLoader apply called with null resources");
             return;
         }
+        Map<String, String> srcs = new ConcurrentHashMap<>();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet()) {
+            if (entry == null || entry.getKey() == null || entry.getValue() == null)
+                continue;
+            try {
+                srcs.put(entry.getKey().toString(), GSON.toJson(entry.getValue()));
+            } catch (Exception ignored) {
+            }
+        }
+        rebuild(srcs);
+    }
+
+    private void rebuild(Map<String, String> srcs) {
         Map<ResourceLocation, TraitModifierData> tempModifiers = new ConcurrentHashMap<>();
         int count = 0;
         int errors = 0;
-        for (Map.Entry<ResourceLocation, JsonElement> entry : resources.entrySet()) {
-            if (entry == null || entry.getKey() == null || entry.getValue() == null) continue;
-            ResourceLocation fileId = entry.getKey();
+        for (Map.Entry<String, String> entry : srcs.entrySet()) {
+            String fileId = entry.getKey();
+            if (!JaamsShineriteMod.isOwnNamespace(fileId)) {
+                continue;
+            }
             try {
-                TraitModifierData data = GSON.fromJson(entry.getValue(), TraitModifierData.class);
+                TraitModifierData data = GSON.fromJson(com.google.gson.JsonParser.parseString(entry.getValue()),
+                        TraitModifierData.class);
                 if (data == null) {
                     LOGGER.warn("Trait modifier file {} returned null data", fileId);
                     errors++;
@@ -74,10 +98,14 @@ public class TraitModifierLoader extends SimpleJsonResourceReloadListener {
                     continue;
                 }
                 if (data.enabled != null && !data.enabled) {
-                    LOGGER.info("Trait modifier file {} is disabled, skipping", fileId);
                     continue;
                 }
-                tempModifiers.put(fileId, data);
+                for (String warning : ConditionEvaluator.validateConditions(data.conditions)) {
+                    LOGGER.warn("Trait modifier file {}: {}", fileId, warning);
+                    errors++;
+                }
+                data.id = fileId;
+                tempModifiers.put(ResourceLocation.parse(fileId), data);
                 count++;
             } catch (Exception e) {
                 errors++;
@@ -86,65 +114,98 @@ public class TraitModifierLoader extends SimpleJsonResourceReloadListener {
         }
         this.modifiers = tempModifiers;
         this.itemCache = new ConcurrentHashMap<>();
+        this.sources = new ConcurrentHashMap<>(srcs);
         LOGGER.info("Loaded {} custom trait modifiers ({} errors)", count, errors);
+    }
+
+    @Override
+    public String getSyncId() {
+        return "trait_modifier";
+    }
+
+    @Override
+    public Map<String, String> getSourcesSnapshot() {
+        return new HashMap<>(sources);
+    }
+
+    @Override
+    public void applyNetworkSync(Map<String, String> srcs) {
+        if (srcs == null)
+            return;
+        rebuild(srcs);
+    }
+
+    @SubscribeEvent
+    public static void onTagsUpdated(TagsUpdatedEvent event) {
+        INSTANCE.itemCache.clear();
     }
 
     public void mergeFrom(TraitModifierData base, TraitModifierData other) {
         if (base == null || other == null)
             return;
-        if (other.active_traits != null) {
-            if (base.active_traits == null)
-                base.active_traits = new ArrayList<>();
-            for (String trait : other.active_traits) {
-                if (!base.active_traits.contains(trait)) {
-                    base.active_traits.add(trait);
-                }
-            }
-        }
-        if (other.disabled_traits != null) {
-            if (base.disabled_traits == null)
-                base.disabled_traits = new ArrayList<>();
-            for (String trait : other.disabled_traits) {
-                if (!base.disabled_traits.contains(trait)) {
-                    base.disabled_traits.add(trait);
-                }
-            }
-        }
-        mergeEntryObjects(base.traits, other.traits, TraitModifierData.TraitsEntry.class, base, "traits");
-        mergeEntryObjects(base.projectile_traits, other.projectile_traits,
-                TraitModifierData.ProjectileTraitsEntry.class, base, "projectile_traits");
+        mergeTraitList(base, other, true);
+        mergeTraitList(base, other, false);
+        mergeEntryObjects(base.traits, other.traits, base, "traits");
+        mergeEntryObjects(base.projectile_traits, other.projectile_traits, base, "projectile_traits");
     }
 
-    private void mergeEntryObjects(Object baseParent, Object otherParent, Class<?> clazz, TraitModifierData baseRoot,
-            String fieldName) {
+    private static void mergeTraitList(TraitModifierData base, TraitModifierData other, boolean active) {
+        List<String> source = active ? other.active_traits : other.disabled_traits;
+        if (source == null)
+            return;
+        List<String> baseList = active ? base.active_traits : base.disabled_traits;
+        if (baseList == null) {
+            baseList = new ArrayList<>();
+            if (active)
+                base.active_traits = baseList;
+            else
+                base.disabled_traits = baseList;
+        }
+        List<String> opposite = active ? base.disabled_traits : base.active_traits;
+        if (opposite != null) {
+            for (String trait : source) {
+                if (trait == null)
+                    continue;
+                opposite.removeIf((t) -> t != null && t.equalsIgnoreCase(trait));
+            }
+        }
+        for (String trait : source) {
+            if (trait == null)
+                continue;
+            if (!baseList.stream().anyMatch((t) -> t != null && t.equalsIgnoreCase(trait)))
+                baseList.add(trait);
+        }
+    }
+
+    private void mergeEntryObjects(Object baseParent, Object otherParent, TraitModifierData baseRoot, String fieldName) {
         if (otherParent == null)
             return;
         try {
-            if (baseParent == null) {
-                baseParent = clazz.getDeclaredConstructor().newInstance();
-                baseRoot.getClass().getField(fieldName).set(baseRoot, baseParent);
-            }
-            for (java.lang.reflect.Field subObjectField : clazz.getDeclaredFields()) {
-                subObjectField.setAccessible(true);
-                Object otherSubEntry = subObjectField.get(otherParent);
-                if (otherSubEntry == null)
-                    continue;
-                Object baseSubEntry = subObjectField.get(baseParent);
-                if (baseSubEntry == null) {
-                    JsonElement clone = GSON.toJsonTree(otherSubEntry);
-                    subObjectField.set(baseParent, GSON.fromJson(clone, subObjectField.getType()));
-                } else {
-                    for (java.lang.reflect.Field dataField : subObjectField.getType().getDeclaredFields()) {
-                        dataField.setAccessible(true);
-                        Object newValue = dataField.get(otherSubEntry);
-                        if (newValue != null) {
-                            dataField.set(baseSubEntry, newValue);
-                        }
-                    }
-                }
+            JsonObject baseJson = GSON.toJsonTree(baseParent).getAsJsonObject();
+            JsonObject otherJson = GSON.toJsonTree(otherParent).getAsJsonObject();
+            mergeJson(baseJson, otherJson);
+            if ("traits".equals(fieldName)) {
+                baseRoot.traits = GSON.fromJson(baseJson, TraitModifierData.TraitsEntry.class);
+            } else if ("projectile_traits".equals(fieldName)) {
+                baseRoot.projectile_traits = GSON.fromJson(baseJson, TraitModifierData.ProjectileTraitsEntry.class);
             }
         } catch (Exception e) {
             LOGGER.error("Error haciendo merge profundo de rasgos", e);
+        }
+    }
+
+    private static void mergeJson(JsonObject base, JsonObject other) {
+        for (java.util.Map.Entry<String, JsonElement> entry : other.entrySet()) {
+            String key = entry.getKey();
+            JsonElement otherValue = entry.getValue();
+            if (otherValue == null || otherValue.isJsonNull()) {
+                continue;
+            }
+            if (!base.has(key) || !base.get(key).isJsonObject() || !otherValue.isJsonObject()) {
+                base.add(key, otherValue);
+            } else {
+                mergeJson(base.getAsJsonObject(key), otherValue.getAsJsonObject());
+            }
         }
     }
 
@@ -169,91 +230,19 @@ public class TraitModifierLoader extends SimpleJsonResourceReloadListener {
                 result.add(data);
             }
         }
-        result.sort((a, b) -> Integer.compare(a.priority, b.priority));
+        result.sort((a, b) -> {
+            int byPriority = Integer.compare(a.priority, b.priority);
+            if (byPriority != 0)
+                return byPriority;
+            return String.valueOf(a.id).compareTo(String.valueOf(b.id));
+        });
         return result;
     }
 
     public boolean evaluateConditions(TraitModifierData data, ItemStack stack) {
-        if (data == null || stack == null) return false;
-        if (data.conditions == null || data.conditions.isEmpty())
-            return true;
-        boolean isAndMode = "and".equalsIgnoreCase(data.condition_mode);
-        for (TraitModifierData.Condition cond : data.conditions) {
-            boolean conditionMet = evaluateSingleCondition(cond, stack);
-            if (isAndMode && !conditionMet)
-                return false;
-            if (!isAndMode && conditionMet)
-                return true;
-        }
-        return isAndMode;
-    }
-
-    private boolean evaluateSingleCondition(TraitModifierData.Condition cond, ItemStack stack) {
-        if (cond == null || cond.type == null)
+        if (data == null || stack == null)
             return false;
-        return switch (cond.type.toLowerCase(Locale.ROOT)) {
-            case "enchantment" -> checkEnchantment(cond, stack);
-            case "nbt" -> checkNBT(cond, stack);
-            case "tag" -> checkTag(cond, stack);
-            case "item" -> checkItem(cond, stack);
-            case "mod" -> checkMod(cond, stack);
-            case "rarity" -> checkRarity(cond, stack);
-            default -> false;
-        };
-    }
-
-    private boolean checkEnchantment(TraitModifierData.Condition cond, ItemStack stack) {
-        if (stack == null || cond.enchantment == null)
-            return false;
-        ResourceLocation enchId = ResourceLocation.tryParse(cond.enchantment);
-        if (enchId == null)
-            return false;
-        Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(enchId);
-        if (enchantment == null)
-            return false;
-        return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack) >= cond.level;
-    }
-
-    private boolean checkNBT(TraitModifierData.Condition cond, ItemStack stack) {
-        if (stack == null || !stack.hasTag() || cond.key == null || cond.nbt_key == null)
-            return false;
-        CompoundTag tag = stack.getTag();
-        if (tag == null)
-            return false;
-        return switch (cond.nbt_key.toLowerCase(Locale.ROOT)) {
-            case "boolean" -> tag.getBoolean(cond.key) == cond.nbt_boolean_value;
-            case "int" -> tag.getInt(cond.key) == cond.nbt_int_value;
-            case "short" -> tag.getShort(cond.key) == cond.nbt_short_value;
-            case "long" -> tag.getLong(cond.key) == cond.nbt_long_value;
-            case "string" -> cond.nbt_string_value != null && cond.nbt_string_value.equals(tag.getString(cond.key));
-            default -> false;
-        };
-    }
-
-    private boolean checkTag(TraitModifierData.Condition cond, ItemStack stack) {
-        if (cond.tag == null || stack == null)
-            return false;
-        ResourceLocation tagId = ResourceLocation.tryParse(cond.tag);
-        return tagId != null && stack.is(TagKey.create(Registries.ITEM, tagId));
-    }
-
-    private boolean checkItem(TraitModifierData.Condition cond, ItemStack stack) {
-        if (cond.item == null || stack == null)
-            return false;
-        ResourceLocation itemId = ResourceLocation.tryParse(cond.item);
-        ResourceLocation stackId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        return itemId != null && stackId != null && stackId.equals(itemId);
-    }
-
-    private boolean checkMod(TraitModifierData.Condition cond, ItemStack stack) {
-        if (cond.mod_id == null || stack == null)
-            return false;
-        ResourceLocation stackId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        return stackId != null && cond.mod_id.equals(stackId.getNamespace());
-    }
-
-    private boolean checkRarity(TraitModifierData.Condition cond, ItemStack stack) {
-        return cond.rarity != null && stack != null && stack.getRarity().name().equalsIgnoreCase(cond.rarity);
+        return ConditionEvaluator.evaluateAll(data.conditions, data.condition_mode, stack);
     }
 
     private boolean matchesTarget(List<String> targets, ResourceLocation itemId) {

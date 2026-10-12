@@ -103,12 +103,12 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 	public boolean canSurvive(BlockState p_153347_, LevelReader p_153348_, BlockPos p_153349_) {
 		BlockPos blockpos = p_153349_.above();
 		BlockState blockstate = p_153348_.getBlockState(blockpos);
-		return blockstate.isFaceSturdy(p_153348_, blockpos, Direction.DOWN);
+		return blockstate.is(this) || blockstate.isFaceSturdy(p_153348_, blockpos, Direction.DOWN);
 	}
 
 	@Override
 	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
-		if (facing == Direction.UP && !facingState.isFaceSturdy(world, facingPos, Direction.DOWN)) {
+		if (facing == Direction.UP && !facingState.is(this) && !facingState.isFaceSturdy(world, facingPos, Direction.DOWN)) {
 			return Blocks.AIR.defaultBlockState();
 		}
 		if (state.getValue(WATERLOGGED)) {

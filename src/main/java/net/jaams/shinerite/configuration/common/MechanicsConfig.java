@@ -32,6 +32,7 @@ public class MechanicsConfig {
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_ARMOR;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_BLOCKS;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_MATERIALS;
+	public static ForgeConfigSpec.BooleanValue IMBUABLE_MUSIC_DISCS;
 	// Imbued armor
 	public static ForgeConfigSpec.IntValue IMBUED_ARMOR_TICK_INTERVAL;
 	public static ForgeConfigSpec.BooleanValue IMBUED_ARMOR_RETALIATE_ON_HIT;
@@ -56,6 +57,7 @@ public class MechanicsConfig {
 		IMBUABLE_ARMOR = builder.comment("Allow armor pieces to be imbued").define("Imbuable Armor", true);
 		IMBUABLE_BLOCKS = builder.comment("Allow blocks to be imbued").define("Imbuable Blocks", true);
 		IMBUABLE_MATERIALS = builder.comment("Allow material items (ingots, raw shinerite, nuggets) to be imbued").define("Imbuable Materials", true);
+		IMBUABLE_MUSIC_DISCS = builder.comment("Allow shinerite music discs to be imbued").define("Imbuable Music Discs", true);
 		builder.pop();
 		builder.push("Imbued Effect Application");
 		IMBUED_EFFECT_DECAY_EXPONENT = builder.defineInRange("Effect Power Decay Exponent", 0.5, 0.1, 2.0);

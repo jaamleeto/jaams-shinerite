@@ -106,6 +106,12 @@ import java.util.ArrayList;
 public class ModUtils {
 	public static final Logger LOGGER = LogManager.getLogger();
 
+	public static final MobEffect[] NATURAL_IMBUE_EFFECTS = {
+		MobEffects.REGENERATION, MobEffects.LUCK, MobEffects.DIG_SPEED,
+		MobEffects.JUMP, MobEffects.POISON, MobEffects.HEAL,
+		MobEffects.BLINDNESS, MobEffects.CONFUSION, MobEffects.DAMAGE_BOOST
+	};
+
 	public static double roundToTwoDecimals(double value) {
 		return Math.round(value * 100.0) / 100.0;
 	}
@@ -308,6 +314,7 @@ public class ModUtils {
 		if (MechanicsConfig.IMBUABLE_ARMOR.get() && stack.is(ModTags.SHINERITE_ARMOR)) return true;
 		if (MechanicsConfig.IMBUABLE_BLOCKS.get() && stack.is(ModTags.SHINERITE_BLOCKS)) return true;
 		if (MechanicsConfig.IMBUABLE_MATERIALS.get() && stack.is(ModTags.SHINERITE_MATERIALS)) return true;
+		if (MechanicsConfig.IMBUABLE_MUSIC_DISCS.get() && stack.is(ModTags.SHINERITE_MUSIC_DISCS)) return true;
 		return false;
 	}
 
@@ -1065,6 +1072,44 @@ public class ModUtils {
 		return true;
 	}
 
+	public static boolean applyRandomNaturalImbuement(BaseShineriteBlockEntity blockEntity, RandomSource random) {
+		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.BLOCK_IMBUING.get()) {
+			return false;
+		}
+		int count = 1 + random.nextInt(2);
+		java.util.List<MobEffect> chosen = new java.util.ArrayList<>();
+		int attempts = 0;
+		while (chosen.size() < count && attempts < 40) {
+			MobEffect effect = NATURAL_IMBUE_EFFECTS[random.nextInt(NATURAL_IMBUE_EFFECTS.length)];
+			if (!chosen.contains(effect)) {
+				chosen.add(effect);
+			}
+			attempts++;
+		}
+		if (chosen.isEmpty()) {
+			return false;
+		}
+		ListTag effectsTag = new ListTag();
+		int r = 0, g = 0, b = 0, n = 0;
+		for (MobEffect effect : chosen) {
+			boolean instant = effect.isInstantenous();
+			int duration = instant ? 1 : (100 + random.nextInt(200));
+			int amplifier = random.nextInt(2);
+			MobEffectInstance instance = new MobEffectInstance(effect, duration, amplifier, false, true, true);
+			effectsTag.add(instance.save(new CompoundTag()));
+			int c = effect.getColor();
+			r += (c >> 16) & 0xFF;
+			g += (c >> 8) & 0xFF;
+			b += c & 0xFF;
+			n++;
+		}
+		int color = ((r / n) << 16) | ((g / n) << 8) | (b / n);
+		int uses = 1 + random.nextInt(3);
+		blockEntity.setColor(color);
+		blockEntity.setImbuedState(effectsTag, uses, uses, color);
+		return true;
+	}
+
 	public static void generateClientCoatedParticles(Level world, BlockPos pos, BlockState state, RandomSource random) {
 		if (!(world instanceof ClientLevel clientLevel)) {
 			return;
@@ -1170,13 +1215,14 @@ public class ModUtils {
 		float red = (color >> 16 & 255) / 255.0F;
 		float green = (color >> 8 & 255) / 255.0F;
 		float blue = (color & 255) / 255.0F;
-		float particleSize = 1.5f;
-		for (int i = 0; i < numberOfParticles; i++) {
-			double velocityX = (serverLevel.random.nextDouble() - 0.5) * 0.1;
-			double velocityY = serverLevel.random.nextDouble() * 0.1;
-			double velocityZ = (serverLevel.random.nextDouble() - 0.5) * 0.1;
-			double offsetX = (serverLevel.random.nextDouble() - 0.5) * 0.5;
-			double offsetZ = (serverLevel.random.nextDouble() - 0.5) * 0.5;
+		float particleSize = 1.75f;
+		int particleCount = Math.max(1, numberOfParticles / 2);
+		for (int i = 0; i < particleCount; i++) {
+			double velocityX = (serverLevel.random.nextDouble() - 0.5) * 0.2;
+			double velocityY = serverLevel.random.nextDouble() * 0.2;
+			double velocityZ = (serverLevel.random.nextDouble() - 0.5) * 0.2;
+			double offsetX = (serverLevel.random.nextDouble() - 0.5) * 0.75;
+			double offsetZ = (serverLevel.random.nextDouble() - 0.5) * 0.75;
 			serverLevel.sendParticles(new DustParticleOptions(new Vector3f(red, green, blue), particleSize), entity.getX() + offsetX, entity.getY(), entity.getZ() + offsetZ, 1, velocityX, velocityY, velocityZ, 0.0);
 		}
 	}

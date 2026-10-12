@@ -22,6 +22,7 @@ public class ModTags {
 	public static final TagKey<Item> SHINERITE_FLOWERS = create("shinerite/shinerite_flowers");
 	public static final TagKey<Item> SHINERITE_BLOCKS = create("shinerite/shinerite_blocks");
 	public static final TagKey<Item> SHINERITE_MATERIALS = create("shinerite/shinerite_materials");
+	public static final TagKey<Item> SHINERITE_MUSIC_DISCS = create("shinerite/shinerite_music_discs");
 	// Weapons
 	public static final TagKey<Item> SHINEMERANGS = create("item/shinemerangs");
 	public static final TagKey<Item> SHINERITE_STARS = create("item/shinerite_stars");

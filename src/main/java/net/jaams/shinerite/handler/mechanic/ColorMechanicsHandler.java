@@ -32,6 +32,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.BlockPos;
 
+import net.jaams.shinerite.compat.BackItemCompat;
 import net.jaams.shinerite.util.ModUtils;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 
@@ -123,14 +124,9 @@ public class ColorMechanicsHandler {
 	}
 
 	private static void processBackItem(LivingEntity entity, Level level) {
-		CompoundTag entityNBT = entity.serializeNBT();
-		CompoundTag forgeCaps = entityNBT.getCompound("ForgeCaps");
-		if (!forgeCaps.contains("jaams_mechanics:back_item"))
+		if (!BackItemCompat.isAvailable())
 			return;
-		CompoundTag backItemNBT = forgeCaps.getCompound("jaams_mechanics:back_item");
-		if (!backItemNBT.contains("backItem", 10))
-			return;
-		ItemStack backItem = ItemStack.of(backItemNBT.getCompound("backItem"));
+		ItemStack backItem = BackItemCompat.getBackItem(entity);
 		if (backItem.isEmpty() || !ModUtils.isWashableItem(backItem))
 			return;
 		if (!ModUtils.isDyed(backItem) && !ModUtils.isImbued(backItem)) {
@@ -145,11 +141,7 @@ public class ColorMechanicsHandler {
 				if (newColor != 0xFFFFFF && newColor != -1) {
 					generateDustParticles(level, entity, null, newColor, PARTICLE_COUNT, PARTICLE_OFFSET, PARTICLE_OFFSET, PARTICLE_OFFSET, PARTICLE_SPEED);
 				}
-				backItemNBT.put("backItem", backItem.save(new CompoundTag()));
-				forgeCaps.put("jaams_mechanics:back_item", backItemNBT);
-				entityNBT.put("ForgeCaps", forgeCaps);
-				entity.deserializeNBT(entityNBT);
-				sendBackItemUpdateToClient(entity);
+				BackItemCompat.setBackItem(entity, backItem);
 				counter = 0;
 			}
 		} else {
@@ -432,16 +424,6 @@ if (!tag.contains("Coated")) {
 			if (entityData != null) {
 				ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(itemEntity.getId(), entityData);
 				((ServerLevel) itemEntity.level()).getChunkSource().broadcast(itemEntity, packet);
-			}
-		}
-	}
-
-	public static void sendBackItemUpdateToClient(LivingEntity entity) {
-		if (!entity.level().isClientSide()) {
-			List<SynchedEntityData.DataValue<?>> entityData = entity.getEntityData().getNonDefaultValues();
-			if (entityData != null) {
-				ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(entity.getId(), entityData);
-				((ServerLevel) entity.level()).getChunkSource().broadcast(entity, packet);
 			}
 		}
 	}

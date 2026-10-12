@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.jaams.shinerite.init.ModBlocks;
 import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
 import net.jaams.shinerite.configuration.common.WorldGenConfig;
+import net.jaams.shinerite.util.ModUtils;
 
 import com.mojang.serialization.Codec;
 
@@ -46,7 +47,7 @@ public class NetherShineriteRootsFeature extends Feature<NoneFeatureConfiguratio
 			return false;
 		}
 		int selectedColor = NETHER_COLORS[random.nextInt(NETHER_COLORS.length)];
-		if (!placeRootWithColor(level, belowPos, selectedColor)) {
+		if (!placeRootWithColor(level, belowPos, selectedColor, random)) {
 			return false;
 		}
 		int maxLength = 3 + random.nextInt(5);
@@ -55,7 +56,7 @@ public class NetherShineriteRootsFeature extends Feature<NoneFeatureConfiguratio
 			if (!level.getBlockState(currentPos).isAir()) {
 				break;
 			}
-			if (!placeRootWithColor(level, currentPos, selectedColor)) {
+			if (!placeRootWithColor(level, currentPos, selectedColor, random)) {
 				break;
 			}
 			currentPos = currentPos.below();
@@ -63,8 +64,8 @@ public class NetherShineriteRootsFeature extends Feature<NoneFeatureConfiguratio
 		return true;
 	}
 
-	private boolean placeRootWithColor(WorldGenLevel level, BlockPos pos, int color) {
-		boolean placed = level.setBlock(pos, rootBlock, 2 | 16);
+	private boolean placeRootWithColor(WorldGenLevel level, BlockPos pos, int color, RandomSource random) {
+		boolean placed = level.setBlock(pos, rootBlock, 3);
 		if (!placed) {
 			return false;
 		}
@@ -73,7 +74,20 @@ public class NetherShineriteRootsFeature extends Feature<NoneFeatureConfiguratio
 		}
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
+			if (WorldGenConfig.NETHER_SHINERITE_ROOTS_IMBUED_CHANCE.get() > 0.0
+					&& random.nextFloat() < WorldGenConfig.NETHER_SHINERITE_ROOTS_IMBUED_CHANCE.get().floatValue()
+					&& ModUtils.applyRandomNaturalImbuement(shineriteBlockEntity, random)) {
+				shineriteBlockEntity.setChanged();
+				if (!level.isClientSide()) {
+					shineriteBlockEntity.sync();
+				}
+				return true;
+			}
 			shineriteBlockEntity.setColor(color);
+			shineriteBlockEntity.setChanged();
+			if (!level.isClientSide()) {
+				shineriteBlockEntity.sync();
+			}
 			return true;
 		} else {
 			return false;

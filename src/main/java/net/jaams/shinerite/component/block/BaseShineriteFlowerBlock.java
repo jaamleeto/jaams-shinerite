@@ -12,7 +12,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
@@ -68,6 +70,17 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 	public BaseShineriteFlowerBlock(Supplier<MobEffect> effect, int effectDuration, BlockBehaviour.Properties properties, Supplier<BlockEntityType<?>> blockEntityType) {
 		super(effect, effectDuration, properties);
 		this.blockEntityType = blockEntityType;
+	}
+
+	@Override
+	protected boolean mayPlaceOn(BlockState state, BlockGetter world, BlockPos pos) {
+		return state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND) || state.is(Blocks.NETHERRACK) || state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL)
+				|| state.is(Blocks.CRIMSON_NYLIUM) || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
+	}
+
+	@Override
+	public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+		return this.mayPlaceOn(level.getBlockState(pos.below()), level, pos);
 	}
 
 	@Override

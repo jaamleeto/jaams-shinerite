@@ -4,13 +4,18 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.tags.TagKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.StringTag;
@@ -22,13 +27,15 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ByteTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import net.jaams.shinerite.loader.ItemModifierLoader;
 import net.jaams.shinerite.data.ItemModifierData;
-import net.jaams.shinerite.condition.ConditionEvaluator;
 
 import java.util.UUID;
+import java.util.Objects;
 import java.util.Map;
 import java.util.List;
 
@@ -63,7 +70,122 @@ public class ItemModifierHandler {
     }
 
     private static boolean checkConditions(ItemStack stack, ItemModifierData data) {
-        return ConditionEvaluator.evaluateAll(data.conditions, data.condition_mode, stack);
+        if (data.conditions.isEmpty())
+            return true;
+        boolean isOrMode = "or".equalsIgnoreCase(data.condition_mode);
+        CompoundTag tag = stack.getTag();
+        for (ItemModifierData.Condition cond : data.conditions) {
+            if (cond.type == null)
+                continue;
+            boolean conditionMet = evaluateSingleCondition(stack, tag, cond);
+            if (isOrMode && conditionMet) {
+                return true;
+            }
+            if (!isOrMode && !conditionMet) {
+                return false;
+            }
+        }
+        return isOrMode ? false : true;
+    }
+
+    private static boolean evaluateSingleCondition(ItemStack stack, CompoundTag tag, ItemModifierData.Condition cond) {
+        String type = cond.type.toLowerCase().trim();
+        switch (type) {
+            case "is_damageable":
+            case "s_damageable":
+                return stack.getItem().isDamageable(stack);
+            case "is_damaged":
+                return stack.isDamaged();
+            case "is_enchanted":
+                return stack.isEnchanted();
+            case "is_enchantable":
+                return stack.isEnchantable();
+            case "is_edible":
+                return stack.getItem().isEdible();
+            case "is_stackable":
+                return stack.getMaxStackSize() > 1;
+            case "mod_loaded":
+                return cond.mod_id != null && ModList.get().isLoaded(cond.mod_id);
+            case "mod_not_loaded":
+                return cond.mod_id != null && !ModList.get().isLoaded(cond.mod_id);
+            case "mod_id":
+                if (cond.mod_id != null) {
+                    ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                    return cond.mod_id.equals(itemId.getNamespace());
+                }
+                return false;
+            case "is_item":
+                if (cond.item != null) {
+                    ResourceLocation wanted = ResourceLocation.tryParse(cond.item);
+                    ResourceLocation current = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                    return current.equals(wanted);
+                }
+                return true;
+            case "is_tagged":
+                if (cond.tag != null) {
+                    boolean negate = cond.tag.startsWith("!");
+                    String tagStr = negate ? cond.tag.substring(1) : cond.tag;
+                    if (tagStr.startsWith("#"))
+                        tagStr = tagStr.substring(1);
+                    ResourceLocation tagId = ResourceLocation.tryParse(tagStr);
+                    if (tagId != null) {
+                        boolean inTag = stack.is(TagKey.create(Registries.ITEM, tagId));
+                        return negate != inTag;
+                    }
+                }
+                return true;
+            case "is_rarity":
+                if (cond.rarity != null) {
+                    String r = cond.rarity.toLowerCase().trim();
+                    Rarity itemRarity = stack.getRarity();
+                    switch (r) {
+                        case "common":
+                            return itemRarity == Rarity.COMMON;
+                        case "uncommon":
+                            return itemRarity == Rarity.UNCOMMON;
+                        case "rare":
+                            return itemRarity == Rarity.RARE;
+                        case "epic":
+                            return itemRarity == Rarity.EPIC;
+                        default:
+                            return false;
+                    }
+                }
+                return true;
+            case "has_nbt":
+            case "has_nbt_key":
+                String k = cond.nbt_key != null ? cond.nbt_key : cond.key;
+                return k != null && tag != null && tag.contains(k);
+            case "has_int_tag":
+                return cond.nbt_key != null && tag != null && tag.contains(cond.nbt_key, Tag.TAG_INT)
+                        && tag.getInt(cond.nbt_key) == cond.nbt_int_value;
+            case "has_boolean_tag":
+                return cond.nbt_key != null && tag != null && tag.contains(cond.nbt_key, Tag.TAG_BYTE)
+                        && tag.getBoolean(cond.nbt_key) == cond.nbt_boolean_value;
+            case "has_short_nbt":
+                return cond.nbt_key != null && tag != null && tag.contains(cond.nbt_key, Tag.TAG_SHORT)
+                        && tag.getShort(cond.nbt_key) == cond.nbt_short_value;
+            case "has_long_nbt":
+                return cond.nbt_key != null && tag != null && tag.contains(cond.nbt_key, Tag.TAG_LONG)
+                        && tag.getLong(cond.nbt_key) == cond.nbt_long_value;
+            case "has_string_nbt":
+                return cond.nbt_key != null && tag != null && tag.contains(cond.nbt_key, Tag.TAG_STRING)
+                        && Objects.equals(tag.getString(cond.nbt_key), cond.nbt_string_value);
+            case "has_enchantment":
+                if (cond.enchantment != null) {
+                    ResourceLocation enchId = ResourceLocation.tryParse(cond.enchantment);
+                    if (enchId == null)
+                        return false;
+                    Enchantment ench = BuiltInRegistries.ENCHANTMENT.get(enchId);
+                    if (ench == null)
+                        return false;
+                    int currentLevel = EnchantmentHelper.getTagEnchantmentLevel(ench, stack);
+                    return cond.level <= 0 ? currentLevel >= 1 : currentLevel >= cond.level;
+                }
+                return true;
+            default:
+                return true;
+        }
     }
 
     private static void applyAttributes(ItemAttributeModifierEvent event, ItemModifierData.ModifierEntry modifierEntry) {

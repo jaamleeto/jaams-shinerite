@@ -1,8 +1,9 @@
 package net.jaams.shinerite.handler.event;
 
+import org.checkerframework.checker.units.qual.s;
+
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -17,6 +18,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.ChatFormatting;
+import net.minecraftforge.fml.ModList;
 
 import net.jaams.shinerite.util.ModUtils;
 import net.jaams.shinerite.configuration.client.TooltipsConfig;
@@ -37,15 +39,8 @@ public abstract class ItemTooltipHandler {
 	private static final String ALT_HINT = "tooltip.jaams_shinerite.alt_desc";
 	private static final String CTRL_HINT = "tooltip.jaams_shinerite.ctrl_info";
 	private static final String MOD_ID = "jaams_shinerite";
+	private static final String MOD_ID_STEM = "jaams";
 
-	/**
-	 * Snapshot of the mod's own tooltip lines taken at HIGHEST priority. Epic
-	 * Fight (and possibly other mods) runs at NORMAL priority and, when its innate
-	 * skill tooltip key (default: left shift) is held, clears the entire tooltip and
-	 * replaces it with the skill description, which would otherwise erase the mod's
-	 * traits and shift descriptions. This snapshot lets us restore those lines at
-	 * LOWEST priority, after every other mod has already processed the event.
-	 */
 	private static List<Component> capturedModTooltipLines = Collections.emptyList();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -53,12 +48,16 @@ public abstract class ItemTooltipHandler {
 		capturedModTooltipLines = new ArrayList<>();
 		for (Component line : event.getToolTip()) {
 			String key = getKey(line);
-			if (key != null && key.contains(MOD_ID)
-					&& (key.contains("trait.") || key.contains("properties")
-							|| key.contains("extra") || key.endsWith(".long_desc"))) {
+			if (key != null && isModTooltipKey(key)) {
 				capturedModTooltipLines.add(line);
 			}
 		}
+	}
+
+	private static boolean isModTooltipKey(String key) {
+		if (!isOurKey(key))
+			return false;
+		return key.contains("trait.") || key.contains("properties") || key.endsWith(".long_desc") || key.contains("extra");
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
@@ -124,118 +123,45 @@ public abstract class ItemTooltipHandler {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void onItemTooltip(ItemTooltipEvent event) {
-		List<Component> lines = event.getToolTip();
-		if (lines.isEmpty())
-			return;
-		restoreModTooltipsClearedByEpicFight(event, lines);
-		Item item = event.getItemStack().getItem();
-		ResourceLocation itemKey = ForgeRegistries.ITEMS.getKey(item);
-		filterTooltipByConfig(lines, itemKey, item);
-		filterControlTooltipByConfig(lines, itemKey, item);
-		filterAltTooltipByConfig(lines, itemKey, item);
-		applyDisabledFeatureFilters(lines);
-		removeDuplicateTraits(lines);
-		reorganizeTraitsByColor(lines);
-		boolean altDown = Screen.hasAltDown();
-		boolean ctrlDown = Screen.hasControlDown();
-		boolean shiftDown = Screen.hasShiftDown();
-		boolean altCtrl = altDown && ctrlDown;
-		TooltipContent content = detectContent(lines);
-		removeLinesByKeyState(lines, altDown, ctrlDown, shiftDown, altCtrl, content);
-		if (altCtrl) {
-			reorganizeAltCtrl(lines);
-		}
-		removeOurHints(lines);
-		TooltipVisibility visibility = detectVisibility(lines);
-		addSpacingAfterLastSpecialLine(lines);
-		addHintsOnlyIfMissing(lines, content, visibility, shiftDown);
-		addSpacingBetweenInfoCategories(event);
-		addSpacingBeforeAquaTraits(event);
-		addSpacingOnlyBetweenLongDescAndProperties(event);
-	}
-
-	/**
-	 * Epic Fight's item tooltip handler runs at NORMAL priority and, while its
-	 * "weapon innate skill tooltip" key (default: left shift) is held, calls
-	 * {@code tooltip.clear()} on weapons with a skill, wiping the whole tooltip.
-	 * This re-adds the mod's captured lines when they were removed by that logic so
-	 * the mod's traits and shift descriptions stay visible and compatible with Epic
-	 * Fight.
-	 */
-	private static void restoreModTooltipsClearedByEpicFight(ItemTooltipEvent event, List<Component> lines) {
-		if (capturedModTooltipLines.isEmpty() || !ModList.get().isLoaded("epicfight"))
-			return;
-		if (hasModTooltipContent(lines))
-			return;
-		int insertIndex = Math.min(1, lines.size());
-		lines.addAll(insertIndex, capturedModTooltipLines);
-	}
-
-	private static boolean hasModTooltipContent(List<Component> lines) {
-		for (Component line : lines) {
-			String key = getKey(line);
-			if (key != null && key.contains(MOD_ID)
-					&& (key.contains("trait.") || key.contains("properties")
-							|| key.contains("extra") || key.endsWith(".long_desc"))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static void addSpacingBetweenInfoCategories(ItemTooltipEvent event) {
+	private static void addSpacingBetweenGoldCategories(ItemTooltipEvent event) {
 		if (!Screen.hasControlDown()) {
 			return;
 		}
 		List<Component> tooltip = event.getToolTip();
-		if (tooltip.size() < 4) {
+		if (tooltip.size() < 4)
 			return;
-		}
-		boolean isPropertiesTooltip = tooltip.stream().map(ItemTooltipHandler::getKey)
-				.anyMatch(key -> key != null && (key.contains("properties") || key.contains("extra")));
+		boolean isPropertiesTooltip = tooltip.stream().map(ItemTooltipHandler::getKey).anyMatch(key -> key != null && isOurKey(key) && (key.contains("properties") || key.contains("extra")));
 		if (!isPropertiesTooltip) {
 			return;
 		}
 		List<Integer> positionsToInsertSpace = new ArrayList<>();
-		int previousCategoryIndex = -1;
-		ChatFormatting previousColor = null;
+		int previousGoldIndex = -1;
 		for (int i = 0; i < tooltip.size(); i++) {
-			String key = getKey(tooltip.get(i));
-
-			if (key == null || !key.contains(MOD_ID)
-					|| (!key.contains("properties") && !key.contains("extra")))
+			Component line = tooltip.get(i);
+			String key = getKey(line);
+			if (key == null || !isOurKey(key))
 				continue;
-			ChatFormatting currentColor = getDominantColor(tooltip.get(i));
-			if (currentColor == ChatFormatting.GOLD || currentColor == ChatFormatting.YELLOW
-					|| currentColor == ChatFormatting.RED) {
-				if (previousCategoryIndex != -1) {
-					boolean sameColor = currentColor == previousColor;
-					if (sameColor) {
-						if (hasGrayStatsBetween(tooltip, previousCategoryIndex, i)) {
-							positionsToInsertSpace.add(i);
+			ChatFormatting color = getDominantColor(line);
+			if (color == ChatFormatting.GOLD) {
+				if (previousGoldIndex >= 0 && i > previousGoldIndex + 1) {
+					boolean hasStatsInBetween = false;
+					for (int j = previousGoldIndex + 1; j < i; j++) {
+						if (getDominantColor(tooltip.get(j)) == ChatFormatting.GRAY) {
+							hasStatsInBetween = true;
+							break;
 						}
-					} else {
+					}
+					if (hasStatsInBetween) {
 						positionsToInsertSpace.add(i);
 					}
 				}
-				previousCategoryIndex = i;
-				previousColor = currentColor;
+				previousGoldIndex = i;
 			}
 		}
 		for (int i = positionsToInsertSpace.size() - 1; i >= 0; i--) {
-			insertSingleEmptyLine(tooltip, positionsToInsertSpace.get(i));
+			int pos = positionsToInsertSpace.get(i);
+			insertSingleEmptyLine(tooltip, pos);
 		}
-	}
-
-	private static boolean hasGrayStatsBetween(List<Component> tooltip, int start, int end) {
-		for (int j = start + 1; j < end; j++) {
-			if (getDominantColor(tooltip.get(j)) == ChatFormatting.GRAY) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static ChatFormatting getDominantColor(Component component) {
@@ -244,12 +170,6 @@ public abstract class ItemTooltipHandler {
 			TextColor color = style.getColor();
 			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GOLD))) {
 				return ChatFormatting.GOLD;
-			}
-			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.YELLOW))) {
-				return ChatFormatting.YELLOW;
-			}
-			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.RED))) {
-				return ChatFormatting.RED;
 			}
 			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GRAY))) {
 				return ChatFormatting.GRAY;
@@ -263,62 +183,12 @@ public abstract class ItemTooltipHandler {
 				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GOLD))) {
 					return ChatFormatting.GOLD;
 				}
-				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.YELLOW))) {
-					return ChatFormatting.YELLOW;
-				}
-				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.RED))) {
-					return ChatFormatting.RED;
-				}
 				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GRAY))) {
 					return ChatFormatting.GRAY;
 				}
 			}
 		}
 		return null;
-	}
-
-	private static void addSpacingBeforeAquaTraits(ItemTooltipEvent event) {
-		List<Component> lines = event.getToolTip();
-		if (lines.size() <= 1)
-			return;
-		int insertPosition = -1;
-		boolean foundAquaBlock = false;
-		for (int i = 0; i < lines.size(); i++) {
-			Component line = lines.get(i);
-			String key = getKey(line);
-			if (key != null && key.contains("trait.")) {
-				int traitColor = getTraitColorSmart(lines, i);
-				boolean isAqua = (traitColor == ChatFormatting.AQUA.getColor());
-				if (isAqua) {
-					foundAquaBlock = true;
-					break;
-				} else {
-					insertPosition = i + 1;
-				}
-			}
-		}
-		if (foundAquaBlock && insertPosition != -1 && insertPosition < lines.size()) {
-			insertSingleEmptyLine(lines, insertPosition);
-		}
-	}
-
-	private static int getTraitColorSmart(List<Component> lines, int currentIndex) {
-		Component currentLine = lines.get(currentIndex);
-		String currentKey = getKey(currentLine);
-		if (currentKey == null || !currentKey.contains("trait.")) {
-			return -1;
-		}
-		if (!currentKey.endsWith(".desc")) {
-			return getTraitColor(currentLine);
-		}
-		for (int j = currentIndex - 1; j >= 0; j--) {
-			Component prevLine = lines.get(j);
-			String prevKey = getKey(prevLine);
-			if (prevKey != null && prevKey.contains("trait.") && !prevKey.endsWith(".desc")) {
-				return getTraitColor(prevLine);
-			}
-		}
-		return -1;
 	}
 
 	private static void addSpacingOnlyBetweenLongDescAndProperties(ItemTooltipEvent event) {
@@ -331,6 +201,8 @@ public abstract class ItemTooltipHandler {
 			String keyCurrent = getKey(current);
 			String keyNext = getKey(next);
 			if (keyCurrent == null || keyNext == null)
+				continue;
+			if (!isOurKey(keyCurrent) && !isOurKey(keyNext))
 				continue;
 			boolean currentIsLongDesc = keyCurrent.endsWith(".long_desc");
 			boolean currentIsPropExtra = keyCurrent.contains("properties") || keyCurrent.contains("extra");
@@ -376,6 +248,56 @@ public abstract class ItemTooltipHandler {
 		if (end == -1)
 			return key.substring(start);
 		return key.substring(start, end);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onItemTooltip(ItemTooltipEvent event) {
+		List<Component> lines = event.getToolTip();
+		if (lines.isEmpty())
+			return;
+		restoreModTooltipsClearedByEpicFight(event, lines);
+		Item item = event.getItemStack().getItem();
+		ResourceLocation itemKey = ForgeRegistries.ITEMS.getKey(item);
+		filterTooltipByConfig(lines, itemKey, item);
+		filterControlTooltipByConfig(lines, itemKey, item);
+		filterAltTooltipByConfig(lines, itemKey, item);
+		applyDisabledFeatureFilters(lines);
+		removeDuplicateTraits(lines);
+		reorganizeTraitsByColor(lines);
+		boolean altDown = Screen.hasAltDown();
+		boolean ctrlDown = Screen.hasControlDown();
+		boolean shiftDown = Screen.hasShiftDown();
+		boolean altCtrl = altDown && ctrlDown;
+		TooltipContent content = detectContent(lines);
+		removeLinesByKeyState(lines, altDown, ctrlDown, shiftDown, altCtrl, content);
+		if (altCtrl) {
+			reorganizeAltCtrl(lines);
+		}
+		removeOurHints(lines);
+		TooltipVisibility visibility = detectVisibility(lines);
+		addSpacingAfterLastSpecialLine(lines);
+		addHintsOnlyIfMissing(lines, content, visibility, shiftDown);
+		addSpacingBetweenGoldCategories(event);
+		addSpacingOnlyBetweenLongDescAndProperties(event);
+	}
+
+	private static void restoreModTooltipsClearedByEpicFight(ItemTooltipEvent event, List<Component> lines) {
+		if (capturedModTooltipLines.isEmpty() || !ModList.get().isLoaded("epicfight"))
+			return;
+		if (hasModTooltipContent(lines))
+			return;
+		int insertIndex = Math.min(1, lines.size());
+		lines.addAll(insertIndex, capturedModTooltipLines);
+	}
+
+	private static boolean hasModTooltipContent(List<Component> lines) {
+		for (Component line : lines) {
+			String key = getKey(line);
+			if (key != null && isModTooltipKey(key)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void applyDisabledFeatureFilters(List<Component> lines) {
@@ -482,7 +404,7 @@ public abstract class ItemTooltipHandler {
 	private static boolean hasAnyHintOfType(List<Component> lines, String type) {
 		return lines.stream().anyMatch(line -> {
 			String key = getKey(line);
-			return key != null && type.equals(getKeySuffix(key));
+			return key != null && isOurKey(key) && type.equals(getKeySuffix(key));
 		});
 	}
 
@@ -510,17 +432,21 @@ public abstract class ItemTooltipHandler {
 		return null;
 	}
 
+	private static boolean isOurKey(String key) {
+		return key.contains(MOD_ID_STEM);
+	}
+
 	private static TooltipContent detectContent(List<Component> lines) {
 		boolean hasTrait = false, hasLongDesc = false, hasPropertiesOrExtra = false;
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key == null)
+			if (key == null || !isOurKey(key))
 				continue;
-			if (key.contains(MOD_ID) && key.contains("trait."))
+			if (key.contains("trait."))
 				hasTrait = true;
-			if (key.contains(MOD_ID) && key.endsWith(".long_desc"))
+			if (key.endsWith(".long_desc"))
 				hasLongDesc = true;
-			if (key.contains(MOD_ID) && (key.contains("properties") || key.contains("extra")))
+			if (key.contains("properties") || key.contains("extra"))
 				hasPropertiesOrExtra = true;
 		}
 		return new TooltipContent(hasTrait, hasLongDesc, hasPropertiesOrExtra);
@@ -531,7 +457,9 @@ public abstract class ItemTooltipHandler {
 		while (it.hasNext()) {
 			Component line = it.next();
 			String key = getKey(line);
-			if (key == null || !key.contains(MOD_ID))
+			if (key == null)
+				continue;
+			if (!isOurKey(key))
 				continue;
 			boolean isTrait = key.contains("trait.");
 			boolean isLongDesc = key.endsWith(".long_desc");
@@ -568,7 +496,7 @@ public abstract class ItemTooltipHandler {
 		List<Component> extras = new ArrayList<>();
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key == null)
+			if (key == null || !isOurKey(key))
 				continue;
 			if (key.endsWith(".long_desc")) {
 				longDescs.add(line);
@@ -590,13 +518,13 @@ public abstract class ItemTooltipHandler {
 		boolean visibleTrait = false, visibleLongDesc = false, visiblePropertiesOrExtra = false;
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key == null)
+			if (key == null || !isOurKey(key))
 				continue;
-			if (key.contains(MOD_ID) && key.contains("trait."))
+			if (key.contains("trait."))
 				visibleTrait = true;
-			if (key.contains(MOD_ID) && key.endsWith(".long_desc"))
+			if (key.endsWith(".long_desc"))
 				visibleLongDesc = true;
-			if (key.contains(MOD_ID) && (key.contains("properties") || key.contains("extra")))
+			if (key.contains("properties") || key.contains("extra"))
 				visiblePropertiesOrExtra = true;
 		}
 		return new TooltipVisibility(visibleTrait, visibleLongDesc, visiblePropertiesOrExtra);
@@ -615,13 +543,23 @@ public abstract class ItemTooltipHandler {
 		}
 		if (lastSpecialIndex == -1)
 			return;
-		boolean hasEmptyAfter = lastSpecialIndex + 1 < lines.size() && lines.get(lastSpecialIndex + 1).getString().isEmpty();
-		int nextNonEmptyIndex = lastSpecialIndex + 1;
-		if (hasEmptyAfter)
-			nextNonEmptyIndex++;
-		boolean nextLineIsNormal = nextNonEmptyIndex < lines.size() && (getKey(lines.get(nextNonEmptyIndex)) == null || !isSpecialKey(getKey(lines.get(nextNonEmptyIndex))));
-		if (!hasEmptyAfter && nextLineIsNormal) {
-			lines.add(lastSpecialIndex + 1, Component.literal(""));
+		int nextIndex = lastSpecialIndex + 1;
+		int blankCount = 0;
+		while (nextIndex + blankCount < lines.size() && lines.get(nextIndex + blankCount).getString().isEmpty()) {
+			blankCount++;
+		}
+		int contentAfterIndex = nextIndex + blankCount;
+		if (contentAfterIndex >= lines.size())
+			return;
+		String nextKey = getKey(lines.get(contentAfterIndex));
+		if (nextKey != null && isSpecialKey(nextKey))
+			return;
+		if (blankCount == 0) {
+			lines.add(nextIndex, Component.literal(""));
+		} else if (blankCount > 1) {
+			for (int r = 0; r < blankCount - 1; r++) {
+				lines.remove(nextIndex);
+			}
 		}
 	}
 
@@ -630,7 +568,7 @@ public abstract class ItemTooltipHandler {
 		Map<String, Component> latestTraitDescs = new LinkedHashMap<>();
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key == null)
+			if (key == null || !isOurKey(key))
 				continue;
 			if (key.contains("trait.") && !key.endsWith(".desc")) {
 				String traitName = extractTraitName(key);
@@ -648,7 +586,7 @@ public abstract class ItemTooltipHandler {
 		List<Component> toRemove = new ArrayList<>();
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key == null)
+			if (key == null || !isOurKey(key))
 				continue;
 			if (key.contains("trait.") && !key.endsWith(".desc")) {
 				String traitName = extractTraitName(key);
@@ -686,9 +624,7 @@ public abstract class ItemTooltipHandler {
 		List<Component> nonTraits = new ArrayList<>();
 		for (Component line : lines) {
 			String key = getKey(line);
-			if (key != null && key.contains(MOD_ID)
-					&& (key.contains("trait.") || key.contains("properties")
-							|| key.contains("extra") || key.endsWith(".long_desc"))) {
+			if (key != null && isOurKey(key) && key.contains("trait.")) {
 				traits.add(line);
 			} else {
 				nonTraits.add(line);
@@ -697,57 +633,56 @@ public abstract class ItemTooltipHandler {
 		if (traits.isEmpty()) {
 			return;
 		}
-		List<List<Component>> sections = new ArrayList<>();
-		List<Component> currentSection = new ArrayList<>();
-		boolean inSection = false;
+		Map<String, TraitEntry> traitMap = new LinkedHashMap<>();
 		for (Component line : traits) {
-			ChatFormatting dominantColor = getDominantColor(line);
-			boolean isGray = (dominantColor == ChatFormatting.GRAY);
-			if (!isGray) {
-				if (inSection && !currentSection.isEmpty()) {
-					sections.add(currentSection);
+			String key = getKey(line);
+			if (key == null)
+				continue;
+			if (key.endsWith(".desc")) {
+				String baseKey = key.substring(0, key.length() - ".desc".length());
+				String traitName = extractTraitName(baseKey);
+				if (traitName != null) {
+					TraitEntry entry = traitMap.computeIfAbsent(traitName, k -> new TraitEntry());
+					entry.desc = line;
 				}
-				currentSection = new ArrayList<>();
-				currentSection.add(line);
-				inSection = true;
-			} else if (inSection) {
-				currentSection.add(line);
 			} else {
-				currentSection = new ArrayList<>();
-				currentSection.add(line);
-				inSection = true;
+				String traitName = extractTraitName(key);
+				if (traitName != null) {
+					TraitEntry entry = traitMap.computeIfAbsent(traitName, k -> new TraitEntry());
+					entry.trait = line;
+				}
 			}
 		}
-		if (inSection && !currentSection.isEmpty()) {
-			sections.add(currentSection);
-		}
-
-		sections.sort((a, b) -> {
-			int colorA = getTraitColor(a.get(0));
-			int colorB = getTraitColor(b.get(0));
+		List<TraitEntry> validTraits = traitMap.values().stream().filter(e -> e.trait != null).collect(Collectors.toList());
+		validTraits.sort((a, b) -> {
+			int colorA = getTraitColor(a.trait);
+			int colorB = getTraitColor(b.trait);
 			int priorityA = getTraitPriority(colorA);
 			int priorityB = getTraitPriority(colorB);
 			return Integer.compare(priorityA, priorityB);
 		});
-
-		List<Component> orderedSpecials = new ArrayList<>();
-		for (List<Component> section : sections) {
-			orderedSpecials.addAll(section);
+		List<Component> orderedTraits = new ArrayList<>();
+		for (TraitEntry entry : validTraits) {
+			orderedTraits.add(entry.trait);
+			if (entry.desc != null) {
+				orderedTraits.add(entry.desc);
+			}
 		}
-
 		lines.clear();
 		lines.addAll(nonTraits);
 		int insertIndex = 1;
 		for (int i = 1; i < lines.size(); i++) {
 			String key = getKey(lines.get(i));
-			if (key != null && key.contains(MOD_ID)
-					&& (key.contains("trait.") || key.contains("properties")
-							|| key.contains("extra") || key.endsWith(".long_desc"))) {
+			if (key != null && isOurKey(key) && key.contains("trait.")) {
+				insertIndex = i;
+				break;
+			}
+			if (key != null && isOurKey(key) && (key.contains("properties") || key.contains("extra") || key.endsWith(".long_desc"))) {
 				insertIndex = i;
 				break;
 			}
 		}
-		lines.addAll(insertIndex, orderedSpecials);
+		lines.addAll(insertIndex, orderedTraits);
 	}
 
 	private static int getTraitPriority(int colorValue) {
@@ -782,10 +717,15 @@ public abstract class ItemTooltipHandler {
 		return -1;
 	}
 
+	private static class TraitEntry {
+		Component trait;
+		Component desc;
+	}
+
 	private static boolean isSpecialKey(String key) {
-		return key.contains(MOD_ID)
-				&& (key.contains("trait.") || key.endsWith(".long_desc")
-						|| key.contains("properties") || key.contains("extra"));
+		if (!isOurKey(key))
+			return false;
+		return key.contains("trait.") || key.endsWith(".long_desc") || key.contains("properties") || key.contains("extra");
 	}
 
 	private record TooltipContent(boolean hasTrait, boolean hasLongDesc, boolean hasPropertiesOrExtra) {

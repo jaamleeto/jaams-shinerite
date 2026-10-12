@@ -92,12 +92,23 @@ public class ModTabs {
 		return itemStack;
 	}
 
-	private static void processDataDrivenEntries(List<ItemStack> items) {
+	private static final String SHINERITE_TAB_ID = "shinerite";
+
+	private static boolean matchesShineriteTab(CreativeTabData.Entry entry) {
+		if (entry == null)
+			return false;
+		String id = entry.tab_id == null || entry.tab_id.isEmpty() ? SHINERITE_TAB_ID : entry.tab_id;
+		return SHINERITE_TAB_ID.equals(id);
+	}
+
+ 	private static void processDataDrivenEntries(List<ItemStack> items) {
 		List<CreativeTabData.Entry> entries = TabModifierLoader.INSTANCE.getAllEntries();
 		List<CreativeTabData.Entry> toRemove = new ArrayList<>();
 		List<CreativeTabData.Entry> toAdd = new ArrayList<>();
 		boolean cleared = false;
 		for (CreativeTabData.Entry entry : entries) {
+			if (!matchesShineriteTab(entry))
+				continue;
 			if (!TabModifierLoader.INSTANCE.evaluateConditions(entry))
 				continue;
 			if (entry.clear_defaults) {
@@ -107,6 +118,8 @@ public class ModTabs {
 			}
 		}
 		for (CreativeTabData.Entry entry : entries) {
+			if (!matchesShineriteTab(entry))
+				continue;
 			if (!TabModifierLoader.INSTANCE.evaluateConditions(entry))
 				continue;
 			if (entry.clear_defaults)

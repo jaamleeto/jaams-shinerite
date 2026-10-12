@@ -1,0 +1,12 @@
+{
+  "type": "jaams_shinerite:shinerite_trim",
+  "template": {
+    "tag": "minecraft:trim_templates"
+  },
+  "base": {
+    "tag": "minecraft:trimmable_armor"
+  },
+  "addition": {
+    "item": "jaams_shinerite:shinerite_ingot"
+  }
+}

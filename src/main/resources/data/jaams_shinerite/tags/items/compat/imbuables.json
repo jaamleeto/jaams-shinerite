@@ -20,6 +20,10 @@
     {
       "id": "#jaams_shinerite:shinerite/shinerite_materials",
       "required": false
+    },
+    {
+      "id": "#jaams_shinerite:shinerite/shinerite_music_discs",
+      "required": false
     }
   ]
 }
