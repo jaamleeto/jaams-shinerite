@@ -1,0 +1,81 @@
+{
+  "entity": [
+    "minecraft:zombie",
+    "minecraft:skeleton"
+  ],
+  "enabled": true,
+  "priority": 2,
+  "condition_mode": "and",
+  "global_chance": 0.03,
+  "conditions": [],
+  "items": [
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.35,
+      "replace_existing": false,
+      "nbt": {
+        "ImbuedColor": 6053067,
+        "ImbuedUses": 3,
+        "MaxImbuedUses": 3,
+        "ImbuedEffects": [
+          {
+            "id": "minecraft:poison",
+            "Duration": 200,
+            "Amplifier": 1,
+            "Ambient": false,
+            "Visible": true,
+            "ShowIcon": true
+          },
+          {
+            "id": "minecraft:wither",
+            "Duration": 160,
+            "Amplifier": 0,
+            "Ambient": false,
+            "Visible": true,
+            "ShowIcon": true
+          }
+        ]
+      }
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.22,
+      "replace_existing": false,
+      "nbt": {
+        "ImbuedColor": 6053067,
+        "ImbuedUses": 3,
+        "MaxImbuedUses": 3,
+        "ImbuedEffects": [
+          {
+            "id": "minecraft:poison",
+            "Duration": 240,
+            "Amplifier": 1,
+            "Ambient": false,
+            "Visible": true,
+            "ShowIcon": true
+          },
+          {
+            "id": "minecraft:slowness",
+            "Duration": 200,
+            "Amplifier": 1,
+            "Ambient": false,
+            "Visible": true,
+            "ShowIcon": true
+          },
+          {
+            "id": "minecraft:mining_fatigue",
+            "Duration": 200,
+            "Amplifier": 0,
+            "Ambient": false,
+            "Visible": true,
+            "ShowIcon": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -32,27 +32,23 @@ import net.jaams.shinerite.particle.CustomFireworkParticleData;
 import net.jaams.shinerite.particle.CustomCritParticleData;
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.init.ModEnchantments;
+import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.capability.glowingcolor.GlowingColorProvider;
 import net.jaams.shinerite.JaamsShineriteMod;
 
 public class ShineriteAttackHandler {
-	public static final int GLOW_DURATION_PER_LEVEL = 80;
-	public static final float LIGHTSTEAL_HEAL_AMOUNT = 0.5f;
-	public static final float LIGHTSTEAL_CHANCE_PER_LEVEL = 0.2f;
 	public static final double BURST_RADIUS = 0.5;
 	public static final float EFFECT_DECAY_EXPONENT = 0.5f;
-	private static final int STOLEN_GLOW_BASE_DURATION = 60;
-	private static final int STOLEN_GLOW_DURATION_PER_SUCCESS = 40;
 
 	public static void applyLightsteal(ItemStack itemStack, LivingEntity target, LivingEntity attacker, Level world) {
 		int lightstealLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.LIGHTSTEAL.get(), itemStack);
-		if (lightstealLevel <= 0)
+		if (lightstealLevel <= 0 || !EnchantmentsConfig.LIGHTSTEAL.get())
 			return;
-		float baseChance = LIGHTSTEAL_CHANCE_PER_LEVEL;
-		float chance = Math.min(0.95f, baseChance * lightstealLevel);
-		float baseHeal = LIGHTSTEAL_HEAL_AMOUNT;
-		float healPerLevel = 0.4f;
+		float baseChance = EnchantmentsConfig.LIGHTSTEAL_CHANCE_PER_LEVEL.get().floatValue();
+		float chance = Math.min(EnchantmentsConfig.LIGHTSTEAL_MAX_CHANCE.get().floatValue(), baseChance * lightstealLevel);
+		float baseHeal = EnchantmentsConfig.LIGHTSTEAL_HEAL_AMOUNT.get().floatValue();
+		float healPerLevel = EnchantmentsConfig.LIGHTSTEAL_HEAL_PER_LEVEL.get().floatValue();
 		float totalHealAmount = baseHeal + (healPerLevel * (lightstealLevel - 1));
 		int successes = 0;
 		for (int i = 0; i < lightstealLevel; i++) {
@@ -75,7 +71,7 @@ public class ShineriteAttackHandler {
 					double offsetScale = 0.4 + (finalLightstealLevel * 0.05);
 					double speedScale = 0.3 + (finalLightstealLevel * 0.05);
 					spawnHeartParticles(serverLevel, target, stolenColor, particleCount, offsetScale, speedScale, finalLightstealLevel);
-					int stolenGlowDuration = STOLEN_GLOW_BASE_DURATION + (finalSuccesses * STOLEN_GLOW_DURATION_PER_SUCCESS);
+					int stolenGlowDuration = EnchantmentsConfig.LIGHTSTEAL_STOLEN_GLOW_BASE_DURATION.get() + (finalSuccesses * EnchantmentsConfig.LIGHTSTEAL_STOLEN_GLOW_DURATION_PER_SUCCESS.get());
 					attacker.getCapability(GlowingColorProvider.GLOWING_COLOR).ifPresent(attackerGlow -> {
 						attackerGlow.setColor(stolenColor);
 						attacker.addEffect(new MobEffectInstance(MobEffects.GLOWING, stolenGlowDuration, 0, false, false, true));
@@ -191,7 +187,7 @@ public class ShineriteAttackHandler {
 	public static void applyGlowEffect(LivingEntity target, Level world, int color, int enchantmentLevel) {
 		target.getCapability(GlowingColorProvider.GLOWING_COLOR).ifPresent(glowingColor -> {
 			glowingColor.setColor(color);
-			target.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_DURATION_PER_LEVEL * enchantmentLevel, 0, false, false, true));
+			target.addEffect(new MobEffectInstance(MobEffects.GLOWING, EnchantmentsConfig.LIGHTBRINGER_DURATION_PER_LEVEL.get() * enchantmentLevel, 0, false, false, true));
 			if (world instanceof ServerLevel serverLevel) {
 				JaamsShineriteMod.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> target), new GlowColorPacket(target.getId(), color));
 				float r = ((color >> 16) & 255) / 255.0F;

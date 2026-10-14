@@ -42,7 +42,7 @@ public abstract class ShineriteArmorItem extends ArmorItem implements IDyeableIt
 
 			@Override
 			public SoundEvent getEquipSound() {
-				return ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("item.armor.equip_gold"));
+				return ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse("item.armor.equip_gold"));
 			}
 
 			@Override

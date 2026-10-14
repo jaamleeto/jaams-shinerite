@@ -24,8 +24,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
+import net.jaams.shinerite.configuration.common.InteractionsConfig;
 import net.jaams.shinerite.particle.CustomEffectParticleData;
 import net.jaams.shinerite.util.ModUtils;
 
@@ -250,6 +253,52 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		applyImbuedEffectsTo(target);
 		consumeAppliedImbuement(this.level, worldPosition);
 		return true;
+	}
+
+	/**
+	 * Hands the stored effects over to the player that broke this block. Shared by every Shinerite
+	 * block type (solid blocks, flowers, roots, potted plants) so the behavior is identical everywhere.
+	 *
+	 * <p>Duration is scaled by {@link MechanicsConfig#IMBUED_BLOCK_BREAK_DURATION_FACTOR} so breaking is
+	 * deliberately weaker than the sneak right-click transfer ({@link #registerDirectContact}), which
+	 * always uses the full stored duration. Mining has no skill component, so it should not be the best
+	 * way to get a buff.
+	 */
+	public void transferImbuementToBreaker(Level level, BlockPos pos, Player player) {
+		if (level.isClientSide || !isImbued()) {
+			return;
+		}
+		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.BLOCK_BREAK_TRANSFER_IMBUEMENT.get()) {
+			return;
+		}
+		if (ModUtils.hasRestrictedEffect(player)) {
+			return;
+		}
+		ListTag effects = getImbuedEffects();
+		if (effects == null || effects.isEmpty()) {
+			return;
+		}
+		float factor = MechanicsConfig.IMBUED_BLOCK_BREAK_DURATION_FACTOR.get().floatValue();
+		int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
+		for (int i = 0; i < effects.size(); i++) {
+			CompoundTag effectData = effects.getCompound(i);
+			MobEffectInstance savedEffect = MobEffectInstance.load(effectData);
+			if (savedEffect == null) {
+				continue;
+			}
+			MobEffect effect = savedEffect.getEffect();
+			if (effect.isInstantenous()) {
+				effect.applyInstantenousEffect(null, null, player, savedEffect.getAmplifier(), 1.0D);
+				continue;
+			}
+			int duration = Math.max(minTicks, (int) (savedEffect.getDuration() * factor));
+			player.addEffect(new MobEffectInstance(effect, duration, savedEffect.getAmplifier(), savedEffect.isAmbient(),
+					savedEffect.isVisible(), savedEffect.showIcon()));
+		}
+		if (level instanceof ServerLevel serverLevel && getImbuedColor() != -1) {
+			ModUtils.generateImbuedBurstParticles(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+					getImbuedColor(), 30);
+		}
 	}
 
 	private boolean isEligibleTarget(net.minecraft.world.entity.LivingEntity target) {

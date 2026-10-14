@@ -40,7 +40,7 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		if (random.nextFloat() > WorldGenConfig.SHINERITIA_FLOWER_PATCH_CHANCE.get().floatValue()) {
 			return false;
 		}
-		BlockPos groundPos = findValidGround(level, pos);
+		BlockPos groundPos = findValidGround(level, pos, WorldGenConfig.SHINERITIA_FLOWER_SEARCH_DEPTH.get());
 		if (groundPos == null) {
 			return false;
 		}
@@ -48,8 +48,8 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		if (!placeFlowerWithRandomColor(level, basePos, random)) {
 			return false;
 		}
-		int flowerCount = 1 + random.nextInt(4);
-		int radius = 1 + random.nextInt(2);
+		int flowerCount = WorldGenConfig.rollInt(random, WorldGenConfig.SHINERITIA_FLOWER_MIN_EXTRA, WorldGenConfig.SHINERITIA_FLOWER_MAX_EXTRA);
+		int radius = WorldGenConfig.rollInt(random, WorldGenConfig.SHINERITIA_FLOWER_MIN_RADIUS, WorldGenConfig.SHINERITIA_FLOWER_MAX_RADIUS);
 		for (int i = 0; i < flowerCount; i++) {
 			int x = random.nextInt(radius * 2 + 1) - radius;
 			int z = random.nextInt(radius * 2 + 1) - radius;
@@ -65,9 +65,9 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		return true;
 	}
 
-	private BlockPos findValidGround(WorldGenLevel level, BlockPos pos) {
+	private BlockPos findValidGround(WorldGenLevel level, BlockPos pos, int searchDepth) {
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < searchDepth; i++) {
 			BlockPos flowerPos = mutable.above();
 			if (level.getBlockState(flowerPos).isAir() && flowerBlock.canSurvive(level, flowerPos)) {
 				return mutable.immutable();

@@ -1,0 +1,48 @@
+{
+  "entity": [
+    "minecraft:piglin_brute"
+  ],
+  "enabled": true,
+  "priority": 5,
+  "condition_mode": "and",
+  "global_chance": 0.07,
+  "conditions": [],
+  "items": [
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.4,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "#FFFF00",
+        "#FFE135",
+        "#FFD700",
+        "#FFD966",
+        "#F0C808",
+        "#E0A800",
+        "#C9A227",
+        "#B8860B"
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_chestplate",
+      "slot": "chest",
+      "count": 1,
+      "chance": 0.08,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "#FFFF00",
+        "#FFE135",
+        "#FFD700",
+        "#FFD966",
+        "#F0C808",
+        "#E0A800",
+        "#C9A227",
+        "#B8860B"
+      ]
+    }
+  ]
+}

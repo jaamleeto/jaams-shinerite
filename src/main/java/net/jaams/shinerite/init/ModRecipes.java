@@ -42,15 +42,15 @@ public class ModRecipes {
 	private static final String MODID = "jaams_shinerite";
 	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
-	public static final RegistryObject<RecipeType<CopyNBTShapedRecipe>> COPY_NBT_SHAPED_TYPE = RECIPE_TYPES.register("copy_nbt_shaped", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_shaped")));
+	public static final RegistryObject<RecipeType<CopyNBTShapedRecipe>> COPY_NBT_SHAPED_TYPE = RECIPE_TYPES.register("copy_nbt_shaped", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_shaped")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTShapedRecipe>> COPY_NBT_SHAPED_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_shaped", CopyNBTShapedRecipeSerializer::new);
-	public static final RegistryObject<RecipeType<CopyNBTShapelessRecipe>> COPY_NBT_SHAPELESS_TYPE = RECIPE_TYPES.register("copy_nbt_shapeless", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_shapeless")));
+	public static final RegistryObject<RecipeType<CopyNBTShapelessRecipe>> COPY_NBT_SHAPELESS_TYPE = RECIPE_TYPES.register("copy_nbt_shapeless", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_shapeless")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTShapelessRecipe>> COPY_NBT_SHAPELESS_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_shapeless", CopyNBTShapelessRecipeSerializer::new);
-	public static final RegistryObject<RecipeType<CopyNBTSmeltingRecipe>> COPY_NBT_SMELTING_TYPE = RECIPE_TYPES.register("copy_nbt_smelting", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_smelting")));
+	public static final RegistryObject<RecipeType<CopyNBTSmeltingRecipe>> COPY_NBT_SMELTING_TYPE = RECIPE_TYPES.register("copy_nbt_smelting", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_smelting")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTSmeltingRecipe>> COPY_NBT_SMELTING_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_smelting", CopyNBTSmeltingRecipeSerializer::new);
-	public static final RegistryObject<RecipeType<CopyNBTBlastingRecipe>> COPY_NBT_BLASTING_TYPE = RECIPE_TYPES.register("copy_nbt_blasting", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_blasting")));
+	public static final RegistryObject<RecipeType<CopyNBTBlastingRecipe>> COPY_NBT_BLASTING_TYPE = RECIPE_TYPES.register("copy_nbt_blasting", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_blasting")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTBlastingRecipe>> COPY_NBT_BLASTING_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_blasting", CopyNBTBlastingRecipeSerializer::new);
-	public static final RegistryObject<RecipeType<CopyNBTStonecutterRecipe>> COPY_NBT_STONECUTTER_TYPE = RECIPE_TYPES.register("copy_nbt_stonecutting", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_stonecutting")));
+	public static final RegistryObject<RecipeType<CopyNBTStonecutterRecipe>> COPY_NBT_STONECUTTER_TYPE = RECIPE_TYPES.register("copy_nbt_stonecutting", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_stonecutting")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTStonecutterRecipe>> COPY_NBT_STONECUTTER_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_stonecutting", CopyNBTStonecutterRecipeSerializer::new);
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<DyeItemRecipe>> DYEABLE_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_dyeable_item", () -> new SimpleCraftingRecipeSerializer<>(DyeItemRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<CoatItemRecipe>> COAT_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_coat_item", () -> new SimpleCraftingRecipeSerializer<>(CoatItemRecipe::new));
@@ -61,9 +61,9 @@ public class ModRecipes {
 			() -> new SimpleCraftingRecipeSerializer<>(ShinyPaintBrushRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<ShinyScraperRecipe>> SHINY_SCRAPER_SERIALIZER = RECIPE_SERIALIZERS.register("custom_scraper_item", () -> new SimpleCraftingRecipeSerializer<>(ShinyScraperRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<WaterBottleRecipe>> WATER_BOTTLE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("custom_water_bottle_item", () -> new SimpleCraftingRecipeSerializer<>(WaterBottleRecipe::new));
-	public static final RegistryObject<RecipeType<ShineriteStewRecipe>> SHINERITE_STEW_TYPE = RECIPE_TYPES.register("shinerite_stew", () -> RecipeType.simple(new ResourceLocation(MODID, "shinerite_stew")));
+	public static final RegistryObject<RecipeType<ShineriteStewRecipe>> SHINERITE_STEW_TYPE = RECIPE_TYPES.register("shinerite_stew", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "shinerite_stew")));
 	public static final RegistryObject<RecipeSerializer<ShineriteStewRecipe>> SHINERITE_STEW_SERIALIZER = RECIPE_SERIALIZERS.register("shinerite_stew", ShineriteStewRecipeSerializer::new);
-	public static final RegistryObject<RecipeType<CopyNBTSmithingRecipe>> COPY_NBT_SMITHING_TYPE = RECIPE_TYPES.register("copy_nbt_smithing", () -> RecipeType.simple(new ResourceLocation(MODID, "copy_nbt_smithing")));
+	public static final RegistryObject<RecipeType<CopyNBTSmithingRecipe>> COPY_NBT_SMITHING_TYPE = RECIPE_TYPES.register("copy_nbt_smithing", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_smithing")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTSmithingRecipe>> COPY_NBT_SMITHING_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_smithing", CopyNBTSmithingRecipeSerializer::new);
 	public static final RegistryObject<RecipeSerializer<ShineriteTrimSmithingRecipe>> SHINERITE_TRIM_SERIALIZER = RECIPE_SERIALIZERS.register("shinerite_trim", ShineriteTrimSmithingRecipeSerializer::new);
 

@@ -18,6 +18,16 @@ public class MobBehaviorConfig {
 	public static ForgeConfigSpec.DoubleValue THROWABLE_MOB_BEHAVIOR_INACCURACY_MULTIPLIER;
 	public static ForgeConfigSpec.BooleanValue THROWABLE_MOBS_THROW;
 
+	public static ForgeConfigSpec.BooleanValue MOB_TOOL_BEHAVIOR;
+	public static ForgeConfigSpec.BooleanValue MOB_TOOL_BRUSH_DYEING;
+	public static ForgeConfigSpec.BooleanValue MOB_TOOL_SCRAPER_SCRAPING;
+	public static ForgeConfigSpec.BooleanValue MOB_TOOL_CONSUME_DURABILITY;
+	public static ForgeConfigSpec.DoubleValue MOB_TOOL_SEARCH_RADIUS;
+	public static ForgeConfigSpec.IntValue MOB_TOOL_COOLDOWN_TICKS;
+	public static ForgeConfigSpec.IntValue MOB_TOOL_SCAN_INTERVAL;
+	public static ForgeConfigSpec.DoubleValue MOB_TOOL_INTERACT_DISTANCE;
+	public static ForgeConfigSpec.DoubleValue MOB_TOOL_APPROACH_SPEED;
+
 	public static void register(ForgeConfigSpec.Builder builder) {
 		builder.push("Mob Behaviors Handler");
 
@@ -70,6 +80,27 @@ public class MobBehaviorConfig {
 				.defineInRange("Throwable Inaccuracy Multiplier", 1.0, 0.0, 10.0);
 		THROWABLE_MOBS_THROW = builder.comment("Allow mobs to throw throwable items when equipped")
 				.define("Mobs Throw Throwables", true);
+		builder.pop();
+
+		builder.push("Mob Shiny Tool Behavior");
+		MOB_TOOL_BEHAVIOR = builder.comment("Master switch: mobs holding a Shiny Paint Brush or a Shiny Scraper use it on nearby Shinerite blocks, the brush dyes them and the scraper strips colors and imbuements")
+				.define("Mob Tool Behavior", true);
+		MOB_TOOL_BRUSH_DYEING = builder.comment("Let mobs dye nearby Shinerite blocks with a colored Shiny Paint Brush")
+				.define("Paint Brush Dyeing", true);
+		MOB_TOOL_SCRAPER_SCRAPING = builder.comment("Let mobs strip colors and imbuements from nearby Shinerite blocks with a Shiny Scraper")
+				.define("Scraper Scraping", true);
+		MOB_TOOL_CONSUME_DURABILITY = builder.comment("Mobs damage the tool they use by 1 durability per action")
+				.define("Consume Durability", false);
+		MOB_TOOL_SEARCH_RADIUS = builder.comment("Radius (in blocks) around the mob where it looks for Shinerite blocks")
+				.defineInRange("Search Radius", 3.0, 1.0, 8.0);
+		MOB_TOOL_COOLDOWN_TICKS = builder.comment("Ticks between two mob tool actions (20 ticks = 1 second)")
+				.defineInRange("Cooldown Ticks", 80, 1, 1200);
+		MOB_TOOL_SCAN_INTERVAL = builder.comment("Ticks between two searches for a target block when no action happened")
+				.defineInRange("Scan Interval Ticks", 20, 1, 200);
+		MOB_TOOL_INTERACT_DISTANCE = builder.comment("How close (in blocks) the mob must be to the block to actually use the tool on it. While further away the mob walks towards the block instead of using it")
+				.defineInRange("Interact Distance", 2.0, 1.0, 5.0);
+		MOB_TOOL_APPROACH_SPEED = builder.comment("Pathfinding speed modifier used while the mob walks towards its target block")
+				.defineInRange("Approach Speed", 1.0, 0.1, 3.0);
 		builder.pop();
 
 		builder.pop();

@@ -145,7 +145,7 @@ public class ShinemerangProjectileEntity extends BaseReturningProjectileEntity {
 
 	private SoundEvent getSound(String genericId, String specificId, SoundEvent fallback) {
 		String soundId = useGenericProjectileSounds() ? genericId : specificId;
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("jaams_shinerite:" + soundId));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse("jaams_shinerite:" + soundId));
 		return sound != null ? sound : fallback;
 	}
 
@@ -217,11 +217,29 @@ public class ShinemerangProjectileEntity extends BaseReturningProjectileEntity {
 	public void tick() {
 		super.tick();
 		spawnTrailParticles();
-		if (!this.level().isClientSide && !this.inGround && !this.isNoPhysics()) {
-			if (this.tickCount % 6 == 0) {
-				ModUtils.playSound(this, "jaams_shinerite:thin_swoosh_air", SoundSource.AMBIENT, 0.3F, 1.0F);
+		if (!this.level().isClientSide && !this.inGround && !this.isNoPhysics() && getSwooshSoundEnabled()) {
+			if (this.tickCount % getSwooshInterval() == 0) {
+				float pitch = 1.0F + this.random.nextFloat() * 0.25F;
+				ModUtils.playSound(this, "jaams_shinerite:swoosh_air", SoundSource.AMBIENT, 0.3F, pitch);
 			}
 		}
+	}
+
+	private int getSwooshInterval() {
+		ItemStack weapon = this.getWeaponItem();
+		if (weapon.hasTag() && weapon.getTag().contains("ProjectileSwooshInterval")) {
+			return Math.max(1, weapon.getTag().getInt("ProjectileSwooshInterval"));
+		}
+		int interval = ProjectileCommonConfig.SHINEMERANG_PROJECTILE_SWOOSH_INTERVAL.get();
+		return Math.max(1, interval);
+	}
+
+	private boolean getSwooshSoundEnabled() {
+		ItemStack weapon = this.getWeaponItem();
+		if (weapon.hasTag() && weapon.getTag().contains("ProjectileSwoosh")) {
+			return weapon.getTag().getBoolean("ProjectileSwoosh");
+		}
+		return ProjectileCommonConfig.SHINEMERANG_PROJECTILE_SWOOSH_SOUND.get();
 	}
 
 	@Override

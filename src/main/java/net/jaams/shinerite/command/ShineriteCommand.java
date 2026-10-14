@@ -46,7 +46,7 @@ public class ShineriteCommand {
 	private static final int MAX_AMPLIFIER = 255;
 	private static final int MIN_USES = 1;
 	private static final int MAX_USES = 9999;
-	private static final String[] SUPPORTED_COLORS = {"red", "green", "blue", "white", "black", "yellow", "purple", "cyan", "orange", "pink", "lime", "magenta", "gray", "light_gray", "brown", "gold", "aqua", "violet", "indigo", "teal"};
+	private static final String[] SUPPORTED_COLORS = ModUtils.SUPPORTED_COLOR_NAMES;
 
 	private static String getModVersion() {
 		try {
@@ -211,42 +211,12 @@ public class ShineriteCommand {
 			if (full.contains(remaining) || name.contains(remaining))
 				matches.add(id.toString());
 		}
-		matches.sort(Comparator.comparingInt((String s) -> s.equalsIgnoreCase(remaining) ? -1 : 0).thenComparing(s -> new ResourceLocation(s).getPath()));
+		matches.sort(Comparator.comparingInt((String s) -> s.equalsIgnoreCase(remaining) ? -1 : 0).thenComparing(s -> ResourceLocation.parse(s).getPath()));
 		matches.forEach(builder::suggest);
 		return builder.buildFuture();
 	}
 
 	private static int parseColor(String input) {
-		String s = input.toLowerCase().trim();
-		if (s.startsWith("#") || s.startsWith("0x")) {
-			String hex = s.replaceFirst("^(#|0x)", "");
-			if (hex.length() == 6 && hex.matches("[0-9a-fA-F]{6}")) {
-				return Integer.parseUnsignedInt(hex, 16) & 0xFFFFFF;
-			}
-			throw new IllegalArgumentException();
-		}
-		return switch (s) {
-			case "red" -> 0xFF0000;
-			case "green" -> 0x00FF00;
-			case "blue" -> 0x0000FF;
-			case "white" -> 0xFFFFFF;
-			case "black" -> 0x000000;
-			case "yellow" -> 0xFFFF00;
-			case "purple" -> 0x800080;
-			case "cyan" -> 0x00FFFF;
-			case "orange" -> 0xFFA500;
-			case "pink" -> 0xFFC1CC;
-			case "lime" -> 0x32CD32;
-			case "magenta" -> 0xFF00FF;
-			case "gray" -> 0x808080;
-			case "light_gray" -> 0xD3D3D3;
-			case "brown" -> 0x8B4513;
-			case "gold" -> 0xFFD700;
-			case "aqua" -> 0x00CED1;
-			case "violet" -> 0xEE82EE;
-			case "indigo" -> 0x4B0082;
-			case "teal" -> 0x008080;
-			default -> throw new IllegalArgumentException();
-		};
+		return ModUtils.parseColor(input);
 	}
 }

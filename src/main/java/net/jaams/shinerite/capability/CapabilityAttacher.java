@@ -10,7 +10,7 @@ import net.jaams.shinerite.capability.glowingcolor.GlowingColorProvider;
 
 @Mod.EventBusSubscriber(modid = "jaams_shinerite", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CapabilityAttacher {
-	public static final ResourceLocation GLOWING_COLOR_CAP = new ResourceLocation("jaams_shinerite", "glowing_color");
+	public static final ResourceLocation GLOWING_COLOR_CAP = ResourceLocation.fromNamespaceAndPath("jaams_shinerite", "glowing_color");
 
 	@SubscribeEvent
 	public static void onAttachCapabilities(AttachCapabilitiesEvent<net.minecraft.world.entity.Entity> event) {

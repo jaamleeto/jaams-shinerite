@@ -9,14 +9,14 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue HAND_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue BLOCK_INTERACTIONS;
-	// Projectile impact - Washing 
+	// Projectile impact - Washing
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_LIVING_ENTITIES;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_BACK_ITEM;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_DROPPED_ITEMS;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_PROJECTILES;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_BLOCKS;
-	// Projectile impact - Imbuing 
+	// Projectile impact - Imbuing
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_DROPPED_ITEMS;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_PROJECTILES;
@@ -47,7 +47,7 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_WASHING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_IMBUING;
-	// Block interactions 
+	// Block interactions
 	public static ForgeConfigSpec.BooleanValue BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_LIGHTENING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_DARKENING;
@@ -55,6 +55,7 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_WASHING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_IMBUING;
+	public static ForgeConfigSpec.BooleanValue BLOCK_BREAK_TRANSFER_IMBUEMENT;
 	// Armor interactions
 	public static ForgeConfigSpec.BooleanValue ARMOR_IMBUING;
 
@@ -140,6 +141,9 @@ public class InteractionsConfig {
 		BLOCK_WASHING = builder.define("Washing", true);
 		BLOCK_IMBUING = builder.define("Imbuing", true);
 		builder.pop();
+		builder.pop();
+		builder.push("Break Interactions");
+		BLOCK_BREAK_TRANSFER_IMBUEMENT = builder.comment("When a player breaks an imbued Shinerite block, transfer its imbued effects to that player").define("Break Transfer Imbuement", true);
 		builder.pop();
 		builder.push("Armor Interactions");
 		ARMOR_IMBUING = builder.comment("Allow armor to be imbued via hand interaction or anvil").define("Armor Imbuing", true);

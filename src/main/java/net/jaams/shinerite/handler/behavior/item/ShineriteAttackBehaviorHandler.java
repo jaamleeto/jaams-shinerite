@@ -18,6 +18,7 @@ import net.jaams.shinerite.util.ModTags;
 import net.jaams.shinerite.init.ModEnchantments;
 import net.jaams.shinerite.handler.mechanic.ShineriteAttackHandler;
 import net.jaams.shinerite.handler.mechanic.InteractionHandler;
+import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 
 @Mod.EventBusSubscriber
 public class ShineriteAttackBehaviorHandler {
@@ -43,7 +44,7 @@ public class ShineriteAttackBehaviorHandler {
 			float pitch = 0.9f + level.random.nextFloat() * 0.4f;
 			ModUtils.playSound(livingTarget, "jaams_shinerite:shinerite_tool_hit", SoundSource.HOSTILE, 1.0F, pitch);
 		}
-		int lightbringerLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.LIGHTBRINGER.get(), stack);
+		int lightbringerLevel = EnchantmentsConfig.LIGHTBRINGER.get() ? EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.LIGHTBRINGER.get(), stack) : 0;
 		int color = ModUtils.getCurrentColor(stack);
 		if (lightbringerLevel > 0) {
 			int glowColor = (color != InteractionHandler.DEFAULT_COLOR) ? color : 0xFFFFFF;
@@ -55,7 +56,7 @@ public class ShineriteAttackBehaviorHandler {
 			ShineriteAttackHandler.handleImbuedEffect(stack, livingTarget, livingAttacker, level);
 		}
 		if (livingTarget.hasEffect(MobEffects.GLOWING)) {
-			int lightstealLevel = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.LIGHTSTEAL.get(), stack);
+			int lightstealLevel = EnchantmentsConfig.LIGHTSTEAL.get() ? EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.LIGHTSTEAL.get(), stack) : 0;
 			if (lightstealLevel > 0) {
 				ShineriteAttackHandler.applyLightsteal(stack, livingTarget, livingAttacker, level);
 			}

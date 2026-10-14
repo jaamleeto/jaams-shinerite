@@ -26,6 +26,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.AgeableMob;
@@ -37,6 +38,7 @@ import net.jaams.shinerite.data.EquipmentData;
 import net.jaams.shinerite.data.EquipmentData.ItemEntry;
 import net.jaams.shinerite.JaamsShineriteMod;
 import net.jaams.shinerite.data.EquipmentData.EquipEntry;
+import net.jaams.shinerite.util.ModUtils;
 import java.util.Map;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -145,12 +148,43 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
 
     public java.util.Optional<ItemStack> resolveItem(ItemEntry entry) {
         if (entry == null || entry.item == null || entry.item.isEmpty()) return java.util.Optional.empty();
-        return resolveItem(entry.item, entry.enchantments, entry.random_enchantments, entry.nbt, entry.count);
+        java.util.Optional<ItemStack> stack = resolveItem(entry.item, entry.enchantments, entry.random_enchantments, entry.nbt, entry.count);
+        stack.ifPresent(s -> applyRandomColor(s, entry.random_color, entry.random_colors));
+        return stack;
     }
 
     public java.util.Optional<ItemStack> resolveEquipItem(EquipEntry entry) {
         if (entry == null || entry.item == null || entry.item.isEmpty()) return java.util.Optional.empty();
-        return resolveItem(entry.item, entry.enchantments, entry.random_enchantments, entry.nbt, entry.count);
+        java.util.Optional<ItemStack> stack = resolveItem(entry.item, entry.enchantments, entry.random_enchantments, entry.nbt, entry.count);
+        stack.ifPresent(s -> applyRandomColor(s, entry.random_color, entry.random_colors));
+        return stack;
+    }
+
+    /**
+     * Dyes the stack with a random color from the mod palette. Applied after the {@code nbt} block so a
+     * random color always wins over a hardcoded one. Only items that support the mod's dye storage are
+     * touched, so this is a no-op for plain vanilla gear.
+     */
+    private void applyRandomColor(ItemStack stack, boolean randomColor, List<String> pool) {
+        if (!randomColor) return;
+        if (!(stack.getItem() instanceof net.jaams.shinerite.dyeable.IDyeableItem dyeable)) return;
+        int color;
+        if (pool != null && !pool.isEmpty()) {
+            List<Integer> resolved = new ArrayList<>();
+            for (String name : pool) {
+                if (name == null) continue;
+                try {
+                    resolved.add(ModUtils.parseColor(name));
+                } catch (IllegalArgumentException ignored) {
+                    // Unknown color name, silently skip it rather than failing the whole modifier.
+                }
+            }
+            if (resolved.isEmpty()) return;
+            color = resolved.get(net.minecraft.util.RandomSource.create().nextInt(resolved.size()));
+        } else {
+            color = ModUtils.randomSupportedColor(net.minecraft.util.RandomSource.create());
+        }
+        ModUtils.applyDyeColor(stack, color);
     }
 
     private java.util.Optional<ItemStack> resolveItem(String itemPattern, Map<String, Integer> enchantments,
@@ -212,31 +246,70 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
         stack.setTag(tag);
     }
 
-    private net.minecraft.nbt.Tag convertToTag(Object value) {
-        if (value instanceof Number num) {
-            double d = num.doubleValue();
-            if (d == Math.floor(d) && d >= Integer.MIN_VALUE && d <= Integer.MAX_VALUE) return IntTag.valueOf(num.intValue());
-            return DoubleTag.valueOf(d);
-        } else if (value instanceof Boolean bool) {
-            return ByteTag.valueOf(bool ? (byte) 1 : (byte) 0);
-        } else if (value instanceof String str) {
-            return StringTag.valueOf(str);
-        } else if (value instanceof JsonObject obj) {
-            CompoundTag c = new CompoundTag();
-            for (var e : obj.entrySet()) {
-                if (e.getValue().isJsonPrimitive()) {
-                    JsonPrimitive p = e.getValue().getAsJsonPrimitive();
-                    if (p.isBoolean()) c.putBoolean(e.getKey(), p.getAsBoolean());
-                    else if (p.isNumber()) c.putDouble(e.getKey(), p.getAsDouble());
-                    else if (p.isString()) c.putString(e.getKey(), p.getAsString());
-                } else if (e.getValue().isJsonObject()) {
-                    c.put(e.getKey(), convertToTag(e.getValue().getAsJsonObject()));
-                }
-            }
-            return c;
-        }
-        return StringTag.valueOf(String.valueOf(value));
-    }
+	private net.minecraft.nbt.Tag convertToTag(Object value) {
+		if (value instanceof Number num) {
+			double d = num.doubleValue();
+			if (d == Math.floor(d) && d >= Integer.MIN_VALUE && d <= Integer.MAX_VALUE) return IntTag.valueOf(num.intValue());
+			return DoubleTag.valueOf(d);
+		} else if (value instanceof Boolean bool) {
+			return ByteTag.valueOf(bool ? (byte) 1 : (byte) 0);
+		} else if (value instanceof String str) {
+			return StringTag.valueOf(str);
+		} else if (value instanceof JsonObject obj) {
+			return convertToTag(obj);
+		} else if (value instanceof JsonArray arr) {
+			return convertToTag(arr);
+		}
+		return StringTag.valueOf(String.valueOf(value));
+	}
+
+	/**
+	 * Converts a JSON object into a {@link CompoundTag}. Whole numbers are written as {@link IntTag}
+	 * rather than {@link DoubleTag}, otherwise reads such as {@code CompoundTag#getInt} (used for
+	 * durations, amplifiers, use counters, ...) would silently return 0.
+	 */
+	private CompoundTag convertToTag(JsonObject obj) {
+		CompoundTag c = new CompoundTag();
+		for (var e : obj.entrySet()) {
+			JsonElement v = e.getValue();
+			if (v.isJsonPrimitive()) {
+				JsonPrimitive p = v.getAsJsonPrimitive();
+				if (p.isBoolean()) c.putBoolean(e.getKey(), p.getAsBoolean());
+				else if (p.isNumber()) {
+					double d = p.getAsDouble();
+					if (d == Math.floor(d) && d >= Integer.MIN_VALUE && d <= Integer.MAX_VALUE) c.putInt(e.getKey(), p.getAsInt());
+					else c.putDouble(e.getKey(), d);
+				} else c.putString(e.getKey(), p.getAsString());
+			} else if (v.isJsonObject()) {
+				c.put(e.getKey(), convertToTag(v.getAsJsonObject()));
+			} else if (v.isJsonArray()) {
+				c.put(e.getKey(), convertToTag(v.getAsJsonArray()));
+			}
+		}
+		return c;
+	}
+
+	/**
+	 * Converts a JSON array into a {@link ListTag}. Needed for list-shaped NBT such as
+	 * {@code ImbuedEffects}, which stores a list of serialized {@code MobEffectInstance}.
+	 */
+	private ListTag convertToTag(JsonArray arr) {
+		ListTag list = new ListTag();
+		for (JsonElement el : arr) {
+			if (el.isJsonPrimitive()) {
+				JsonPrimitive p = el.getAsJsonPrimitive();
+				if (p.isBoolean()) list.add(ByteTag.valueOf(p.getAsBoolean() ? (byte) 1 : (byte) 0));
+				else if (p.isNumber()) {
+					double d = p.getAsDouble();
+					if (d == Math.floor(d) && d >= Integer.MIN_VALUE && d <= Integer.MAX_VALUE) list.add(IntTag.valueOf(p.getAsInt()));
+					else list.add(DoubleTag.valueOf(d));
+				} else list.add(StringTag.valueOf(p.getAsString()));
+			} else if (el.isJsonObject()) {
+				list.add(convertToTag(el.getAsJsonObject()));
+			}
+		}
+		return list;
+	}
 
     public boolean matchesEntity(List<String> patterns, ResourceLocation entityId) {
         if (patterns == null || patterns.isEmpty()) return false;

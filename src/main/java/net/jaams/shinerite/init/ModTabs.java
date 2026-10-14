@@ -26,6 +26,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.init.ModEnchantments;
 import net.jaams.shinerite.configuration.client.CreativeTabConfig;
+import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 import net.jaams.shinerite.data.CreativeTabData;
 import net.jaams.shinerite.loader.TabModifierLoader;
 import net.jaams.shinerite.JaamsShineriteMod;
@@ -40,7 +41,7 @@ import com.google.common.collect.ImmutableMap;
 public class ModTabs {
 	public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, JaamsShineriteMod.MODID);
 	public static final RegistryObject<CreativeModeTab> SHINERITE_TAB = REGISTRY.register("shinerite_tab",
-			() -> CreativeModeTab.builder().title(Component.translatable("item_group.jaams_shinerite.tab_icon").withStyle(style -> style.withFont(new ResourceLocation("jaams_shinerite", "default")))).icon(() -> getTabIcon())
+			() -> CreativeModeTab.builder().title(Component.translatable("item_group.jaams_shinerite.tab_icon").withStyle(style -> style.withFont(ResourceLocation.fromNamespaceAndPath("jaams_shinerite", "default")))).icon(() -> getTabIcon())
 					.withTabsBefore(getPreferredTabBefore()).displayItems((parameters, tabData) -> {
 						List<ItemStack> items = new ArrayList<>();
 						// Shinerite Items
@@ -78,9 +79,15 @@ public class ModTabs {
 						items.add(new ItemStack(ModItems.SHINERITE_ROOTS.get()));
 						items.add(new ItemStack(ModItems.SHINERITIA.get()));
 						// Enchanted Books
-						items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTBRINGER.get(), 2));
-						items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTSTEAL.get(), 3));
-						items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTGUARD.get(), 4));
+						if (EnchantmentsConfig.LIGHTBRINGER.get()) {
+							items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTBRINGER.get(), EnchantmentsConfig.LIGHTBRINGER_MAX_LEVEL.get()));
+						}
+						if (EnchantmentsConfig.LIGHTSTEAL.get()) {
+							items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTSTEAL.get(), EnchantmentsConfig.LIGHTSTEAL_MAX_LEVEL.get()));
+						}
+						if (EnchantmentsConfig.LIGHTGUARD.get()) {
+							items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTGUARD.get(), EnchantmentsConfig.LIGHTGUARD_MAX_LEVEL.get()));
+						}
 						processDataDrivenEntries(items);
 						for (ItemStack stack : items) {
 							tabData.accept(stack);
@@ -146,7 +153,7 @@ public class ModTabs {
 			List<ItemStack> stacksToAdd = new ArrayList<>();
 			if (entry.item.startsWith("#")) {
 				String tagId = entry.item.substring(1);
-				TagKey<Item> tagKey = TagKey.create(Registries.ITEM, new ResourceLocation(tagId));
+				TagKey<Item> tagKey = TagKey.create(Registries.ITEM, ResourceLocation.parse(tagId));
 				for (Item item : ForgeRegistries.ITEMS) {
 					ItemStack stack = new ItemStack(item);
 					if (stack.is(tagKey)) {
@@ -170,7 +177,7 @@ public class ModTabs {
 
 	private static void insertItemOrdered(List<ItemStack> items, ItemStack stack, CreativeTabData.Entry entry) {
 		if (entry.after != null && !entry.after.isEmpty()) {
-			ResourceLocation afterLoc = new ResourceLocation(entry.after);
+			ResourceLocation afterLoc = ResourceLocation.parse(entry.after);
 			for (int i = 0; i < items.size(); i++) {
 				ResourceLocation cur = ForgeRegistries.ITEMS.getKey(items.get(i).getItem());
 				if (cur != null && cur.equals(afterLoc)) {
@@ -180,7 +187,7 @@ public class ModTabs {
 			}
 		}
 		if (entry.before != null && !entry.before.isEmpty()) {
-			ResourceLocation beforeLoc = new ResourceLocation(entry.before);
+			ResourceLocation beforeLoc = ResourceLocation.parse(entry.before);
 			for (int i = 0; i < items.size(); i++) {
 				ResourceLocation cur = ForgeRegistries.ITEMS.getKey(items.get(i).getItem());
 				if (cur != null && cur.equals(beforeLoc)) {
@@ -197,10 +204,10 @@ public class ModTabs {
 			return;
 		try {
 			if (itemId.startsWith("#")) {
-				TagKey<Item> tagKey = TagKey.create(Registries.ITEM, new ResourceLocation(itemId.substring(1)));
+				TagKey<Item> tagKey = TagKey.create(Registries.ITEM, ResourceLocation.parse(itemId.substring(1)));
 				items.removeIf(stack -> stack.is(tagKey));
 			} else {
-				ResourceLocation target = new ResourceLocation(itemId);
+				ResourceLocation target = ResourceLocation.parse(itemId);
 				items.removeIf(stack -> {
 					ResourceLocation cur = ForgeRegistries.ITEMS.getKey(stack.getItem());
 					return cur != null && cur.equals(target);
@@ -213,7 +220,7 @@ public class ModTabs {
 
 	private static ItemStack createSingleItemStack(CreativeTabData.Entry entry) {
 		try {
-			ResourceLocation loc = new ResourceLocation(entry.item);
+			ResourceLocation loc = ResourceLocation.parse(entry.item);
 			Item item = ForgeRegistries.ITEMS.getValue(loc);
 			if (item == null || item == Items.AIR)
 				return null;
@@ -238,11 +245,11 @@ public class ModTabs {
 
 	private static ResourceLocation getPreferredTabBefore() {
 		if (ModList.get().isLoaded("jaams_cavenry")) {
-			return new ResourceLocation("jaams_cavenry", "cavenry");
+			return ResourceLocation.fromNamespaceAndPath("jaams_cavenry", "cavenry");
 		} else if (ModList.get().isLoaded("jaams_weaponry")) {
-			return new ResourceLocation("jaams_weaponry", "weaponry");
+			return ResourceLocation.fromNamespaceAndPath("jaams_weaponry", "weaponry");
 		} else if (ModList.get().isLoaded("jaams_archaeology")) {
-			return new ResourceLocation("jaams_archaeology", "archaeology");
+			return ResourceLocation.fromNamespaceAndPath("jaams_archaeology", "archaeology");
 		}
 		return CreativeModeTabs.SPAWN_EGGS.location();
 	}
@@ -250,7 +257,7 @@ public class ModTabs {
 	private static ItemStack getTabIcon() {
 		try {
 			String itemId = CreativeTabConfig.CREATIVE_TAB_ICON.get();
-			ResourceLocation resourceLocation = new ResourceLocation(itemId);
+			ResourceLocation resourceLocation = ResourceLocation.parse(itemId);
 			Item item = BuiltInRegistries.ITEM.get(resourceLocation);
 			if (item != null && item != Items.AIR) {
 				return new ItemStack(item);

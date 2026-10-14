@@ -1,0 +1,99 @@
+{
+  "entity": [
+    "minecraft:zombie",
+    "minecraft:skeleton"
+  ],
+  "enabled": true,
+  "priority": 3,
+  "condition_mode": "and",
+  "global_chance": 0.05,
+  "conditions": [
+    {
+      "type": "time_of_day",
+      "time_min": 13000,
+      "time_max": 23000
+    }
+  ],
+  "items": [
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.35,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "purple",
+        "indigo",
+        "violet",
+        "blue",
+        "cyan",
+        "aqua",
+        "teal",
+        "black"
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.18,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "purple",
+        "indigo",
+        "violet",
+        "blue",
+        "cyan",
+        "aqua",
+        "teal",
+        "black"
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shiny_paint_brush",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.08,
+      "replace_existing": false,
+      "random_color": true
+    },
+    {
+      "item": "jaams_shinerite:shiny_scraper",
+      "slot": "mainhand",
+      "count": 1,
+      "chance": 0.06,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "purple",
+        "indigo",
+        "violet",
+        "blue",
+        "cyan",
+        "aqua",
+        "teal",
+        "black"
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_helmet",
+      "slot": "head",
+      "count": 1,
+      "chance": 0.09,
+      "replace_existing": false,
+      "random_color": true,
+      "random_colors": [
+        "purple",
+        "indigo",
+        "violet",
+        "blue",
+        "cyan",
+        "aqua",
+        "teal",
+        "black"
+      ]
+    }
+  ]
+}

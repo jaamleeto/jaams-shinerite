@@ -36,14 +36,18 @@ public class ShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration
 		if (!WorldGenConfig.SHINERITE_COLORED_ORE.get()) {
 			return false;
 		}
+		if (random.nextFloat() >= WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE.get().floatValue()) {
+			return false;
+		}
 		int selectedColor = COLORS[random.nextInt(COLORS.length)];
 		boolean placed = false;
-		int attempts = 6 + random.nextInt(5);
+		int attempts = WorldGenConfig.rollInt(random, WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE, WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE);
+		int spread = WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD.get();
 		for (int i = 0; i < attempts; i++) {
 			BlockPos targetPos = pos.offset(
-				random.nextInt(3) - 1 + random.nextInt(3) - 1,
-				random.nextInt(3) - 1 + random.nextInt(3) - 1,
-				random.nextInt(3) - 1 + random.nextInt(3) - 1
+				randomOffset(random, spread),
+				randomOffset(random, spread),
+				randomOffset(random, spread)
 			);
 			if (isValidGround(level.getBlockState(targetPos))) {
 				if (placeOreWithColor(level, targetPos, selectedColor)) {
@@ -52,6 +56,10 @@ public class ShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration
 			}
 		}
 		return placed;
+	}
+
+	private int randomOffset(RandomSource random, int spread) {
+		return spread <= 0 ? 0 : random.nextInt(spread * 2 + 1) - spread;
 	}
 
 	private boolean isValidGround(BlockState state) {

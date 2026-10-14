@@ -7,6 +7,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -58,6 +59,7 @@ import java.util.AbstractMap;
 public class JaamsShineriteMod {
 	public static final Logger LOGGER = LogManager.getLogger(JaamsShineriteMod.class);
 	public static final String MODID = "jaams_shinerite";
+	public static ModLoadingContext MOD_LOADING_CONTEXT;
 
 	public static boolean isOwnNamespace(String location) {
 		int i = location.indexOf(':');
@@ -65,12 +67,13 @@ public class JaamsShineriteMod {
 		return MODID.equals(ns);
 	}
 
-	public JaamsShineriteMod() {
+	public JaamsShineriteMod(FMLJavaModLoadingContext context) {
 		// Start of user code block mod constructor
 		/*
 		// End of user code block mod constructor
 		MinecraftForge.EVENT_BUS.register(this);
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+		JaamsShineriteMod.MOD_LOADING_CONTEXT = context;
+		IEventBus bus = context.getModEventBus();
 		ModSounds.REGISTRY.register(bus);
 		ModBlocks.REGISTRY.register(bus);
 		JaamsShineriteModBlockEntities.REGISTRY.register(bus);
@@ -82,7 +85,8 @@ public class JaamsShineriteMod {
 		// Start of user code block mod init
 		*/
 		MinecraftForge.EVENT_BUS.register(this);
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+		MOD_LOADING_CONTEXT = context;
+		IEventBus bus = context.getModEventBus();
 		// Default Registry
 		ModSounds.REGISTRY.register(bus);
 		ModEntities.REGISTRY.register(bus);
@@ -130,7 +134,7 @@ public class JaamsShineriteMod {
 
 	// End of user code block mod methods
 	private static final String PROTOCOL_VERSION = "1";
-	public static final SimpleChannel PACKET_HANDLER = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, MODID), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
+	public static final SimpleChannel PACKET_HANDLER = NetworkRegistry.newSimpleChannel(ResourceLocation.fromNamespaceAndPath(MODID, MODID), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 	private static int messageID = 0;
 
 	public static <T> void addNetworkMessage(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {

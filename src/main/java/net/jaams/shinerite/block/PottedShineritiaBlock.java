@@ -273,7 +273,8 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 
 	private static ItemStack createPlantItem(BaseShineriteBlockEntity blockEntity) {
 		ItemStack plant = new ItemStack(ModItems.SHINERITIA.get());
-		int color = blockEntity.getColor();
+		// Breaking the pot consumes the imbuement (see transferImbuementToBreaker), so the plant drops clean.
+		int color = blockEntity.isImbued() ? -1 : blockEntity.getColor();
 		if (color != -1) {
 			if (plant.getItem() instanceof IDyeableItem dyeableItem) {
 				dyeableItem.setColor(plant, color);
@@ -284,6 +285,11 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 		if (blockEntity.isCoated()) {
 			plant.getOrCreateTag().putBoolean("Coated", true);
 		}
+		return plant;
+	}
+
+	private static ItemStack createCloneItem(BaseShineriteBlockEntity blockEntity) {
+		ItemStack plant = createPlantItem(blockEntity);
 		if (blockEntity.isImbued()) {
 			plant.getOrCreateTag().put("ImbuedEffects", blockEntity.getImbuedEffects());
 			plant.getOrCreateTag().putInt("ImbuedUses", blockEntity.getImbuedUses());
@@ -292,6 +298,14 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 			ModUtils.applyDyeColor(plant, blockEntity.getImbuedColor());
 		}
 		return plant;
+	}
+
+	@Override
+	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+		super.playerWillDestroy(level, pos, state, player);
+		if (level.getBlockEntity(pos) instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
+			shineriteBlockEntity.transferImbuementToBreaker(level, pos, player);
+		}
 	}
 
 	@Override
@@ -308,7 +322,7 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 	public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
-			return createPlantItem(shineriteBlockEntity);
+			return createCloneItem(shineriteBlockEntity);
 		}
 		return super.getCloneItemStack(world, pos, state);
 	}

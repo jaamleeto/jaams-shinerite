@@ -33,6 +33,7 @@ import net.jaams.shinerite.util.ModUtils;
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.init.ModEnchantments;
 import net.jaams.shinerite.handler.mechanic.ShineriteAttackHandler;
+import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.capability.glowingcolor.GlowingColorProvider;
 import net.jaams.shinerite.block.ShineriteOreBlock;
@@ -92,13 +93,7 @@ public class EnchantmentsHandler {
 		}
 	}
 
-	private static final int GLOW_DURATION_PER_LEVEL = 20;
 	private static final int DEFAULT_GLOW_COLOR = -1;
-	private static final float DAMAGE_CHANCE_PER_LEVEL = 0.1f;
-	private static final float MAGIC_DAMAGE_PER_PIECE = 1.0f;
-	private static final float KNOCKBACK_STRENGTH = 0.5f;
-	private static final int LIGHTGUARD_PARTICLE_COUNT = 6;
-	private static final float LIGHTGUARD_PARTICLE_SIZE = 0.15f;
 	private static final float RETALIATION_SOUND_VOLUME = 0.7F;
 	private static final float RETALIATION_SOUND_PITCH = 1.3F;
 	private static final int RETALIATION_WEARER_PARTICLE_COUNT = 10;
@@ -122,6 +117,8 @@ public class EnchantmentsHandler {
 	}
 
 	private static void handleLightguard(LivingEntity target, LivingEntity attacker, Level world) {
+		if (!EnchantmentsConfig.LIGHTGUARD.get())
+			return;
 		int totalEnchantLevel = 0;
 		int enchantedArmorPieces = 0;
 		float redSum = 0, greenSum = 0, blueSum = 0;
@@ -146,11 +143,11 @@ public class EnchantmentsHandler {
 			glowColor = (r << 16) | (g << 8) | b;
 		}
 		applyGlowEffect(attacker, world, glowColor, totalEnchantLevel);
-		float damageChance = totalEnchantLevel * DAMAGE_CHANCE_PER_LEVEL;
+		float damageChance = totalEnchantLevel * EnchantmentsConfig.LIGHTGUARD_DAMAGE_CHANCE_PER_LEVEL.get().floatValue();
 		if (target.getRandom().nextFloat() < damageChance) {
-			float magicDamage = enchantedArmorPieces * MAGIC_DAMAGE_PER_PIECE;
+			float magicDamage = enchantedArmorPieces * EnchantmentsConfig.LIGHTGUARD_MAGIC_DAMAGE_PER_PIECE.get().floatValue();
 			attacker.hurt(target.level().damageSources().magic(), magicDamage);
-			attacker.knockback(KNOCKBACK_STRENGTH, target.getX() - attacker.getX(), target.getZ() - attacker.getZ());
+			attacker.knockback(EnchantmentsConfig.LIGHTGUARD_KNOCKBACK.get().floatValue(), target.getX() - attacker.getX(), target.getZ() - attacker.getZ());
 		}
 	}
 
@@ -209,7 +206,7 @@ public class EnchantmentsHandler {
 		float g = greenSum / (coloredPieces * 255.0F);
 		float b = blueSum / (coloredPieces * 255.0F);
 		ShineriteAttackHandler.spawnCritBurst(world, target, r, g, b, RETALIATION_WEARER_PARTICLE_SIZE, RETALIATION_WEARER_PARTICLE_COUNT);
-		ShineriteAttackHandler.spawnCritBurst(world, attacker, r, g, b, LIGHTGUARD_PARTICLE_SIZE, LIGHTGUARD_PARTICLE_COUNT);
+		ShineriteAttackHandler.spawnCritBurst(world, attacker, r, g, b, RETALIATION_WEARER_PARTICLE_SIZE, RETALIATION_WEARER_PARTICLE_COUNT);
 	}
 
 	private static void applyImbuedEffects(ListTag effectsTag, LivingEntity attacker, float scaledFraction, int minTicks) {
@@ -243,7 +240,7 @@ public class EnchantmentsHandler {
 	private static void applyGlowEffect(LivingEntity target, Level world, int color, int enchantmentLevel) {
 		target.getCapability(GlowingColorProvider.GLOWING_COLOR).ifPresent(glowingColor -> {
 			glowingColor.setColor(color);
-			target.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_DURATION_PER_LEVEL * enchantmentLevel, 0, false, false, true));
+			target.addEffect(new MobEffectInstance(MobEffects.GLOWING, EnchantmentsConfig.LIGHTGUARD_DURATION_PER_LEVEL.get() * enchantmentLevel, 0, false, false, true));
 			if (world instanceof ServerLevel serverLevel) {
 				JaamsShineriteMod.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> target), new GlowColorPacket(target.getId(), color));
 				if (target instanceof ServerPlayer serverPlayer) {
@@ -255,9 +252,11 @@ public class EnchantmentsHandler {
 	}
 
 	private static void spawnCritParticles(ServerLevel world, LivingEntity entity, int baseColor) {
+		if (!EnchantmentsConfig.LIGHTGUARD_SPAWN_PARTICLES.get())
+			return;
 		float r = ((baseColor >> 16) & 0xFF) / 255.0f;
 		float g = ((baseColor >> 8) & 0xFF) / 255.0f;
 		float b = (baseColor & 0xFF) / 255.0f;
-		ShineriteAttackHandler.spawnCritBurst(world, entity, r, g, b, LIGHTGUARD_PARTICLE_SIZE, LIGHTGUARD_PARTICLE_COUNT);
+		ShineriteAttackHandler.spawnCritBurst(world, entity, r, g, b, EnchantmentsConfig.LIGHTGUARD_PARTICLE_SIZE.get().floatValue(), EnchantmentsConfig.LIGHTGUARD_PARTICLES.get());
 	}
 }

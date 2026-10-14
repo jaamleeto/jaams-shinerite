@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -372,6 +373,14 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 	}
 
 	@Override
+	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+		super.playerWillDestroy(level, pos, state, player);
+		if (level.getBlockEntity(pos) instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
+			shineriteBlockEntity.transferImbuementToBreaker(level, pos, player);
+		}
+	}
+
+	@Override
 	public float[] getBeaconColorMultiplier(BlockState state, LevelReader world, BlockPos pos, BlockPos beaconPos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity) {
@@ -395,6 +404,11 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 			if (tag.contains("Coated", Tag.TAG_BYTE)) {
 				isCoated = tag.getBoolean("Coated");
 			}
+			// The imbuement is consumed by breaking the block (see transferImbuementToBreaker), so the drop
+			// is always clean: neither the stored effects nor the imbuement color are carried over.
+			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
+				color = -1;
+			}
 		}
 		ItemStack stack = new ItemStack(this);
 		CompoundTag stackTag = stack.getOrCreateTag();
@@ -403,13 +417,6 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 		}
 		if (isCoated) {
 			stackTag.putBoolean("Coated", true);
-		}
-		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
-			stackTag.put("ImbuedEffects", shineriteBE.getImbuedEffects());
-			stackTag.putInt("ImbuedUses", shineriteBE.getImbuedUses());
-			stackTag.putInt("MaxImbuedUses", shineriteBE.getMaxImbuedUses());
-			stackTag.putInt("ImbuedColor", shineriteBE.getImbuedColor());
-			ModUtils.applyDyeColor(stack, shineriteBE.getImbuedColor());
 		}
 		return Collections.singletonList(stack);
 	}

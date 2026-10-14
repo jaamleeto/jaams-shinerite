@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.EquipmentSlot;
 
 import net.jaams.shinerite.util.ModTags;
+import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 
 import java.util.List;
 
@@ -18,7 +19,17 @@ public class LightguardEnchantment extends Enchantment {
 
 	@Override
 	public int getMaxLevel() {
-		return 4;
+		return EnchantmentsConfig.LIGHTGUARD_MAX_LEVEL.get();
+	}
+
+	@Override
+	public int getMinCost(int level) {
+		return EnchantmentsConfig.LIGHTGUARD_MIN_COST.get() + (level - 1) * EnchantmentsConfig.LIGHTGUARD_COST_PER_LEVEL.get();
+	}
+
+	@Override
+	public int getMaxCost(int level) {
+		return getMinCost(level) + EnchantmentsConfig.LIGHTGUARD_COST_RANGE.get();
 	}
 
 	@Override
@@ -28,16 +39,26 @@ public class LightguardEnchantment extends Enchantment {
 
 	@Override
 	public boolean canEnchant(ItemStack stack) {
-		return stack.is(ModTags.ENCHANTABLE_LIGHTGUARD);
+		return EnchantmentsConfig.LIGHTGUARD.get() && stack.is(ModTags.ENCHANTABLE_LIGHTGUARD);
 	}
 
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack stack) {
-		return stack.is(ModTags.ENCHANTABLE_LIGHTGUARD);
+		return EnchantmentsConfig.LIGHTGUARD.get() && stack.is(ModTags.ENCHANTABLE_LIGHTGUARD);
+	}
+
+	@Override
+	public boolean isAllowedOnBooks() {
+		return EnchantmentsConfig.LIGHTGUARD.get();
 	}
 
 	@Override
 	public boolean isTradeable() {
 		return false;
+	}
+
+	@Override
+	public boolean isTreasureOnly() {
+		return EnchantmentsConfig.LIGHTGUARD_IS_TREASURE.get();
 	}
 }

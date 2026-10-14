@@ -22,7 +22,7 @@ public class CopyNBTSmithingRecipeSerializer implements RecipeSerializer<CopyNBT
 		JsonObject resultJson = GsonHelper.getAsJsonObject(json, "result");
 		ItemStack result = ItemStack.EMPTY;
 		if (resultJson.has("item")) {
-			ResourceLocation itemId = new ResourceLocation(GsonHelper.getAsString(resultJson, "item"));
+			ResourceLocation itemId = ResourceLocation.parse(GsonHelper.getAsString(resultJson, "item"));
 			int count = GsonHelper.getAsInt(resultJson, "count", 1);
 			result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId), count);
 			if (resultJson.has("nbt")) {

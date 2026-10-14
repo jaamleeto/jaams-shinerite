@@ -34,6 +34,6 @@ public class ModTags {
 	public static final TagKey<Item> FRAILGLOW = create("trait/frailglow");
 
 	private static TagKey<Item> create(String path) {
-		return TagKey.create(Registries.ITEM, new ResourceLocation("jaams_shinerite", path));
+		return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("jaams_shinerite", path));
 	}
 }

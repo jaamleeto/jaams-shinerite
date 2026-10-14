@@ -37,6 +37,9 @@ public class ShineriteRootsFeature extends Feature<NoneFeatureConfiguration> {
 		if (!WorldGenConfig.SHINERITE_ROOTS.get()) {
 			return false;
 		}
+		if (random.nextFloat() >= WorldGenConfig.SHINERITE_ROOTS_CHANCE.get().floatValue()) {
+			return false;
+		}
 		BlockState currentState = level.getBlockState(pos);
 		if (!isValidCeiling(currentState)) {
 			return false;
@@ -50,7 +53,7 @@ public class ShineriteRootsFeature extends Feature<NoneFeatureConfiguration> {
 		if (!placeRootWithColor(level, belowPos, selectedColor, random)) {
 			return false;
 		}
-		int maxLength = 3 + random.nextInt(5);
+		int maxLength = WorldGenConfig.rollInt(random, WorldGenConfig.SHINERITE_ROOTS_MIN_LENGTH, WorldGenConfig.SHINERITE_ROOTS_MAX_LENGTH);
 		BlockPos currentPos = belowPos.below();
 		for (int i = 0; i < maxLength - 1; i++) {
 			if (!level.getBlockState(currentPos).isAir()) {

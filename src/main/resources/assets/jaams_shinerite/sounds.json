@@ -284,5 +284,14 @@
         "stream": false
       }
     ]
+  },
+  "swoosh_air": {
+    "subtitle": "subtitles.swoosh_air",
+    "sounds": [
+      {
+        "name": "jaams_shinerite:swoosh_air",
+        "stream": false
+      }
+    ]
   }
 }

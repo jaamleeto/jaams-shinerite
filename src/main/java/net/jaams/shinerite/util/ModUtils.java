@@ -464,7 +464,7 @@ public class ModUtils {
 			double particleZ = startZ + lookVec.z * adjustedDistance;
 			ParticleOptions particle = new ItemParticleOption(ParticleTypes.ITEM, particleStack);
 			serverLevel.sendParticles(particle, particleX, particleY, particleZ, particleCount, 0.1d, 0.1d, 0.1d, 0.05d);
-			SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEvent));
+			SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 			if (sound != null) {
 				serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundSource.HOSTILE, 1.0F, 1.0F); // Cambiado a HOSTILE
 			}
@@ -590,7 +590,7 @@ public class ModUtils {
 	}
 
 	public static boolean hasRestrictedEffect(LivingEntity entity) {
-		return entity.hasEffect(BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation("jaams_weaponry", "knocked_up"))) || entity.hasEffect(BuiltInRegistries.MOB_EFFECT.get(new ResourceLocation("jaams_weaponry", "incapable")));
+		return entity.hasEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath("jaams_weaponry", "knocked_up"))) || entity.hasEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath("jaams_weaponry", "incapable")));
 	}
 
 	public static boolean hasSmeltingEnchantment(String enchantmentIdStr) {
@@ -606,7 +606,7 @@ public class ModUtils {
 		if (!(entity.level() instanceof ServerLevel level))
 			return;
 		BlockPos pos = entity.blockPosition();
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEvent));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 		if (sound != null) {
 			level.playSound(null, pos, sound, SoundSource.PLAYERS, 1.0f, 1.0f);
 		}
@@ -616,7 +616,7 @@ public class ModUtils {
 		if (!(entity.level() instanceof ServerLevel level))
 			return;
 		BlockPos pos = entity.blockPosition();
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEvent));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 		if (sound != null) {
 			level.playSound(null, pos, sound, source, 1.0f, 1.0f);
 		}
@@ -626,7 +626,7 @@ public class ModUtils {
 		if (!(entity.level() instanceof ServerLevel level))
 			return;
 		BlockPos pos = entity.blockPosition();
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEvent));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 		if (sound != null) {
 			level.playSound(null, pos, sound, source, volume, pitch);
 		}
@@ -636,7 +636,7 @@ public class ModUtils {
 		if (!(entity.level() instanceof ClientLevel level))
 			return;
 		BlockPos pos = entity.blockPosition();
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEvent));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 		if (sound != null) {
 			level.playLocalSound(pos, sound, SoundSource.PLAYERS, 1.0f, 1.0f, false);
 		}
@@ -852,7 +852,7 @@ public class ModUtils {
 			if (entry.startsWith("#")) {
 				try {
 					String tagName = entry.substring(1);
-					TagKey<Item> tag = TagKey.create(Registries.ITEM, new ResourceLocation(tagName));
+					TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(tagName));
 					if (item.builtInRegistryHolder().is(tag)) {
 						return true;
 					}
@@ -927,7 +927,7 @@ public class ModUtils {
 				}
 			} else {
 				try {
-					ResourceLocation resourceLocation = new ResourceLocation(entry);
+					ResourceLocation resourceLocation = ResourceLocation.parse(entry);
 					if (ForgeRegistries.ITEMS.containsKey(resourceLocation) && itemKey.equals(resourceLocation)) {
 						return true;
 					}
@@ -937,6 +937,57 @@ public class ModUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The color names this mod understands, in the order used by {@code /jaams_shinerite color set}.
+	 * Kept here so the command and the data driven loaders share a single palette.
+	 */
+	public static final String[] SUPPORTED_COLOR_NAMES = {"red", "green", "blue", "white", "black", "yellow", "purple",
+			"cyan", "orange", "pink", "lime", "magenta", "gray", "light_gray", "brown", "gold", "aqua", "violet",
+			"indigo", "teal"};
+
+	/**
+	 * Resolves a color name such as {@code "red"} or a hex value such as {@code "#8B4513"} into a packed
+	 * RGB int. Throws {@link IllegalArgumentException} for anything the mod does not know.
+	 */
+	public static int parseColor(String input) {
+		String s = input.toLowerCase(java.util.Locale.ROOT).trim();
+		if (s.startsWith("#") || s.startsWith("0x")) {
+			String hex = s.replaceFirst("^(#|0x)", "");
+			if (hex.length() == 6 && hex.matches("[0-9a-fA-F]{6}")) {
+				return Integer.parseUnsignedInt(hex, 16) & 0xFFFFFF;
+			}
+			throw new IllegalArgumentException();
+		}
+		return switch (s) {
+			case "red" -> 0xFF0000;
+			case "green" -> 0x00FF00;
+			case "blue" -> 0x0000FF;
+			case "white" -> 0xFFFFFF;
+			case "black" -> 0x000000;
+			case "yellow" -> 0xFFFF00;
+			case "purple" -> 0x800080;
+			case "cyan" -> 0x00FFFF;
+			case "orange" -> 0xFFA500;
+			case "pink" -> 0xFFC1CC;
+			case "lime" -> 0x32CD32;
+			case "magenta" -> 0xFF00FF;
+			case "gray" -> 0x808080;
+			case "light_gray" -> 0xD3D3D3;
+			case "brown" -> 0x8B4513;
+			case "gold" -> 0xFFD700;
+			case "aqua" -> 0x00CED1;
+			case "violet" -> 0xEE82EE;
+			case "indigo" -> 0x4B0082;
+			case "teal" -> 0x008080;
+			default -> throw new IllegalArgumentException();
+		};
+	}
+
+	/** Returns a uniformly random color from {@link #SUPPORTED_COLOR_NAMES}. */
+	public static int randomSupportedColor(net.minecraft.util.RandomSource random) {
+		return parseColor(SUPPORTED_COLOR_NAMES[random.nextInt(SUPPORTED_COLOR_NAMES.length)]);
 	}
 
 	public static int lightenColor(int color) {

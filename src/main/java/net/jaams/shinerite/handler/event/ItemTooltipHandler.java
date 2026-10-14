@@ -123,45 +123,62 @@ public abstract class ItemTooltipHandler {
 		}
 	}
 
-	private static void addSpacingBetweenGoldCategories(ItemTooltipEvent event) {
+	private static void addSpacingBetweenInfoCategories(ItemTooltipEvent event) {
 		if (!Screen.hasControlDown()) {
 			return;
 		}
 		List<Component> tooltip = event.getToolTip();
-		if (tooltip.size() < 4)
+		if (tooltip.size() < 4) {
 			return;
+		}
 		boolean isPropertiesTooltip = tooltip.stream().map(ItemTooltipHandler::getKey).anyMatch(key -> key != null && isOurKey(key) && (key.contains("properties") || key.contains("extra")));
 		if (!isPropertiesTooltip) {
 			return;
 		}
 		List<Integer> positionsToInsertSpace = new ArrayList<>();
-		int previousGoldIndex = -1;
-		for (int i = 0; i < tooltip.size(); i++) {
+		int previousCategoryIndex = -1;
+		ChatFormatting previousColor = null;
+		for (int i = 1; i < tooltip.size(); i++) {
 			Component line = tooltip.get(i);
 			String key = getKey(line);
-			if (key == null || !isOurKey(key))
+			if (key == null || !isCategoryHeaderKey(key))
 				continue;
-			ChatFormatting color = getDominantColor(line);
-			if (color == ChatFormatting.GOLD) {
-				if (previousGoldIndex >= 0 && i > previousGoldIndex + 1) {
-					boolean hasStatsInBetween = false;
-					for (int j = previousGoldIndex + 1; j < i; j++) {
-						if (getDominantColor(tooltip.get(j)) == ChatFormatting.GRAY) {
-							hasStatsInBetween = true;
-							break;
+			ChatFormatting currentColor = getDominantColor(line);
+			if (currentColor == ChatFormatting.GOLD || currentColor == ChatFormatting.YELLOW || currentColor == ChatFormatting.RED) {
+				if (previousCategoryIndex != -1) {
+					boolean sameColor = currentColor == previousColor;
+					if (sameColor) {
+						if (hasGrayStatsBetween(tooltip, previousCategoryIndex, i)) {
+							positionsToInsertSpace.add(i);
 						}
-					}
-					if (hasStatsInBetween) {
+					} else {
 						positionsToInsertSpace.add(i);
 					}
 				}
-				previousGoldIndex = i;
+				previousCategoryIndex = i;
+				previousColor = currentColor;
 			}
 		}
 		for (int i = positionsToInsertSpace.size() - 1; i >= 0; i--) {
-			int pos = positionsToInsertSpace.get(i);
-			insertSingleEmptyLine(tooltip, pos);
+			insertSingleEmptyLine(tooltip, positionsToInsertSpace.get(i));
 		}
+	}
+
+	private static boolean hasGrayStatsBetween(List<Component> tooltip, int start, int end) {
+		for (int j = start + 1; j < end; j++) {
+			if (getDominantColor(tooltip.get(j)) == ChatFormatting.GRAY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isCategoryHeaderKey(String key) {
+		if (!isOurKey(key))
+			return false;
+		if (key.endsWith(".desc"))
+			return false;
+		return key.contains("trait.") || key.contains("properties") || key.contains("extra");
 	}
 
 	private static ChatFormatting getDominantColor(Component component) {
@@ -170,6 +187,12 @@ public abstract class ItemTooltipHandler {
 			TextColor color = style.getColor();
 			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GOLD))) {
 				return ChatFormatting.GOLD;
+			}
+			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.YELLOW))) {
+				return ChatFormatting.YELLOW;
+			}
+			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.RED))) {
+				return ChatFormatting.RED;
 			}
 			if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GRAY))) {
 				return ChatFormatting.GRAY;
@@ -182,6 +205,12 @@ public abstract class ItemTooltipHandler {
 				TextColor color = s.getColor();
 				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GOLD))) {
 					return ChatFormatting.GOLD;
+				}
+				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.YELLOW))) {
+					return ChatFormatting.YELLOW;
+				}
+				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.RED))) {
+					return ChatFormatting.RED;
 				}
 				if (color.equals(TextColor.fromLegacyFormat(ChatFormatting.GRAY))) {
 					return ChatFormatting.GRAY;
@@ -277,7 +306,7 @@ public abstract class ItemTooltipHandler {
 		TooltipVisibility visibility = detectVisibility(lines);
 		addSpacingAfterLastSpecialLine(lines);
 		addHintsOnlyIfMissing(lines, content, visibility, shiftDown);
-		addSpacingBetweenGoldCategories(event);
+		addSpacingBetweenInfoCategories(event);
 		addSpacingOnlyBetweenLongDescAndProperties(event);
 	}
 

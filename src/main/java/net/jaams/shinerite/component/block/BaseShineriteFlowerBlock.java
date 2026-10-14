@@ -348,6 +348,14 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 	}
 
 	@Override
+	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+		super.playerWillDestroy(level, pos, state, player);
+		if (level.getBlockEntity(pos) instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
+			shineriteBlockEntity.transferImbuementToBreaker(level, pos, player);
+		}
+	}
+
+	@Override
 	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
 		ItemStack tool = builder.getOptionalParameter(LootContextParams.TOOL);
 		int color = -1;
@@ -361,6 +369,10 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 			if (tag.contains("Coated", Tag.TAG_BYTE)) {
 				isCoated = tag.getBoolean("Coated");
 			}
+			// Breaking consumes the imbuement (see transferImbuementToBreaker), so the drop is always clean.
+			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
+				color = -1;
+			}
 		}
 		ItemStack stack = new ItemStack(this);
 		CompoundTag stackTag = stack.getOrCreateTag();
@@ -369,13 +381,6 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 		}
 		if (isCoated) {
 			stackTag.putBoolean("Coated", true);
-		}
-		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
-			stackTag.put("ImbuedEffects", shineriteBE.getImbuedEffects());
-			stackTag.putInt("ImbuedUses", shineriteBE.getImbuedUses());
-			stackTag.putInt("MaxImbuedUses", shineriteBE.getMaxImbuedUses());
-			stackTag.putInt("ImbuedColor", shineriteBE.getImbuedColor());
-			ModUtils.applyDyeColor(stack, shineriteBE.getImbuedColor());
 		}
 		return Collections.singletonList(stack);
 	}

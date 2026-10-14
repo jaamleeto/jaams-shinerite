@@ -154,14 +154,7 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 		if (blockEntity.isCoated()) {
 			stack.getOrCreateTag().putBoolean("Coated", true);
 		}
-		if (blockEntity.isImbued()) {
-			CompoundTag stackTag = stack.getOrCreateTag();
-			stackTag.put("ImbuedEffects", blockEntity.getImbuedEffects());
-			stackTag.putInt("ImbuedUses", blockEntity.getImbuedUses());
-			stackTag.putInt("MaxImbuedUses", blockEntity.getMaxImbuedUses());
-			stackTag.putInt("ImbuedColor", blockEntity.getImbuedColor());
-			ModUtils.applyDyeColor(stack, blockEntity.getImbuedColor());
-		}
+		// The imbuement is consumed by breaking the roots (see transferImbuementToBreaker).
 	}
 
 	private int calculateDropCount(int fortuneLevel, RandomSource random) {

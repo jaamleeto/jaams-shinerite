@@ -104,7 +104,7 @@ public class ShineriteStarProjectileEntity extends BaseWeaponProjectileEntity {
 
 	private SoundEvent getSound(String genericId, String specificId, SoundEvent fallback) {
 		String soundId = useGenericProjectileSounds() ? genericId : specificId;
-		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation("jaams_shinerite:" + soundId));
+		SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse("jaams_shinerite:" + soundId));
 		return sound != null ? sound : fallback;
 	}
 

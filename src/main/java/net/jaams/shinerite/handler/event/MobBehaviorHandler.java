@@ -2,6 +2,7 @@ package net.jaams.shinerite.handler.event;
 
 import net.jaams.shinerite.JaamsShineriteMod;
 import net.jaams.shinerite.handler.behavior.item.MobThrowableBehaviorHandler;
+import net.jaams.shinerite.handler.behavior.item.MobToolBehaviorHandler;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 public class MobBehaviorHandler {
 
 	public static final TagKey<EntityType<?>> TAG_THROWABLE =
-			TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(JaamsShineriteMod.MODID, "behavior/throwable"));
+			TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(JaamsShineriteMod.MODID, "behavior/throwable"));
 
 	@SubscribeEvent
 	public static void onMobBehaviorTick(LivingEvent.LivingTickEvent event) {
@@ -25,9 +26,13 @@ public class MobBehaviorHandler {
 		if (!(entity instanceof Mob mob)) return;
 		if (mob.isRemoved() || !mob.isAlive()) {
 			MobThrowableBehaviorHandler.removeState(mob.getUUID());
+			MobToolBehaviorHandler.removeState(mob.getUUID());
 			return;
 		}
-		if (!mob.getType().is(TAG_THROWABLE)) return;
-		MobThrowableBehaviorHandler.tryExecute(mob, mob.level().getGameTime());
+		long gameTime = mob.level().getGameTime();
+		if (mob.getType().is(TAG_THROWABLE)) {
+			MobThrowableBehaviorHandler.tryExecute(mob, gameTime);
+		}
+		MobToolBehaviorHandler.tryExecute(mob, gameTime);
 	}
 }

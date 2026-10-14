@@ -1,19 +1,16 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="All Rights Reserved"
+license="MIT"
 
 [[mods]]
 modId="jaams_shinerite"
 version="1.1.0"
 displayName="Jaam's Shinerite"
-displayURL="https://discord.gg/ApZgFR7zZv"
+displayURL="https://linktr.ee/jaamleeto"
 logoFile="jaams_shinerite_banner.png"
 authors="Jaamleeto"
 description="Jaam’s Shinerite introduces a new glowing and dyeable ore used to craft tools, weapons, armor, and blocks. Adds potion imbuement, glowing mechanics, color mechanics, and more."
-issueTrackerURL="https://discord.gg/ApZgFR7zZv"
-
-# Start of user code block mod configuration
-# End of user code block mod configuration
+issueTrackerURL="https://github.com/jaamleeto/jaams-shinerite/issues"
 
 [[dependencies.jaams_shinerite]]
     modId="minecraft"
@@ -22,16 +19,10 @@ issueTrackerURL="https://discord.gg/ApZgFR7zZv"
     ordering="AFTER"
     side="BOTH"
 
-
-
-
-
-# Start of user code block dependencies configuration
 [modproperties."jaams_shinerite"]
 catalogueItemIcon="jaams_shinerite:shinerite_ingot"
 catalogueBackground="jaams_shinerite_background.png"
 configuredBackground="minecraft:textures/block/deepslate.png"
-# End of user code block dependencies configuration
 
 [[mixins]]
 config="mixins.jaams_shinerite.epicfight.json"
