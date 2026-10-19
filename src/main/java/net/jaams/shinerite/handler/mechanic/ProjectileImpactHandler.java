@@ -48,19 +48,27 @@ import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
 import net.jaams.shinerite.block.ShineritiaBlock;
 import net.jaams.shinerite.block.ShineriteRootsBlock;
 
+import javax.annotation.Nullable;
+
+import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 
 @Mod.EventBusSubscriber
 public class ProjectileImpactHandler {
+	public static final String IMBUE_LAST_TARGET = "ImbueLastTargetUUID";
+	public static final String IMBUE_LAST_TARGET_TICKS = "ImbueLastTargetTicks";
+	public static final int IMBUE_HIT_COOLDOWN_TICKS = 20;
+
 	@SubscribeEvent
 	public static void onProjectileImbuedImpact(ProjectileImpactEvent event) {
 		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.PROJECTILE_IMPACT_IMBUING.get()) {
 			return;
 		}
 		Projectile projectile = event.getProjectile();
-		if (projectile == null)
+		if (projectile == null || projectile.level().isClientSide) {
 			return;
+		}
 		CompoundTag nbt = projectile.getPersistentData();
 		if (!nbt.contains("WeaponItem", Tag.TAG_COMPOUND))
 			return;
@@ -87,15 +95,12 @@ public class ProjectileImpactHandler {
 			nbt.put("WeaponItem", weaponItem.save(new CompoundTag()));
 			return;
 		}
-		Player owner = null;
-		boolean isCreative = false;
 		Entity ownerEntity = projectile.getOwner();
-		if (ownerEntity instanceof Player p) {
-			owner = p;
-			isCreative = p.isCreative();
-		}
-		boolean hitEntity = event.getRayTraceResult() instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity;
-		boolean hitBlock = event.getRayTraceResult() instanceof BlockHitResult;
+		Player owner = ownerEntity instanceof Player p ? p : null;
+		boolean isCreative = owner != null && owner.isCreative();
+		HitResult hitResult = event.getRayTraceResult();
+		boolean hitEntity = hitResult instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity;
+		boolean hitBlock = hitResult instanceof BlockHitResult;
 		int usesToConsume = 0;
 		if (hitEntity && InteractionsConfig.PROJECTILE_IMPACT_IMBUING_CONSUME_ON_ENTITY_HIT.get()) {
 			usesToConsume = InteractionsConfig.PROJECTILE_IMPACT_IMBUING_USES_PER_HIT.get();
@@ -103,23 +108,12 @@ public class ProjectileImpactHandler {
 		if (hitBlock && InteractionsConfig.PROJECTILE_IMPACT_IMBUING_CONSUME_ON_BLOCK_HIT.get()) {
 			usesToConsume = InteractionsConfig.PROJECTILE_IMPACT_IMBUING_USES_PER_HIT.get();
 		}
-		if (hitEntity && owner == null) {
-			float progress = (float) uses / maxUses;
-			for (Tag entry : effectsTag) {
-				if (!(entry instanceof CompoundTag effectTag))
-					continue;
-				MobEffectInstance original = MobEffectInstance.load(effectTag);
-				if (original == null || original.getEffect() == null)
-					continue;
-				int adjustedDuration = Math.max(1, (int) (original.getDuration() * progress));
-				MobEffectInstance toApply = new MobEffectInstance(original.getEffect(), adjustedDuration, original.getAmplifier(), original.isAmbient(), original.isVisible(), original.showIcon());
-				LivingEntity target = (LivingEntity) ((EntityHitResult) event.getRayTraceResult()).getEntity();
-				if (target.canBeAffected(toApply)) {
-					target.addEffect(toApply);
-				}
-			}
+		boolean effectApplied = false;
+		if (hitEntity) {
+			LivingEntity hitTarget = (LivingEntity) ((EntityHitResult) hitResult).getEntity();
+			effectApplied = applyImbuedEffectsToHitTarget(nbt, effectsTag, projectile, ownerEntity, hitTarget, weaponItem, uses, maxUses);
 		}
-		if (usesToConsume > 0 && !isCreative) {
+		if (effectApplied && usesToConsume > 0 && !isCreative) {
 			int usesAfter = uses - usesToConsume;
 			boolean isStackable = weaponItem.getMaxStackSize() > 1;
 			if (isStackable || usesAfter <= 0) {
@@ -132,6 +126,40 @@ public class ProjectileImpactHandler {
 			}
 			nbt.put("WeaponItem", weaponItem.save(new CompoundTag()));
 		}
+	}
+
+	/**
+	 * Applies the imbued effects of the weapon carried by the projectile to the entity that was hit.
+	 * Strictly server side, never the shooter itself, never the projectile, and at most once per target
+	 * within the cooldown so returning projectiles can't re-apply the effect every tick.
+	 */
+	private static boolean applyImbuedEffectsToHitTarget(CompoundTag nbt, ListTag effectsTag, Projectile projectile, @Nullable Entity ownerEntity, LivingEntity hitTarget, ItemStack weaponItem, int uses, int maxUses) {
+		if (projectile == null || hitTarget == null || !hitTarget.isAlive() || hitTarget.isRemoved() || effectsTag.isEmpty()) {
+			return false;
+		}
+		if (hitTarget.getUUID().equals(projectile.getUUID())) {
+			return false;
+		}
+		if (ownerEntity != null && (hitTarget == ownerEntity || hitTarget.getVehicle() == ownerEntity || ownerEntity.getVehicle() == hitTarget || hitTarget.getVehicle() == projectile)) {
+			return false;
+		}
+		if (hitTarget instanceof Player targetPlayer && (targetPlayer.isCreative() || targetPlayer.isSpectator())) {
+			return false;
+		}
+		UUID lastTarget = nbt.hasUUID(IMBUE_LAST_TARGET) ? nbt.getUUID(IMBUE_LAST_TARGET) : null;
+		int lastTargetTicks = nbt.getInt(IMBUE_LAST_TARGET_TICKS);
+		int cooldown = Math.max(1, IMBUE_HIT_COOLDOWN_TICKS);
+		if (lastTarget != null && lastTarget.equals(hitTarget.getUUID()) && lastTargetTicks > 0) {
+			return false;
+		}
+		float progress = Math.min(1.0F, (float) uses / maxUses);
+		boolean applied = ShineriteAttackHandler.applyImbuedEffects(effectsTag, ownerEntity, hitTarget, progress, MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get(), false);
+		if (applied) {
+			nbt.putUUID(IMBUE_LAST_TARGET, hitTarget.getUUID());
+			nbt.putInt(IMBUE_LAST_TARGET_TICKS, cooldown);
+			ShineriteAttackHandler.spawnImbuedCritBurst(projectile.level(), hitTarget, weaponItem, 0.15f, 6);
+		}
+		return applied;
 	}
 
 	@SubscribeEvent

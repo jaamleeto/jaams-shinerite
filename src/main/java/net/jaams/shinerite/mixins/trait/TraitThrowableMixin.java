@@ -32,7 +32,7 @@ import net.jaams.shinerite.util.ModEnums;
 import net.jaams.shinerite.util.ModTraits;
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.entity.ShineriteStarProjectileEntity;
-import net.jaams.shinerite.entity.ShinemerangProjectileEntity;
+import net.jaams.shinerite.entity.ShinerangProjectileEntity;
 import net.jaams.shinerite.data.ThrowableItemData;
 import net.jaams.shinerite.configuration.common.TraitsConfig;
 import net.jaams.shinerite.configuration.common.ThrowableConfig;
@@ -43,8 +43,8 @@ import net.jaams.shinerite.component.projectile.BaseReturningProjectileEntity;
 @Mixin(ItemStack.class)
 public class TraitThrowableMixin {
 	@Unique
-	private boolean isShinemerang(ItemStack stack) {
-		return stack.is(ModTags.SHINEMERANGS) || (stack.hasTag() && stack.getTag().getBoolean("ForceShinemerangThrowable"));
+	private boolean isShinerang(ItemStack stack) {
+		return stack.is(ModTags.SHINERANGS) || (stack.hasTag() && stack.getTag().getBoolean("ForceShinerangThrowable"));
 	}
 
 	@Unique
@@ -54,7 +54,7 @@ public class TraitThrowableMixin {
 
 	@Unique
 	private boolean isThrowableType(ItemStack stack) {
-		return isShinemerang(stack) || isShineriteStar(stack) || getJsonThrowableEntry(stack) != null;
+		return isShinerang(stack) || isShineriteStar(stack) || getJsonThrowableEntry(stack) != null;
 	}
 
 	@Unique
@@ -72,10 +72,10 @@ public class TraitThrowableMixin {
 		if (json != null && json.throw_enabled != null) {
 			return json.throw_enabled;
 		}
-		if (!isShinemerang(stack) && !isShineriteStar(stack)) {
+		if (!isShinerang(stack) && !isShineriteStar(stack)) {
 			return false;
 		}
-		if (isShinemerang(stack) && !ThrowableConfig.THROWABLE_SHINEMERANG.get()) {
+		if (isShinerang(stack) && !ThrowableConfig.THROWABLE_SHINERANG.get()) {
 			return false;
 		}
 		if (isShineriteStar(stack) && !ThrowableConfig.THROWABLE_SHINERITE_STAR.get()) {
@@ -187,8 +187,8 @@ public class TraitThrowableMixin {
 			} catch (Exception ignored) {
 			}
 		}
-		if (isShinemerang(stack)) {
-			return ModUtils.getConfigOrNbtEnum(stack, "ThrowMode", () -> ThrowableConfig.THROWABLE_SHINEMERANG_THROW_MODE.get());
+		if (isShinerang(stack)) {
+			return ModUtils.getConfigOrNbtEnum(stack, "ThrowMode", () -> ThrowableConfig.THROWABLE_SHINERANG_THROW_MODE.get());
 		}
 		return ModUtils.getConfigOrNbtEnum(stack, "ThrowMode", () -> ThrowableConfig.THROWABLE_SHINERITE_STAR_THROW_MODE.get());
 	}
@@ -201,8 +201,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.use_duration_ticks != null && json.use_duration_ticks >= 0)
 			return json.use_duration_ticks;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_USE_DURATION_TICKS.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_USE_DURATION_TICKS.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_USE_DURATION_TICKS.get();
 	}
 
@@ -216,8 +216,8 @@ public class TraitThrowableMixin {
 		if (json != null && json.use_animation != null && !json.use_animation.isEmpty()) {
 			return parseUseAnimation(json.use_animation);
 		}
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_USE_ANIMATION.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_USE_ANIMATION.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_USE_ANIMATION.get();
 	}
 
@@ -248,8 +248,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.min_charge_ticks != null && json.min_charge_ticks >= 0)
 			return json.min_charge_ticks;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MIN_CHARGE.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MIN_CHARGE.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MIN_CHARGE.get();
 	}
 
@@ -261,8 +261,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.max_charge_ticks != null && json.max_charge_ticks >= 0)
 			return json.max_charge_ticks;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MAX_CHARGE.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MAX_CHARGE.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MAX_CHARGE.get();
 	}
 
@@ -274,8 +274,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.instant_cooldown_ticks != null && json.instant_cooldown_ticks >= 0)
 			return json.instant_cooldown_ticks;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_COOLDOWN_TICKS_INSTANT.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_COOLDOWN_TICKS_INSTANT.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_COOLDOWN_TICKS_INSTANT.get();
 	}
 
@@ -287,8 +287,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.min_speed != null && json.min_speed >= 0)
 			return json.min_speed;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MIN_SPEED.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MIN_SPEED.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MIN_SPEED.get().floatValue();
 	}
 
@@ -300,8 +300,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.max_speed != null && json.max_speed >= 0)
 			return json.max_speed;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MAX_SPEED.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MAX_SPEED.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MAX_SPEED.get().floatValue();
 	}
 
@@ -313,8 +313,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.inaccuracy != null && json.inaccuracy >= 0)
 			return json.inaccuracy;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_INACCURACY.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_INACCURACY.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_INACCURACY.get().floatValue();
 	}
 
@@ -326,8 +326,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.critical_power_threshold != null && json.critical_power_threshold >= 0)
 			return json.critical_power_threshold;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_CRITICAL_POWER_THRESHOLD.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_CRITICAL_POWER_THRESHOLD.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_CRITICAL_POWER_THRESHOLD.get().floatValue();
 	}
 
@@ -339,8 +339,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.damage_on_throw != null && json.damage_on_throw >= 0)
 			return json.damage_on_throw;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_DAMAGE_AMOUNT_ON_THROW.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_DAMAGE_AMOUNT_ON_THROW.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_DAMAGE_AMOUNT_ON_THROW.get();
 	}
 
@@ -352,8 +352,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.min_remaining_durability != null)
 			return json.min_remaining_durability;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MIN_REMAINING_DURABILITY.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MIN_REMAINING_DURABILITY.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MIN_REMAINING_DURABILITY.get();
 	}
 
@@ -365,8 +365,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.allow_multishot != null)
 			return json.allow_multishot;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_ALLOW_MULTISHOT.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_ALLOW_MULTISHOT.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_ALLOW_MULTISHOT.get();
 	}
 
@@ -378,8 +378,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.multishot_spread_angle != null && json.multishot_spread_angle >= 0)
 			return json.multishot_spread_angle;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MULTISHOT_SPREAD_ANGLE.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MULTISHOT_SPREAD_ANGLE.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MULTISHOT_SPREAD_ANGLE.get().floatValue();
 	}
 
@@ -391,8 +391,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.remember_slot != null)
 			return json.remember_slot;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_REMEMBER_SLOT.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_REMEMBER_SLOT.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_REMEMBER_SLOT.get();
 	}
 
@@ -404,8 +404,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.recoil != null && json.recoil >= 0)
 			return json.recoil;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_RECOIL.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL.get().floatValue();
 	}
 
@@ -417,8 +417,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.recoil_only_fully_charged != null)
 			return json.recoil_only_fully_charged;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL_ONLY_FULLY_CHARGED.get()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_RECOIL_ONLY_FULLY_CHARGED.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL_ONLY_FULLY_CHARGED.get();
 	}
 
@@ -430,8 +430,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.recoil_crouch_reduction != null && json.recoil_crouch_reduction >= 0)
 			return json.recoil_crouch_reduction;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL_CROUCH_REDUCTION.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_RECOIL_CROUCH_REDUCTION.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL_CROUCH_REDUCTION.get().floatValue();
 	}
 
@@ -443,8 +443,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.recoil_vertical_multiplier != null && json.recoil_vertical_multiplier >= 0)
 			return json.recoil_vertical_multiplier;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL_VERTICAL_MULTIPLIER.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_RECOIL_VERTICAL_MULTIPLIER.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL_VERTICAL_MULTIPLIER.get().floatValue();
 	}
 
@@ -456,8 +456,8 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.recoil_pitch_kick != null && json.recoil_pitch_kick >= 0)
 			return json.recoil_pitch_kick;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL_PITCH_KICK.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_RECOIL_PITCH_KICK.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL_PITCH_KICK.get().floatValue();
 	}
 
@@ -469,13 +469,13 @@ public class TraitThrowableMixin {
 		ThrowableItemData.ThrowableEntry json = getJsonThrowableEntry(stack);
 		if (json != null && json.projectile != null && !json.projectile.isEmpty())
 			return json.projectile;
-		return isShinemerang(stack) ? "jaams_shinerite:shinemerang" : "jaams_shinerite:shinerite_star";
+		return isShinerang(stack) ? "jaams_shinerite:shinerang" : "jaams_shinerite:shinerite_star";
 	}
 
 	@Unique
-	private boolean isJsonProjectileShinemerang(ItemStack stack) {
+	private boolean isJsonProjectileShinerang(ItemStack stack) {
 		String type = getProjectileType(stack);
-		return type != null && (type.contains("shinemerang") || type.equals("jaams_shinerite:shinemerang"));
+		return type != null && (type.contains("shinerang") || type.equals("jaams_shinerite:shinerang"));
 	}
 
 	@Unique
@@ -536,7 +536,7 @@ public class TraitThrowableMixin {
 
 	@Unique
 	private void performThrow(Level level, Player player, InteractionHand hand, ItemStack stack, float power) {
-		boolean isShinemerang = isJsonProjectileShinemerang(stack);
+		boolean isShinerang = isJsonProjectileShinerang(stack);
 		float minSpeed = getMinSpeed(stack);
 		float maxSpeed = getMaxSpeed(stack);
 		float speed = minSpeed + (maxSpeed - minSpeed) * power * power;
@@ -556,8 +556,8 @@ public class TraitThrowableMixin {
 			for (int i = 0; i < projectileCount; i++) {
 				ItemStack projectileStack = stack.copy();
 				BaseWeaponProjectileEntity projectile;
-				if (isShinemerang) {
-					projectile = new ShinemerangProjectileEntity(level, player, projectileStack);
+				if (isShinerang) {
+					projectile = new ShinerangProjectileEntity(level, player, projectileStack);
 				} else {
 					projectile = new ShineriteStarProjectileEntity(level, player, projectileStack);
 				}
@@ -579,7 +579,7 @@ public class TraitThrowableMixin {
 				}
 				int pierceLevel = stack.getTag() != null && stack.getTag().contains("PiercingLevel", Tag.TAG_INT)
 						? stack.getTag().getInt("PiercingLevel")
-						: (isShinemerang ? ProjectileCommonConfig.SHINEMERANG_PROJECTILE_PIERCING_LEVEL.get() : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_PIERCING_LEVEL.get());
+						: (isShinerang ? ProjectileCommonConfig.SHINERANG_PROJECTILE_PIERCING_LEVEL.get() : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_PIERCING_LEVEL.get());
 				pierceLevel += EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, stack);
 				projectile.setPierceLevel(Math.max(0, pierceLevel));
 				if (multishotLevel > 0) {
@@ -603,8 +603,8 @@ public class TraitThrowableMixin {
 					projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, speed, inaccuracy);
 				}
 				if (projectile instanceof BaseReturningProjectileEntity returningProjectile) {
-					double minRangeBase = ModUtils.getConfigOrNbtFloat(stack, "MinRangeBase", TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE::get);
-					float maxRange = ModUtils.getConfigOrNbtFloat(stack, "MaxRange", TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE::get);
+					double minRangeBase = ModUtils.getConfigOrNbtFloat(stack, "MinRangeBase", TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE::get);
+					float maxRange = ModUtils.getConfigOrNbtFloat(stack, "MaxRange", TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE::get);
 					double weaponRangeCalc = minRangeBase + (power * 20.0);
 					float finalRange = (float) Math.min(weaponRangeCalc, maxRange);
 					returningProjectile.setWeaponRange(finalRange);
@@ -614,8 +614,8 @@ public class TraitThrowableMixin {
 				SoundEvent shootSound;
 				if (stack.hasTag() && stack.getTag().getBoolean("GenericSoundSet")) {
 					shootSound = ModSounds.PROJECTILE_THROW.get();
-				} else if (isShinemerang) {
-					shootSound = ModSounds.SHINEMERANG_SHOOT.get();
+				} else if (isShinerang) {
+					shootSound = ModSounds.SHINERANG_SHOOT.get();
 				} else {
 					shootSound = ModSounds.SHINERITE_STAR_SHOOT.get();
 				}

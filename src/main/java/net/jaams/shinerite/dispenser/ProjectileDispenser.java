@@ -3,7 +3,7 @@ package net.jaams.shinerite.dispenser;
 import net.jaams.shinerite.init.ModEntities;
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.entity.ShineriteStarProjectileEntity;
-import net.jaams.shinerite.entity.ShinemerangProjectileEntity;
+import net.jaams.shinerite.entity.ShinerangProjectileEntity;
 import net.jaams.shinerite.util.ModTags;
 import net.jaams.shinerite.util.ModProjectiles;
 import net.jaams.shinerite.configuration.common.InteractionsConfig;
@@ -29,7 +29,7 @@ public class ProjectileDispenser {
 		if (stack == null || stack.isEmpty()) {
 			return false;
 		}
-		if (stack.is(ModTags.SHINEMERANGS)) {
+		if (stack.is(ModTags.SHINERANGS)) {
 			return InteractionsConfig.DISPENSER_INTERACTIONS.get();
 		}
 		if (stack.is(ModTags.SHINERITE_STARS)) {
@@ -63,10 +63,10 @@ public class ProjectileDispenser {
 	}
 
 	private static Entity createProjectileEntity(ItemStack stack, Level level, double x, double y, double z) {
-		if (stack.is(ModTags.SHINEMERANGS)) {
-			ShinemerangProjectileEntity entity = new ShinemerangProjectileEntity(ModEntities.SHINEMERANG_PROJECTILE.get(), x, y, z, level);
-			initializeProjectile(entity, stack, ProjectileCommonConfig.SHINEMERANG_PROJECTILE_BASE_DAMAGE.get(), ProjectileCommonConfig.SHINEMERANG_PROJECTILE_BASE_KNOCKBACK.get(),
-					ProjectileCommonConfig.SHINEMERANG_PROJECTILE_PIERCING_LEVEL.get());
+		if (stack.is(ModTags.SHINERANGS)) {
+			ShinerangProjectileEntity entity = new ShinerangProjectileEntity(ModEntities.SHINERANG_PROJECTILE.get(), x, y, z, level);
+			initializeProjectile(entity, stack, ProjectileCommonConfig.SHINERANG_PROJECTILE_BASE_DAMAGE.get(), ProjectileCommonConfig.SHINERANG_PROJECTILE_BASE_KNOCKBACK.get(),
+					ProjectileCommonConfig.SHINERANG_PROJECTILE_PIERCING_LEVEL.get());
 			return entity;
 		}
 		if (stack.is(ModTags.SHINERITE_STARS)) {
@@ -89,8 +89,8 @@ public class ProjectileDispenser {
 		SoundEvent sound;
 		if (stack.hasTag() && stack.getTag().getBoolean("GenericSoundSet")) {
 			sound = ModSounds.PROJECTILE_THROW.get();
-		} else if (stack.is(ModTags.SHINEMERANGS)) {
-			sound = ModSounds.SHINEMERANG_SHOOT.get();
+		} else if (stack.is(ModTags.SHINERANGS)) {
+			sound = ModSounds.SHINERANG_SHOOT.get();
 		} else {
 			sound = ModSounds.SHINERITE_STAR_SHOOT.get();
 		}

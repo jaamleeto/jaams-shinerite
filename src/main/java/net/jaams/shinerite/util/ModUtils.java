@@ -83,6 +83,7 @@ import net.minecraft.ChatFormatting;
 
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.handler.mechanic.InteractionHandler;
+import net.jaams.shinerite.handler.mechanic.ShineriteAttackHandler;
 import net.jaams.shinerite.dyeable.IDyeableItem;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.configuration.common.InteractionsConfig;
@@ -105,6 +106,9 @@ import java.util.ArrayList;
 
 public class ModUtils {
 	public static final Logger LOGGER = LogManager.getLogger();
+
+	/** Fallback RGB for imbuement feedback when the item has no usable color. */
+	public static final int IMBUE_FALLBACK_COLOR = 0xFFFFFF;
 
 	public static final MobEffect[] NATURAL_IMBUE_EFFECTS = {
 		MobEffects.REGENERATION, MobEffects.LUCK, MobEffects.DIG_SPEED,
@@ -410,19 +414,15 @@ public class ModUtils {
 		if (effectsTag.isEmpty()) {
 			return;
 		}
-		int imbuedColor = tag.getInt("ImbuedColor");
-		for (int i = 0; i < effectsTag.size(); i++) {
-			CompoundTag effectTag = effectsTag.getCompound(i);
-			MobEffectInstance effectInstance = MobEffectInstance.load(effectTag);
-			if (effectInstance != null) {
-				MobEffect effect = effectInstance.getEffect();
-				if (effect.isInstantenous()) {
-					effect.applyInstantenousEffect(null, null, entity, effectInstance.getAmplifier(), 1.0D);
-				} else {
-					entity.addEffect(new MobEffectInstance(effectInstance.getEffect(), effectInstance.getDuration(), effectInstance.getAmplifier(), effectInstance.isAmbient(), effectInstance.isVisible(), effectInstance.showIcon()));
-				}
-			}
+		int uses = tag.getInt("ImbuedUses");
+		int maxUses = tag.getInt("MaxImbuedUses");
+		float fraction = (uses > 0 && maxUses > 0) ? Math.min(1.0F, (float) uses / maxUses) : 1.0F;
+		int minDuration = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
+		boolean applied = ShineriteAttackHandler.applyImbuedEffects(effectsTag, null, entity, fraction, minDuration, false);
+		if (!applied) {
+			return;
 		}
+		int imbuedColor = tag.getInt("ImbuedColor");
 		if (level instanceof ServerLevel serverLevel && imbuedColor != InteractionHandler.DEFAULT_COLOR) {
 			float r = ((imbuedColor >> 16) & 255) / 255.0F;
 			float g = ((imbuedColor >> 8) & 255) / 255.0F;
@@ -814,6 +814,26 @@ public class ModUtils {
 		return tag.getInt("ImbuedColor");
 	}
 
+	/** Safe RGB color used for imbuement feedback particles; never white/transparent. */
+	public static int getImbuedParticleColor(ItemStack stack) {
+		if (stack == null || stack.isEmpty()) {
+			return IMBUE_FALLBACK_COLOR;
+		}
+		int currentColor = getCurrentColor(stack);
+		if (isValidParticleColor(currentColor)) {
+			return currentColor & 0xFFFFFF;
+		}
+		int imbuedColor = getImbuedColor(stack);
+		if (isValidParticleColor(imbuedColor)) {
+			return imbuedColor & 0xFFFFFF;
+		}
+		return IMBUE_FALLBACK_COLOR;
+	}
+
+	private static boolean isValidParticleColor(int color) {
+		return color != -1 && color >= 0 && color <= 0xFFFFFF;
+	}
+
 	public static void removeImbuement(ItemStack stack) {
 		if (!stack.hasTag()) {
 			return;
@@ -1158,6 +1178,42 @@ public class ModUtils {
 		int uses = 1 + random.nextInt(3);
 		blockEntity.setColor(color);
 		blockEntity.setImbuedState(effectsTag, uses, uses, color);
+		return true;
+	}
+
+	/**
+	 * Imbues a block entity with exactly ONE effect picked from {@code pool}.
+	 *
+	 * <p>Worldgen deliberately never stacks several effects on the same block: each generated
+	 * Shinerite flower or root carries a single, readable effect so a player can tell at a glance
+	 * which one they stumbled upon. The pool is chosen per biome so the effect always matches where
+	 * the block grew.</p>
+	 *
+	 * @return true when the block entity ended up imbued, false when the roll failed (in which case
+	 * the caller should fall back to its plain colour palette)
+	 */
+	public static boolean applyNaturalImbuement(BaseShineriteBlockEntity blockEntity, RandomSource random, MobEffect[] pool, double chance) {
+		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.BLOCK_IMBUING.get()) {
+			return false;
+		}
+		if (pool == null || pool.length == 0 || chance <= 0.0 || random.nextFloat() >= chance) {
+			return false;
+		}
+
+		MobEffect effect = pool[random.nextInt(pool.length)];
+		// Instantaneous effects have no sensible "touch the block and get a buff" behaviour.
+		if (effect.isInstantenous()) {
+			return false;
+		}
+
+		int duration = 100 + random.nextInt(200);
+		int amplifier = random.nextInt(2);
+		int color = effect.getColor();
+		ListTag effectsTag = new ListTag();
+		effectsTag.add(new MobEffectInstance(effect, duration, amplifier, false, true, true).save(new CompoundTag()));
+
+		blockEntity.setColor(color);
+		blockEntity.setImbuedState(effectsTag, 1, 1, color);
 		return true;
 	}
 

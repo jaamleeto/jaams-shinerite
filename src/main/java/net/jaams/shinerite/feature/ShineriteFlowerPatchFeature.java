@@ -6,6 +6,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,6 +21,8 @@ import com.mojang.serialization.Codec;
 
 public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguration> {
 	private static final int[] COLORS = {0xFF5555, 0xFFAA00, 0xFFFF55, 0x55FF55, 0x55FFFF, 0x5555FF, 0xFF55FF, 0xFF77C8, 0x99FF99, 0xFFB366};
+	/** One effect per flower, picked at random. Never several at once. */
+	private static final MobEffect[] IMBUEMENT_EFFECTS = {MobEffects.REGENERATION, MobEffects.POISON, MobEffects.DIG_SPEED, MobEffects.LUCK, MobEffects.LEVITATION};
 	private final BlockState flowerBlock;
 
 	public ShineriteFlowerPatchFeature(Codec<NoneFeatureConfiguration> codec) {
@@ -57,7 +61,7 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 				continue;
 			}
 			BlockPos checkPos = basePos.offset(x, 0, z);
-			if (!level.getBlockState(checkPos).isAir() || !flowerBlock.canSurvive(level, checkPos)) {
+			if (!level.getBlockState(checkPos).isAir() || !ShineriteFlowerGround.isValidGround(level, checkPos.below()) || !flowerBlock.canSurvive(level, checkPos)) {
 				continue;
 			}
 			placeFlowerWithRandomColor(level, checkPos, random);
@@ -69,7 +73,7 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
 		for (int i = 0; i < searchDepth; i++) {
 			BlockPos flowerPos = mutable.above();
-			if (level.getBlockState(flowerPos).isAir() && flowerBlock.canSurvive(level, flowerPos)) {
+			if (level.getBlockState(flowerPos).isAir() && flowerBlock.canSurvive(level, flowerPos) && ShineriteFlowerGround.isValidGround(level, mutable)) {
 				return mutable.immutable();
 			}
 			mutable.move(Direction.DOWN);
@@ -78,7 +82,9 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 	}
 
 	private boolean placeFlowerWithRandomColor(WorldGenLevel level, BlockPos pos, RandomSource random) {
-		if (!level.setBlock(pos, flowerBlock, 3)) {
+		// Flag 2 only: no client notification. This runs against a WorldGenLevel proto-chunk, and
+		// BaseShineriteBlockEntity#sync is a no-op there anyway since there is no ServerLevel to broadcast to.
+		if (!level.setBlock(pos, flowerBlock, 2)) {
 			return false;
 		}
 		if (!level.getBlockState(pos).is(ModBlocks.SHINERITIA.get())) {
@@ -86,20 +92,12 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		}
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
-			if (WorldGenConfig.SHINERITIA_FLOWER_IMBUED_CHANCE.get() > 0.0
-					&& random.nextFloat() < WorldGenConfig.SHINERITIA_FLOWER_IMBUED_CHANCE.get().floatValue()
-					&& ModUtils.applyRandomNaturalImbuement(shineriteBlockEntity, random)) {
+			if (ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, IMBUEMENT_EFFECTS, WorldGenConfig.SHINERITIA_FLOWER_IMBUED_CHANCE.get())) {
 				shineriteBlockEntity.setChanged();
-				if (!level.isClientSide()) {
-					shineriteBlockEntity.sync();
-				}
 				return true;
 			}
 			shineriteBlockEntity.setColor(COLORS[random.nextInt(COLORS.length)]);
 			shineriteBlockEntity.setChanged();
-			if (!level.isClientSide()) {
-				shineriteBlockEntity.sync();
-			}
 			return true;
 		}
 		return false;

@@ -1,0 +1,29 @@
+{
+  "feature": "jaams_shinerite:nether_shinerite_roots_patch",
+  "placement": [
+    { "type": "minecraft:count", "count": 10 },
+    { "type": "minecraft:in_square" },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:uniform",
+        "min_inclusive": { "above_bottom": 0 },
+        "max_inclusive": { "above_bottom": 120 }
+      }
+    },
+    {
+      "type": "minecraft:environment_scan",
+      "allowed_search_condition": {
+        "type": "minecraft:matching_blocks",
+        "blocks": "minecraft:air"
+      },
+      "direction_of_search": "up",
+      "max_steps": 8,
+      "target_condition": {
+        "type": "minecraft:has_sturdy_face",
+        "direction": "down"
+      }
+    },
+    { "type": "minecraft:biome" }
+  ]
+}

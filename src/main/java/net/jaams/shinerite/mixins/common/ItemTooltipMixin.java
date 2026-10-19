@@ -16,7 +16,7 @@ import net.jaams.shinerite.tooltip.item.ShinyScraperItemTooltip;
 import net.jaams.shinerite.tooltip.item.ShinyRootsItemTooltip;
 import net.jaams.shinerite.tooltip.item.ShinyPaintBrushItemTooltip;
 import net.jaams.shinerite.tooltip.throwable.ThrowableShineriteStarTooltip;
-import net.jaams.shinerite.tooltip.throwable.ThrowableShinemerangTooltip;
+import net.jaams.shinerite.tooltip.throwable.ThrowableShinerangTooltip;
 import net.jaams.shinerite.tooltip.throwable.ThrowableItemTooltip;
 import net.jaams.shinerite.tooltip.trait.ImbuableItemTooltip;
 import net.jaams.shinerite.tooltip.item.GlowSaladItemTooltip;
@@ -36,7 +36,7 @@ public abstract class ItemTooltipMixin {
 		GlowSaladItemTooltip.add(stack, tooltip);
 		ShinyRootsItemTooltip.add(stack, tooltip);
 		ThrowableItemTooltip.add(stack, tooltip);
-		ThrowableShinemerangTooltip.add(stack, tooltip);
+		ThrowableShinerangTooltip.add(stack, tooltip);
 		ThrowableShineriteStarTooltip.add(stack, tooltip);
 		ShinyPaintBrushItemTooltip.add(stack, tooltip);
 		ShinyScraperItemTooltip.add(stack, tooltip);

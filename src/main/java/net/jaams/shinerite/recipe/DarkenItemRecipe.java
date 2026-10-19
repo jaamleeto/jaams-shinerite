@@ -97,10 +97,7 @@ public class DarkenItemRecipe extends CustomRecipe {
 				return false;
 			}
 		}
-		if (dyeableItem.isEmpty() || inkCount == 0)
-			return false;
-		int maxInks = RecipesConfig.DARKEN_ITEM_RECIPE_MAX_INKS.get();
-		return maxInks <= 0 || inkCount <= maxInks;
+		return !dyeableItem.isEmpty() && inkCount > 0;
 	}
 
 	private boolean isValidDyeableStackForDarken(ItemStack stack) {

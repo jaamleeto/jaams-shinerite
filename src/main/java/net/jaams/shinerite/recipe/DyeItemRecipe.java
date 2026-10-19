@@ -91,10 +91,7 @@ public class DyeItemRecipe extends CustomRecipe {
 				return false;
 			}
 		}
-		if (dyeableItem.isEmpty() || totalDyeCount == 0)
-			return false;
-		int maxDyes = RecipesConfig.DYE_ITEM_RECIPE_MAX_DYES.get();
-		return maxDyes <= 0 || totalDyeCount <= maxDyes;
+		return !dyeableItem.isEmpty() && totalDyeCount > 0;
 	}
 
 	@Override

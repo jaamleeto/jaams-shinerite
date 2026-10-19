@@ -50,7 +50,7 @@ public class ModTabs {
 						items.add(new ItemStack(ModItems.SHINERITE_PICKAXE.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_HOE.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_SHOVEL.get()));
-						items.add(new ItemStack(ModItems.SHINEMERANG.get()));
+						items.add(new ItemStack(ModItems.SHINERANG.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_STAR.get()));
 						items.add(new ItemStack(ModItems.SHINY_PAINT_BRUSH.get()));
 						items.add(new ItemStack(ModItems.SHINY_SCRAPER.get()));
@@ -280,8 +280,8 @@ public class ModTabs {
 			putAfter(entries, ModItems.SHINERITE_ARMOR_HELMET.get(), ModItems.SHINERITE_ARMOR_CHESTPLATE);
 			putAfter(entries, ModItems.SHINERITE_ARMOR_CHESTPLATE.get(), ModItems.SHINERITE_ARMOR_LEGGINGS);
 			putAfter(entries, ModItems.SHINERITE_ARMOR_LEGGINGS.get(), ModItems.SHINERITE_ARMOR_BOOTS);
-			putAfter(entries, Items.BOW, ModItems.SHINEMERANG);
-			putAfter(entries, ModItems.SHINEMERANG.get(), ModItems.SHINERITE_STAR);
+			putAfter(entries, Items.BOW, ModItems.SHINERANG);
+			putAfter(entries, ModItems.SHINERANG.get(), ModItems.SHINERITE_STAR);
 		}
 		// Tools and Utilities Tab
 		if (tabData.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {

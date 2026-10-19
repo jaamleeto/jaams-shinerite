@@ -1,9 +1,9 @@
 {
   "asset_name": "shinerite",
   "description": {
-    "color": "#F2E2A0",
+    "color": "#DBD4C5",
     "translate": "trim_material.jaams_shinerite.shinerite"
   },
   "ingredient": "jaams_shinerite:shinerite_ingot",
-  "item_model_index": 1.1
+  "item_model_index": 0.16
 }

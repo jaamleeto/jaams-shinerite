@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.resources.ResourceLocation;
 
+import net.jaams.shinerite.recipe.FlowerDyeRecipe;
 import net.jaams.shinerite.recipe.CoatItemRecipe;
 import net.jaams.shinerite.recipe.WaterBottleRecipe;
 import net.jaams.shinerite.recipe.ShinyScraperRecipe;
@@ -53,6 +54,7 @@ public class ModRecipes {
 	public static final RegistryObject<RecipeType<CopyNBTStonecutterRecipe>> COPY_NBT_STONECUTTER_TYPE = RECIPE_TYPES.register("copy_nbt_stonecutting", () -> RecipeType.simple(ResourceLocation.fromNamespaceAndPath(MODID, "copy_nbt_stonecutting")));
 	public static final RegistryObject<RecipeSerializer<CopyNBTStonecutterRecipe>> COPY_NBT_STONECUTTER_SERIALIZER = RECIPE_SERIALIZERS.register("copy_nbt_stonecutting", CopyNBTStonecutterRecipeSerializer::new);
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<DyeItemRecipe>> DYEABLE_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_dyeable_item", () -> new SimpleCraftingRecipeSerializer<>(DyeItemRecipe::new));
+	public static final RegistryObject<SimpleCraftingRecipeSerializer<FlowerDyeRecipe>> FLOWER_DYE_SERIALIZER = RECIPE_SERIALIZERS.register("flower_dye", () -> new SimpleCraftingRecipeSerializer<>(FlowerDyeRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<CoatItemRecipe>> COAT_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_coat_item", () -> new SimpleCraftingRecipeSerializer<>(CoatItemRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<LightenItemRecipe>> LIGHTEN_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_lighten_item", () -> new SimpleCraftingRecipeSerializer<>(LightenItemRecipe::new));
 	public static final RegistryObject<SimpleCraftingRecipeSerializer<DarkenItemRecipe>> DARKEN_ITEM_SERIALIZER = RECIPE_SERIALIZERS.register("custom_darken_item", () -> new SimpleCraftingRecipeSerializer<>(DarkenItemRecipe::new));

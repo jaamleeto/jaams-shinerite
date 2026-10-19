@@ -1,87 +1,46 @@
 package net.jaams.shinerite.feature;
 
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-import net.jaams.shinerite.init.ModBlocks;
-import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
 import net.jaams.shinerite.configuration.common.WorldGenConfig;
+import net.jaams.shinerite.init.ModBlocks;
 
 import com.mojang.serialization.Codec;
 
-public class ShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration> {
-	private static final int[] COLORS = {0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFFFFF};
-	private final BlockState oreBlock;
+/**
+ * Overworld stone depth palette: mostly white and black so the blobs read as coal, with copper and
+ * gold as the common mimics, a broad spread of greys as the neutral accents and the remaining
+ * spectrum colours as low moderate extras.
+ */
+public class ShineriteColoredOreFeature extends AbstractShineriteColoredOreFeature {
+	private static final int[] COLORS = {
+			0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF,
+			0x0D0D0D, 0x0D0D0D, 0x0D0D0D, 0x0D0D0D, 0x0D0D0D, 0x0D0D0D, 0x0D0D0D, 0x0D0D0D,
+			0xC26B3A, 0xC26B3A, 0xC26B3A, 0xC26B3A, 0xC26B3A, 0xC26B3A,
+			0xFFC42D, 0xFFC42D, 0xFFC42D, 0xFFC42D,
+			0xD9D9D9, 0xD9D9D9, 0xD9D9D9, 0xD9D9D9,
+			0xB4B4B4, 0xB4B4B4, 0xB4B4B4, 0xB4B4B4,
+			0x8C8C8C, 0x8C8C8C, 0x8C8C8C,
+			0x666666, 0x666666, 0x666666,
+			0x3F3F3F, 0x3F3F3F,
+			0x1C1C1C, 0x1C1C1C,
+			0xD03A2A, 0xD03A2A, 0xD03A2A,
+			0x3E9B4F, 0x3E9B4F,
+			0x2F4FB5, 0x2F4FB5,
+			0x46B7C9, 0x46B7C9,
+			0xB44FC4
+	};
 
 	public ShineriteColoredOreFeature(Codec<NoneFeatureConfiguration> codec) {
-		super(codec);
-		this.oreBlock = ModBlocks.SHINERITE_ORE.get().defaultBlockState();
+		super(codec, ModBlocks.SHINERITE_ORE.get().defaultBlockState(), COLORS, WorldGenConfig.SHINERITE_COLORED_ORE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE::get, WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE::get, WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
 	}
 
 	@Override
-	public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-		WorldGenLevel level = context.level();
-		if (level == null) {
-			return false;
-		}
-		BlockPos pos = context.origin();
-		RandomSource random = context.random();
-		if (!WorldGenConfig.SHINERITE_COLORED_ORE.get()) {
-			return false;
-		}
-		if (random.nextFloat() >= WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE.get().floatValue()) {
-			return false;
-		}
-		int selectedColor = COLORS[random.nextInt(COLORS.length)];
-		boolean placed = false;
-		int attempts = WorldGenConfig.rollInt(random, WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE, WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE);
-		int spread = WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD.get();
-		for (int i = 0; i < attempts; i++) {
-			BlockPos targetPos = pos.offset(
-				randomOffset(random, spread),
-				randomOffset(random, spread),
-				randomOffset(random, spread)
-			);
-			if (isValidGround(level.getBlockState(targetPos))) {
-				if (placeOreWithColor(level, targetPos, selectedColor)) {
-					placed = true;
-				}
-			}
-		}
-		return placed;
-	}
-
-	private int randomOffset(RandomSource random, int spread) {
-		return spread <= 0 ? 0 : random.nextInt(spread * 2 + 1) - spread;
-	}
-
-	private boolean isValidGround(BlockState state) {
+	protected boolean isValidGround(BlockState state) {
 		return state.is(ModBlocks.SHINERITE_ORE.get()) || state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE);
-	}
-
-	private boolean placeOreWithColor(WorldGenLevel level, BlockPos pos, int color) {
-		if (!level.setBlock(pos, oreBlock, 3)) {
-			return false;
-		}
-		if (!level.getBlockState(pos).is(ModBlocks.SHINERITE_ORE.get())) {
-			return false;
-		}
-		BlockEntity blockEntity = level.getBlockEntity(pos);
-		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
-			shineriteBlockEntity.setColor(color);
-			shineriteBlockEntity.setChanged();
-			if (!level.isClientSide()) {
-				shineriteBlockEntity.sync();
-			}
-			return true;
-		}
-		return false;
 	}
 }

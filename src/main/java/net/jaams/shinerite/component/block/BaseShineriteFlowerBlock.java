@@ -75,7 +75,8 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 	@Override
 	protected boolean mayPlaceOn(BlockState state, BlockGetter world, BlockPos pos) {
 		return state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND) || state.is(Blocks.NETHERRACK) || state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL)
-				|| state.is(Blocks.CRIMSON_NYLIUM) || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
+				|| state.is(Blocks.CRIMSON_NYLIUM) || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.CRIMSON_ROOTS) || state.is(Blocks.WARPED_ROOTS)
+				|| state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
 	}
 
 	@Override

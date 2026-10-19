@@ -21,7 +21,7 @@ import net.jaams.shinerite.item.ShineriteIngotItem;
 import net.jaams.shinerite.item.ShineriteHoeItem;
 import net.jaams.shinerite.item.ShineriteAxeItem;
 import net.jaams.shinerite.item.ShineriteArmorItem;
-import net.jaams.shinerite.item.ShinemerangItem;
+import net.jaams.shinerite.item.ShinerangItem;
 import net.jaams.shinerite.item.RawShineriteItem;
 import net.jaams.shinerite.item.MusicDiscShinyItem;
 import net.jaams.shinerite.item.GlowSaladItem;
@@ -41,7 +41,7 @@ public class ModItems {
 	public static final RegistryObject<Item> SHINERITE_HOE = REGISTRY.register("shinerite_hoe", () -> new ShineriteHoeItem());
 	public static final RegistryObject<Item> SHINERITE_SHOVEL = REGISTRY.register("shinerite_shovel", () -> new ShineriteShovelItem());
 	public static final RegistryObject<Item> SHINERITE_STAR = REGISTRY.register("shinerite_star", () -> new ShineriteStarItem());
-	public static final RegistryObject<Item> SHINEMERANG = REGISTRY.register("shinemerang", () -> new ShinemerangItem());
+	public static final RegistryObject<Item> SHINERANG = REGISTRY.register("shinerang", () -> new ShinerangItem());
 	public static final RegistryObject<Item> SHINY_ROOTS = REGISTRY.register("shiny_roots", () -> new ShinyRootsItem());
 	public static final RegistryObject<Item> SHINY_PAINT_BRUSH = REGISTRY.register("shiny_paint_brush", () -> new ShinyPaintBrushItem());
 	public static final RegistryObject<Item> SHINY_SCRAPER = REGISTRY.register("shiny_scraper", () -> new ShinyScraperItem());

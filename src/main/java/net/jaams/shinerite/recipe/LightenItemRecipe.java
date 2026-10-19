@@ -95,10 +95,7 @@ public class LightenItemRecipe extends CustomRecipe {
 				return false;
 			}
 		}
-		if (dyeableItem.isEmpty() || glowInkCount == 0)
-			return false;
-		int maxGlowInks = RecipesConfig.LIGHTEN_ITEM_RECIPE_MAX_GLOW_INKS.get();
-		return maxGlowInks <= 0 || glowInkCount <= maxGlowInks;
+		return !dyeableItem.isEmpty() && glowInkCount > 0;
 	}
 
 	private boolean isValidDyeableStackForLighten(ItemStack stack) {

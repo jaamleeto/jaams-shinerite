@@ -4,7 +4,7 @@ import net.jaams.shinerite.configuration.common.MobBehaviorConfig;
 import net.jaams.shinerite.configuration.common.TraitsConfig;
 import net.jaams.shinerite.configuration.common.ThrowableConfig;
 import net.jaams.shinerite.data.ThrowableItemData;
-import net.jaams.shinerite.entity.ShinemerangProjectileEntity;
+import net.jaams.shinerite.entity.ShinerangProjectileEntity;
 import net.jaams.shinerite.entity.ShineriteStarProjectileEntity;
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.util.ModProjectiles;
@@ -151,9 +151,9 @@ public class MobThrowableBehaviorHandler {
 
 		if (projectile instanceof BaseReturningProjectileEntity returning) {
 			double minRange = ModProjectiles.getThrowbackMinRange(throwableStack,
-					TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE.get().doubleValue());
+					TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE.get().doubleValue());
 			float maxRange = (float) ModProjectiles.getThrowbackMaxRange(throwableStack,
-					TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE.get().floatValue());
+					TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE.get().floatValue());
 			float finalRange = (float) Math.max(minRange, Math.min(minRange + 20.0, maxRange));
 			returning.setWeaponRange(finalRange);
 		}
@@ -172,7 +172,7 @@ public class MobThrowableBehaviorHandler {
 		if (json != null && json.projectile != null && !json.projectile.isEmpty()) {
 			return json.projectile;
 		}
-		return isShinemerang(stack) ? "jaams_shinerite:shinemerang" : "jaams_shinerite:shinerite_star";
+		return isShinerang(stack) ? "jaams_shinerite:shinerang" : "jaams_shinerite:shinerite_star";
 	}
 
 	private static BaseWeaponProjectileEntity createProjectileEntity(
@@ -180,8 +180,8 @@ public class MobThrowableBehaviorHandler {
 		if (type == null || type.isEmpty()) return null;
 		try {
 			String lower = type.toLowerCase(java.util.Locale.ROOT);
-			if (lower.contains("shinemerang")) {
-				return new ShinemerangProjectileEntity(level, shooter, projectileStack);
+			if (lower.contains("shinerang")) {
+				return new ShinerangProjectileEntity(level, shooter, projectileStack);
 			}
 			return new ShineriteStarProjectileEntity(level, shooter, projectileStack);
 		} catch (Exception e) {
@@ -212,7 +212,7 @@ public class MobThrowableBehaviorHandler {
 			} catch (Exception ignored) {
 			}
 		}
-		return isShinemerang(stack) ? ModSounds.SHINEMERANG_SHOOT.get() : ModSounds.SHINERITE_STAR_SHOOT.get();
+		return isShinerang(stack) ? ModSounds.SHINERANG_SHOOT.get() : ModSounds.SHINERITE_STAR_SHOOT.get();
 	}
 
 	private static float getThrowSpeed(ItemStack stack) {
@@ -222,8 +222,8 @@ public class MobThrowableBehaviorHandler {
 		if (tag != null && tag.contains("MaxSpeed", Tag.TAG_FLOAT)) return tag.getFloat("MaxSpeed");
 		ThrowableItemData.ThrowableEntry json = ThrowableItemData.getThrowableData(stack);
 		if (json != null && json.max_speed != null && json.max_speed >= 0) return json.max_speed;
-		return isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_MAX_SPEED.get().floatValue()
+		return isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_MAX_SPEED.get().floatValue()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_MAX_SPEED.get().floatValue();
 	}
 
@@ -238,8 +238,8 @@ public class MobThrowableBehaviorHandler {
 		ThrowableItemData.ThrowableEntry json = ThrowableItemData.getThrowableData(stack);
 		if (json != null && json.inaccuracy != null)
 			return (float) (json.inaccuracy * MobBehaviorConfig.THROWABLE_MOB_BEHAVIOR_INACCURACY_MULTIPLIER.get());
-		return (float) ((isShinemerang(stack)
-				? ThrowableConfig.THROWABLE_SHINEMERANG_INACCURACY.get()
+		return (float) ((isShinerang(stack)
+				? ThrowableConfig.THROWABLE_SHINERANG_INACCURACY.get()
 				: ThrowableConfig.THROWABLE_SHINERITE_STAR_INACCURACY.get())
 				* MobBehaviorConfig.THROWABLE_MOB_BEHAVIOR_INACCURACY_MULTIPLIER.get());
 	}
@@ -285,11 +285,11 @@ public class MobThrowableBehaviorHandler {
 	private static boolean isThrowable(ItemStack stack) {
 		if (stack.isEmpty()) return false;
 		if (ModTraits.isThrowableItem(stack)) return true;
-		return stack.is(ModTags.SHINEMERANGS) || stack.is(ModTags.SHINERITE_STARS);
+		return stack.is(ModTags.SHINERANGS) || stack.is(ModTags.SHINERITE_STARS);
 	}
 
-	private static boolean isShinemerang(ItemStack stack) {
-		return stack.is(ModTags.SHINEMERANGS);
+	private static boolean isShinerang(ItemStack stack) {
+		return stack.is(ModTags.SHINERANGS);
 	}
 
 	private static double getCooldownMultiplier(Mob mob) {

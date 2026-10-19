@@ -1,6 +1,0 @@
-{
-  "type": "forge:add_features",
-  "biomes": "#minecraft:is_overworld",
-  "features": "jaams_shinerite:shinerite_roots",
-  "step": "vegetal_decoration"
-}

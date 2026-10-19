@@ -11,26 +11,37 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 
+import net.jaams.shinerite.client.model.ArmorTrimModelGenerator;
 import net.jaams.shinerite.init.ModItems;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+/**
+ * Forces a full bright light on everything that carries a Shinerite trim, so the armor and its trim keep glowing
+ * in dark places: the four Shinerite pieces and, since the trim icon is generated at runtime, any trimmable item
+ * of any mod that was given a Shinerite trim.
+ */
 @Mixin(ItemRenderer.class)
 public abstract class ItemModelMixin {
+	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
+
 	@Shadow
 	public void render(ItemStack stack, ItemDisplayContext displayContext, boolean leftHanded, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, BakedModel model) {
 	}
 
 	@ModifyVariable(method = "renderModelLists", at = @At("HEAD"), ordinal = 0)
 	private int modifyLightForShineriteItems(int light, BakedModel model, ItemStack itemStack) {
-		if (isShineriteItem(itemStack)) {
-			return 0xF000F0;
-		}
-		return light;
+		return glowsInTheDark(itemStack) ? FULL_BRIGHT_LIGHT : light;
 	}
 
-	private boolean isShineriteItem(ItemStack itemStack) {
-		return itemStack.is(ModItems.SHINERITE_ARMOR_HELMET.get()) || itemStack.is(ModItems.SHINERITE_ARMOR_CHESTPLATE.get()) || itemStack.is(ModItems.SHINERITE_ARMOR_LEGGINGS.get())
-				|| itemStack.is(ModItems.SHINERITE_ARMOR_BOOTS.get());
+	private static boolean glowsInTheDark(ItemStack itemStack) {
+		if (itemStack.isEmpty()) {
+			return false;
+		}
+		if (itemStack.is(ModItems.SHINERITE_ARMOR_HELMET.get()) || itemStack.is(ModItems.SHINERITE_ARMOR_CHESTPLATE.get()) || itemStack.is(ModItems.SHINERITE_ARMOR_LEGGINGS.get())
+				|| itemStack.is(ModItems.SHINERITE_ARMOR_BOOTS.get())) {
+			return true;
+		}
+		return ArmorTrimModelGenerator.hasShineriteTrim(itemStack);
 	}
 }

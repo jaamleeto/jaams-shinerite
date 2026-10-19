@@ -60,14 +60,11 @@ import net.jaams.shinerite.configuration.common.InteractionsConfig;
 import javax.annotation.Nullable;
 
 import java.util.function.Supplier;
-import java.util.Map;
 import java.util.List;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public abstract class BaseShineriteBlock extends Block implements EntityBlock {
-	private final Map<BlockPos, CompoundTag> stateMap = new HashMap<>();
 	private final Supplier<BlockEntityType<?>> blockEntityType;
 
 	public BaseShineriteBlock(BlockBehaviour.Properties properties, Supplier<BlockEntityType<?>> blockEntityType) {
@@ -456,11 +453,9 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 	@Override
 	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (!world.isClientSide && isMoving) {
-			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity) {
-				stateMap.put(pos, shineriteBaseBlockEntity.saveWithFullMetadata());
-			}
-		}
+		// Colour, coating and imbuement are deliberately not carried over by hand here: vanilla pistons
+		// already copy the block entity NBT of a moved block into its new block entity, and doing it a
+		// second time through a side table only ever duplicated data between unrelated blocks.
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity && !world.isClientSide) {
 			int color = shineriteBaseBlockEntity.getColor();
 			if (world instanceof ServerLevel serverLevel) {
@@ -477,21 +472,8 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 	public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (!world.isClientSide) {
-			BlockPos originalPos = findOriginalPosition(pos);
-			if (originalPos != null && stateMap.containsKey(originalPos)) {
-				if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity) {
-					CompoundTag savedData = stateMap.remove(originalPos);
-					if (savedData != null) {
-						shineriteBaseBlockEntity.load(savedData);
-						shineriteBaseBlockEntity.setChanged();
-						shineriteBaseBlockEntity.sync();
-						world.setBlock(pos, state, 3);
-					}
-					world.sendBlockUpdated(pos, state, state, 3);
-				}
-			}
 			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity) {
-if (shineriteBaseBlockEntity.isCoated()) {
+				if (shineriteBaseBlockEntity.isCoated()) {
 					ModUtils.generateCoatedParticles(world, pos, state, world.random);
 				}
 				int color = shineriteBaseBlockEntity.getColor();
@@ -558,15 +540,5 @@ if (shineriteBaseBlockEntity.isCoated()) {
 			shineriteBaseBlockEntity.setChanged();
 			world.sendBlockUpdated(pos, state, state, 3);
 		}
-	}
-
-	public BlockPos findOriginalPosition(BlockPos newPos) {
-		for (Map.Entry<BlockPos, CompoundTag> entry : stateMap.entrySet()) {
-			BlockPos originalPos = entry.getKey();
-			if (originalPos.distSqr(newPos) <= 1) {
-				return originalPos;
-			}
-		}
-		return null;
 	}
 }

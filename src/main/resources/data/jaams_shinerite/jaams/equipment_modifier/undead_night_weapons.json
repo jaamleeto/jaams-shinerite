@@ -6,7 +6,7 @@
   "enabled": true,
   "priority": 3,
   "condition_mode": "and",
-  "global_chance": 0.05,
+  "global_chance": 0.07,
   "conditions": [
     {
       "type": "time_of_day",
@@ -19,7 +19,7 @@
       "item": "jaams_shinerite:shinerite_sword",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.35,
+      "chance": 0.49,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [
@@ -37,7 +37,7 @@
       "item": "jaams_shinerite:shinerite_axe",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.18,
+      "chance": 0.25,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [
@@ -55,7 +55,7 @@
       "item": "jaams_shinerite:shiny_paint_brush",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.08,
+      "chance": 0.11,
       "replace_existing": false,
       "random_color": true
     },
@@ -63,7 +63,7 @@
       "item": "jaams_shinerite:shiny_scraper",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.06,
+      "chance": 0.08,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [
@@ -81,7 +81,7 @@
       "item": "jaams_shinerite:shinerite_helmet",
       "slot": "head",
       "count": 1,
-      "chance": 0.09,
+      "chance": 0.13,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [

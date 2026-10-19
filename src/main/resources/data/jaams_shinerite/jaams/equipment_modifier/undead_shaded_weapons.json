@@ -6,28 +6,28 @@
   "enabled": true,
   "priority": 0,
   "condition_mode": "and",
-  "global_chance": 0.05,
+  "global_chance": 0.07,
   "conditions": [],
   "items": [
     {
       "item": "jaams_shinerite:shinerite_sword",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.3,
+      "chance": 0.42,
       "replace_existing": false
     },
     {
       "item": "jaams_shinerite:shinerite_axe",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.18,
+      "chance": 0.25,
       "replace_existing": false
     },
     {
       "item": "jaams_shinerite:shinerite_helmet",
       "slot": "head",
       "count": 1,
-      "chance": 0.1,
+      "chance": 0.14,
       "replace_existing": false
     }
   ]

@@ -1,8 +1,6 @@
 {
   "type": "forge:add_features",
-  "biomes": {
-    "type": "forge:any"
-  },
+  "biomes": "#minecraft:is_overworld",
   "features": "jaams_shinerite:deepslate_shinerite_ore",
   "step": "underground_ores"
 }

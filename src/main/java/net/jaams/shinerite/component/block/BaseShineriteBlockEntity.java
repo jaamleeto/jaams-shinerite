@@ -295,6 +295,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 			player.addEffect(new MobEffectInstance(effect, duration, savedEffect.getAmplifier(), savedEffect.isAmbient(),
 					savedEffect.isVisible(), savedEffect.showIcon()));
 		}
+		level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0F, 0.9F);
 		if (level instanceof ServerLevel serverLevel && getImbuedColor() != -1) {
 			ModUtils.generateImbuedBurstParticles(serverLevel, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
 					getImbuedColor(), 30);
@@ -447,8 +448,19 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		}
 	}
 
+	/**
+	 * Pushes the current state to every client tracking this block entity.
+	 *
+	 * <p>Deliberately a no-op outside of a {@link ServerLevel}. The setters above ({@code setColor},
+	 * {@code setCoated}, {@code setImbuedState}, {@code clearImbuedState}) call this on every change, and
+	 * they are reachable from the worldgen features, where the block entity is attached to a
+	 * {@code WorldGenLevel} proto-chunk that has no server to broadcast to. Calling
+	 * {@code Level#sendBlockUpdated} there reaches a null server and stalls spawn-area generation.
+	 * Worldgen only needs {@code setChanged()} so the data ends up in the region file; the client picks it
+	 * up from the chunk's block entity NBT when the chunk is sent.
+	 */
 	public void sync() {
-		if (this.level != null) {
+		if (this.level instanceof ServerLevel) {
 			this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
 		}
 	}

@@ -28,8 +28,7 @@ import net.jaams.shinerite.util.ShineriteTrimSupport;
 
 public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 	public static final String TAG_TRIM_COLOR = "shinerite_trim_color";
-	private static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
-	private static String LAST_DIAG = "";
+	
 
 	final ResourceLocation id;
 	final Ingredient template;
@@ -49,19 +48,13 @@ public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 	}
 
 	/**
-	 * A Shinerite trim may always be applied, but the ingot color can only be frozen into the armor
-	 * when that armor piece is able to render a tinted trim. On any other trimmable armor (modded
-	 * armor we have no tinted trim model for) a colored ingot would yield a trim that can never take
-	 * that color, so only a plain (undyed / white) ingot is accepted there.
+	 * A Shinerite trim may always be applied to any trimmable armor, colored ingot included: the trim icon is
+	 * generated at runtime and the worn trim is rendered by the armor layer mixin, so the dye color is
+	 * rendered for the armor of every mod, not only for the pieces listed in
+	 * {@link ShineriteTrimSupport#isTintable(ItemStack)}.
 	 */
 	private boolean canApply(ItemStack templateStack, ItemStack baseStack, ItemStack additionStack) {
-		if (!this.template.test(templateStack) || !this.base.test(baseStack) || !this.addition.test(additionStack)) {
-			return false;
-		}
-		if (ShineriteTrimSupport.isTintable(baseStack)) {
-			return true;
-		}
-		return ShineriteTrimSupport.isPlainIngot(additionStack);
+		return this.template.test(templateStack) && this.base.test(baseStack) && this.addition.test(additionStack);
 	}
 
 	@Override
@@ -85,15 +78,9 @@ public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 		if (!ArmorTrim.setTrim(registryAccess, result, trim))
 			return ItemStack.EMPTY;
 		boolean tintable = ShineriteTrimSupport.isTintable(baseStack);
-		boolean storeColor = tintable && ShineriteTrimSupport.shouldStoreColor(additionStack);
+		boolean storeColor = ShineriteTrimSupport.shouldStoreColor(additionStack);
 		if (storeColor)
 			result.getOrCreateTag().putInt(TAG_TRIM_COLOR, ((IDyeableItem) additionStack.getItem()).getColor(additionStack));
-		String diag = "assemble id=" + this.id + " base=" + baseStack.getItem() + " tintable=" + tintable
-				+ " plainIngot=" + ShineriteTrimSupport.isPlainIngot(additionStack) + " storedColor=" + storeColor;
-		if (!diag.equals(LAST_DIAG)) {
-			LAST_DIAG = diag;
-			LOGGER.info("[ShineriteTrim] {}", diag);
-		}
 		return result;
 	}
 

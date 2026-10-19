@@ -180,7 +180,7 @@ public class EnchantmentsHandler {
 				continue;
 			float scaledFraction = (float) Math.pow((float) uses / maxUses, decayExponent);
 			int imbuedColor = tag.getInt("ImbuedColor");
-			applyImbuedEffects(effectsTag, attacker, scaledFraction, minTicks);
+			applyImbuedEffects(effectsTag, target, attacker, scaledFraction, minTicks);
 			retaliated = true;
 			if (imbuedColor != -1) {
 				redSum += (imbuedColor >> 16) & 255;
@@ -209,20 +209,8 @@ public class EnchantmentsHandler {
 		ShineriteAttackHandler.spawnCritBurst(world, attacker, r, g, b, RETALIATION_WEARER_PARTICLE_SIZE, RETALIATION_WEARER_PARTICLE_COUNT);
 	}
 
-	private static void applyImbuedEffects(ListTag effectsTag, LivingEntity attacker, float scaledFraction, int minTicks) {
-		for (int i = 0; i < effectsTag.size(); i++) {
-			MobEffectInstance savedEffect = MobEffectInstance.load(effectsTag.getCompound(i));
-			if (savedEffect == null)
-				continue;
-			MobEffect effect = savedEffect.getEffect();
-			int finalDuration = Math.max(minTicks, (int) (savedEffect.getDuration() * scaledFraction));
-			int finalAmplifier = Math.max(0, (int) (savedEffect.getAmplifier() * scaledFraction));
-			if (effect.isInstantenous()) {
-				effect.applyInstantenousEffect(null, null, attacker, finalAmplifier, 1.0);
-			} else {
-				attacker.addEffect(new MobEffectInstance(effect, finalDuration, finalAmplifier, savedEffect.isAmbient(), savedEffect.isVisible(), savedEffect.showIcon()));
-			}
-		}
+	private static void applyImbuedEffects(ListTag effectsTag, LivingEntity source, LivingEntity target, float scaledFraction, int minTicks) {
+		ShineriteAttackHandler.applyImbuedEffects(effectsTag, source, target, scaledFraction, minTicks, true);
 	}
 
 	private static void consumeUse(LivingEntity target, EquipmentSlot slot, ItemStack armor, CompoundTag tag, int uses, int maxUses) {

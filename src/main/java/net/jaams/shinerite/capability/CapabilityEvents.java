@@ -6,6 +6,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Entity;
@@ -14,6 +15,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.server.level.ServerPlayer;
 
 import net.jaams.shinerite.packet.GlowColorPacket;
+import net.jaams.shinerite.network.SyncModDataMessage;
 import net.jaams.shinerite.capability.glowingcolor.GlowingColorProvider;
 import net.jaams.shinerite.JaamsShineriteMod;
 
@@ -67,6 +69,16 @@ public class CapabilityEvents {
 				JaamsShineriteMod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new GlowColorPacket(target.getId(), glowingColor.getColor()));
 			}
 		});
+	}
+
+	@SubscribeEvent
+	public static void onModDataSync(OnDatapackSyncEvent event) {
+		for (ServerPlayer player : event.getPlayers()) {
+			if (player.level().isClientSide) {
+				continue;
+			}
+			JaamsShineriteMod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), SyncModDataMessage.fromServerState());
+		}
 	}
 
 	@SubscribeEvent

@@ -15,10 +15,10 @@ import net.jaams.shinerite.init.ModItems;
  * Central list of the armor pieces that can render a <b>tinted</b> Shinerite trim, both on the worn
  * model and on the inventory icon.
  *
- * <p>For these pieces the smithing recipe accepts a colored Shinerite ingot and freezes that color
- * into the armor NBT. For every other trimmable armor (armor from other mods, modded armor that has
- * no Shinerite trim model) a colored ingot would produce a trim that can never be tinted, which is
- * an inconsistency the user would notice, so those only accept a plain (undyed / white) ingot.
+ * <p>The smithing recipe freezes a colored ingot into the armor NBT for <b>every</b> trimmable armor, since the trim
+ * icon is generated at runtime and the worn trim is rendered by the armor layer mixin, so the color also works on the
+ * armor of other mods. This list is kept for informational purposes (tooltip, integrations) and only holds the pieces
+ * that are tinted by their own color (Shinerite) or by dyeing (vanilla leather).
  */
 public final class ShineriteTrimSupport {
 
@@ -72,7 +72,8 @@ public final class ShineriteTrimSupport {
 		return tintableArmor;
 	}
 
-	/** {@code true} when this armor piece can render a tinted Shinerite trim. */
+	/** {@code true} when this armor piece has a colored base model of its own (Shinerite / dyeable leather).
+	 */
 	public static boolean isTintable(ItemStack stack) {
 		return stack != null && tintableArmor().contains(stack.getItem());
 	}

@@ -39,6 +39,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.ChatFormatting;
 
 import net.jaams.shinerite.util.ModProjectiles;
+import net.jaams.shinerite.handler.mechanic.ProjectileImpactHandler;
 
 import javax.annotation.Nullable;
 
@@ -248,6 +249,7 @@ public abstract class BaseWeaponProjectileEntity extends AbstractArrow implement
 	public void tick() {
 		super.tick();
 		if (!this.level().isClientSide) {
+			tickImbuementCooldown();
 			if (handleCurseOfVanishingDisappear()) {
 				return;
 			}
@@ -606,6 +608,15 @@ public abstract class BaseWeaponProjectileEntity extends AbstractArrow implement
 		if (knockbackStrength > 0.0F) {
 			target.knockback(knockbackStrength * (float) knockbackFactor, -this.getDeltaMovement().x, -this.getDeltaMovement().z);
 		}
+	}
+
+	protected void tickImbuementCooldown() {
+		CompoundTag persistent = this.getPersistentData();
+		int ticks = persistent.getInt(ProjectileImpactHandler.IMBUE_LAST_TARGET_TICKS);
+		if (ticks <= 0) {
+			return;
+		}
+		persistent.putInt(ProjectileImpactHandler.IMBUE_LAST_TARGET_TICKS, ticks - 1);
 	}
 
 	protected boolean handleCurseOfVanishingDisappear() {

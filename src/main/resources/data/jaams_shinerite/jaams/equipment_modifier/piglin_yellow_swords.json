@@ -5,14 +5,14 @@
   "enabled": true,
   "priority": 4,
   "condition_mode": "and",
-  "global_chance": 0.06,
+  "global_chance": 0.15,
   "conditions": [],
   "items": [
     {
       "item": "jaams_shinerite:shinerite_sword",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.35,
+      "chance": 0.7,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [
@@ -30,7 +30,7 @@
       "item": "jaams_shinerite:shinerite_helmet",
       "slot": "head",
       "count": 1,
-      "chance": 0.08,
+      "chance": 0.24,
       "replace_existing": false,
       "random_color": true,
       "random_colors": [

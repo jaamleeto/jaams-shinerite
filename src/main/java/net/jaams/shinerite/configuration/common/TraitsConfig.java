@@ -15,14 +15,14 @@ public class TraitsConfig {
 	public static ForgeConfigSpec.IntValue FRAILGLOW_GLOW_DURATION;
 	public static ForgeConfigSpec.IntValue FRAILGLOW_GLOW_AMPLIFIER;
 	// Throwback
-	public static ForgeConfigSpec.IntValue THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE;
-	public static ForgeConfigSpec.IntValue THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE;
-	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINEMERANG_PROJECTILE_ON_MAX_RANGE;
-	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINEMERANG_PROJECTILE_ON_HIT;
-	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINEMERANG_PROJECTILE_ON_BLOCK;
+	public static ForgeConfigSpec.IntValue THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE;
+	public static ForgeConfigSpec.IntValue THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE;
+	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE;
+	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_HIT;
+	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK;
 	// Radiant Collector
-	public static ForgeConfigSpec.IntValue RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_MAX_ITEMS;
-	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_GLOW;
+	public static ForgeConfigSpec.IntValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_MAX_ITEMS;
+	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_GLOW;
 
 	public static void register(ForgeConfigSpec.Builder builder) {
 		builder.push("Weapon Traits Handler");
@@ -43,18 +43,18 @@ public class TraitsConfig {
 		ThrowableConfig.register(builder);
 		builder.pop();
 		builder.push("Throwback");
-		builder.push("Shinemerang Projectile");
-		THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE = builder.comment("Minimum distance before the Shinemerang projectile starts returning").defineInRange("Min Range", 5, 1, 50);
-		THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE = builder.comment("Maximum distance the Shinemerang projectile can travel before forced return").defineInRange("Max Range", 20, 3, 100);
-		THROWBACK_SHINEMERANG_PROJECTILE_ON_MAX_RANGE = builder.comment("Whether the Shinemerang returns automatically at max distance").define("Return On Max Range", true);
-		THROWBACK_SHINEMERANG_PROJECTILE_ON_HIT = builder.comment("Whether the Shinemerang returns immediately after hitting an entity").define("Return On Entity Hit", true);
-		THROWBACK_SHINEMERANG_PROJECTILE_ON_BLOCK = builder.comment("Whether the Shinemerang returns immediately after hitting a block").define("Return On Block Hit", true);
+		builder.push("Shinerang Projectile");
+		THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE = builder.comment("Minimum distance before the Shinerang projectile starts returning").defineInRange("Min Range", 5, 1, 50);
+		THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE = builder.comment("Maximum distance the Shinerang projectile can travel before forced return").defineInRange("Max Range", 20, 3, 100);
+		THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE = builder.comment("Whether the Shinerang returns automatically at max distance").define("Return On Max Range", true);
+		THROWBACK_SHINERANG_PROJECTILE_ON_HIT = builder.comment("Whether the Shinerang returns immediately after hitting an entity").define("Return On Entity Hit", true);
+		THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK = builder.comment("Whether the Shinerang returns immediately after hitting a block").define("Return On Block Hit", true);
 		builder.pop();
 		builder.pop();
 		builder.push("Radiant Collector");
-		builder.push("Shinemerang Projectile");
-		RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_MAX_ITEMS = builder.comment("Maximum number of items the Shinemerang can pick up and bring back").defineInRange("Max Collected Items", 3, 0, 6);
-		RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_GLOW = builder.comment("Whether collected items glow while being carried by Shinemerang").define("Glow On Collected Items", true);
+		builder.push("Shinerang Projectile");
+		RADIANT_COLLECTOR_SHINERANG_PROJECTILE_MAX_ITEMS = builder.comment("Maximum number of items the Shinerang can pick up and bring back").defineInRange("Max Collected Items", 3, 0, 6);
+		RADIANT_COLLECTOR_SHINERANG_PROJECTILE_GLOW = builder.comment("Whether collected items glow while being carried by Shinerang").define("Glow On Collected Items", true);
 		builder.pop();
 		builder.pop();
 		builder.pop();

@@ -38,13 +38,15 @@ import net.jaams.shinerite.init.ModParticles;
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.packet.CustomJukeboxPacket;
 import net.jaams.shinerite.network.SyncModDataMessage;
-import net.jaams.shinerite.loot.LootModifiers;
+
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.init.ModEntities;
 import net.jaams.shinerite.init.ModEnchantments;
-import net.jaams.shinerite.registry.ShineriteFeaturesRegister;
+
 import net.jaams.shinerite.dispenser.ShineriteBlockDispenser;
+import net.jaams.shinerite.registry.ShineriteFeaturesRegister;
+import net.jaams.shinerite.util.ShineriteTrimCompat;
 
 import java.util.function.Supplier;
 import java.util.function.Function;
@@ -104,12 +106,12 @@ public class JaamsShineriteMod {
 		ModParticles.register(bus);
 		// Features
 		ShineriteFeaturesRegister.FEATURES.register(bus);
-		// Loot Modifier
-		LootModifiers.register(bus);
 		// Common Setup
 		bus.addListener(this::commonSetup);
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-			//JaamSpriteSources.register();
+			// Oreganized renders its electrum armor with its own model and its own trim draw, so it must not be
+			// taken over here; its trim only gets the Shinerite glow and color through the renderTrim of Forge.
+			ShineriteTrimCompat.excludeNamespace("oreganized");
 		});
 		// End of user code block mod init
 	}

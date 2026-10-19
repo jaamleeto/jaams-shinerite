@@ -1,8 +1,0 @@
-{
-  "type": "jaams_shinerite:add_item",
-  "conditions": [
-    {
-      "condition": "minecraft:all_of"
-    }
-  ]
-}

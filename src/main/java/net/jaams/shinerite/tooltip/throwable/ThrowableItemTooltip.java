@@ -52,16 +52,16 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.projectile != null && !json.projectile.isEmpty())
             return json.projectile;
-        if (isShinemerang(stack))
-            return "jaams_shinerite:shinemerang_projectile";
+        if (isShinerang(stack))
+            return "jaams_shinerite:shinerang_projectile";
         if (isShineriteStar(stack))
             return "jaams_shinerite:shinerite_star_projectile";
         return "GENERIC";
     }
 
-    private static boolean isShinemerang(ItemStack stack) {
-        return stack.is(net.jaams.shinerite.util.ModTags.SHINEMERANGS)
-                || (stack.hasTag() && stack.getTag().getBoolean("ForceShinemerangThrowable"));
+    private static boolean isShinerang(ItemStack stack) {
+        return stack.is(net.jaams.shinerite.util.ModTags.SHINERANGS)
+                || (stack.hasTag() && stack.getTag().getBoolean("ForceShinerangThrowable"));
     }
 
     private static boolean isShineriteStar(ItemStack stack) {
@@ -90,8 +90,8 @@ public class ThrowableItemTooltip {
             } catch (Exception ignored) {
             }
         }
-        if (isShinemerang(stack))
-            return ThrowableConfig.THROWABLE_SHINEMERANG_THROW_MODE.get();
+        if (isShinerang(stack))
+            return ThrowableConfig.THROWABLE_SHINERANG_THROW_MODE.get();
         if (isShineriteStar(stack))
             return ThrowableConfig.THROWABLE_SHINERITE_STAR_THROW_MODE.get();
         return ModEnums.ThrowMode.CHARGE_AND_RELEASE;
@@ -184,8 +184,8 @@ public class ThrowableItemTooltip {
             return json.base_damage;
         }
         double itemDamage = ModUtils.calculateDamage(stack);
-        double defaultDmg = isShinemerang(stack)
-                ? ProjectileCommonConfig.SHINEMERANG_PROJECTILE_BASE_DAMAGE.get()
+        double defaultDmg = isShinerang(stack)
+                ? ProjectileCommonConfig.SHINERANG_PROJECTILE_BASE_DAMAGE.get()
                 : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_BASE_DAMAGE.get();
         return itemDamage + defaultDmg;
     }
@@ -197,8 +197,8 @@ public class ThrowableItemTooltip {
         if (json.base_knockback != null && json.base_knockback >= 0.0f) {
             return json.base_knockback;
         }
-        return isShinemerang(stack)
-                ? ProjectileCommonConfig.SHINEMERANG_PROJECTILE_BASE_KNOCKBACK.get()
+        return isShinerang(stack)
+                ? ProjectileCommonConfig.SHINERANG_PROJECTILE_BASE_KNOCKBACK.get()
                 : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_BASE_KNOCKBACK.get();
     }
 
@@ -208,8 +208,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.min_charge_ticks != null && json.min_charge_ticks >= 0)
             return json.min_charge_ticks;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_MIN_CHARGE.get()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_MIN_CHARGE.get()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_MIN_CHARGE.get();
     }
 
@@ -219,8 +219,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.max_charge_ticks != null && json.max_charge_ticks >= 0)
             return json.max_charge_ticks;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_MAX_CHARGE.get()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_MAX_CHARGE.get()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_MAX_CHARGE.get();
     }
 
@@ -230,8 +230,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.min_speed != null && json.min_speed >= 0)
             return json.min_speed;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_MIN_SPEED.get().floatValue()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_MIN_SPEED.get().floatValue()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_MIN_SPEED.get().floatValue();
     }
 
@@ -241,8 +241,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.max_speed != null && json.max_speed >= 0)
             return json.max_speed;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_MAX_SPEED.get().floatValue()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_MAX_SPEED.get().floatValue()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_MAX_SPEED.get().floatValue();
     }
 
@@ -252,8 +252,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.inaccuracy != null && json.inaccuracy >= 0)
             return json.inaccuracy;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_INACCURACY.get().floatValue()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_INACCURACY.get().floatValue()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_INACCURACY.get().floatValue();
     }
 
@@ -263,8 +263,8 @@ public class ThrowableItemTooltip {
             return nbt;
         if (json.recoil != null && json.recoil >= 0)
             return json.recoil;
-        return isShinemerang(stack)
-                ? ThrowableConfig.THROWABLE_SHINEMERANG_RECOIL.get().floatValue()
+        return isShinerang(stack)
+                ? ThrowableConfig.THROWABLE_SHINERANG_RECOIL.get().floatValue()
                 : ThrowableConfig.THROWABLE_SHINERITE_STAR_RECOIL.get().floatValue();
     }
 
@@ -275,8 +275,8 @@ public class ThrowableItemTooltip {
         } else if (json.pierce_level != null) {
             piercing = Math.max(0, json.pierce_level);
         } else {
-            piercing = isShinemerang(stack)
-                    ? ProjectileCommonConfig.SHINEMERANG_PROJECTILE_PIERCING_LEVEL.get()
+            piercing = isShinerang(stack)
+                    ? ProjectileCommonConfig.SHINERANG_PROJECTILE_PIERCING_LEVEL.get()
                     : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_PIERCING_LEVEL.get();
         }
         piercing += EnchantmentHelper.getTagEnchantmentLevel(Enchantments.PIERCING, stack);
@@ -290,8 +290,8 @@ public class ThrowableItemTooltip {
             ModTooltips.addStat(stack, tooltip, "water_inertia", ModUtils.roundToTwoDecimals(stack.getTag().getDouble("WaterInertia")));
             return;
         }
-        float def = isShinemerang(stack)
-                ? ProjectileCommonConfig.SHINEMERANG_PROJECTILE_WATER_INERTIA.get().floatValue()
+        float def = isShinerang(stack)
+                ? ProjectileCommonConfig.SHINERANG_PROJECTILE_WATER_INERTIA.get().floatValue()
                 : ProjectileCommonConfig.SHINERITE_STAR_PROJECTILE_WATER_INERTIA.get().floatValue();
         float inertia = ModProjectiles.getWaterInertia(stack, def);
         ModTooltips.addStat(stack, tooltip, "water_inertia", ModUtils.roundToTwoDecimals(inertia));
@@ -299,16 +299,16 @@ public class ThrowableItemTooltip {
 
     private static void addThrowbackPropertiesIfEnabled(ItemStack stack, List<Component> tooltip,
             ModEnums.ThrowMode throwMode, String projectileType) {
-        if (!isShinemerangProjectile(projectileType)) {
+        if (!isShinerangProjectile(projectileType)) {
             return;
         }
         if (!isThrowbackEnabled(stack) || !TooltipsConfig.TOOLTIP_THROWBACK_PROPERTIES.get()) {
             return;
         }
         double minRange = ModProjectiles.getThrowbackMinRange(stack,
-                TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MIN_RANGE.get().doubleValue());
+                TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE.get().doubleValue());
         float maxRange = ModProjectiles.getThrowbackMaxRange(stack,
-                TraitsConfig.THROWBACK_SHINEMERANG_PROJECTILE_MAX_RANGE.get().floatValue());
+                TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE.get().floatValue());
         double returnSpeed = ModProjectiles.getThrowbackReturnSpeed(stack, 1.0);
         ModTooltips.addExtraInfo(stack, tooltip, "tooltip.jaams_shinerite.properties.throwback", ChatFormatting.YELLOW);
         if (throwMode == ModEnums.ThrowMode.INSTANT_ON_RIGHT_CLICK) {
@@ -321,21 +321,21 @@ public class ThrowableItemTooltip {
     }
 
     private static void addCollectorPropertiesIfEnabled(ItemStack stack, List<Component> tooltip, String projectileType) {
-        if (!isShinemerangProjectile(projectileType)) {
+        if (!isShinerangProjectile(projectileType)) {
             return;
         }
         if (!isCollectorEnabled(stack) || !TooltipsConfig.TOOLTIP_COLLECTOR_PROPERTIES.get()) {
             return;
         }
         int maxItems = ModProjectiles.getMaxMountedEntities(stack, true,
-                TraitsConfig.RADIANT_COLLECTOR_SHINEMERANG_PROJECTILE_MAX_ITEMS.get());
+                TraitsConfig.RADIANT_COLLECTOR_SHINERANG_PROJECTILE_MAX_ITEMS.get());
         ModTooltips.addExtraInfo(stack, tooltip, "tooltip.jaams_shinerite.properties.radiant_collector",
                 ChatFormatting.YELLOW);
         ModTooltips.addStat(stack, tooltip, "collector_max_items", maxItems);
     }
 
-    private static boolean isShinemerangProjectile(String projectileType) {
-        return projectileType != null && projectileType.endsWith("shinemerang_projectile");
+    private static boolean isShinerangProjectile(String projectileType) {
+        return projectileType != null && projectileType.endsWith("shinerang_projectile");
     }
 
     private static void addCooldownIfInstant(ItemStack stack, List<Component> tooltip, ModEnums.ThrowMode throwMode,
@@ -371,7 +371,7 @@ public class ThrowableItemTooltip {
     }
 
     private static void addSpecialTraits(ItemStack stack, List<Component> tooltip, String projectileType) {
-        if (isShinemerangProjectile(projectileType)) {
+        if (isShinerangProjectile(projectileType)) {
             if (isThrowbackEnabled(stack)) {
                 ModTooltips.addProjectileTrait(stack, tooltip, "tooltip.jaams_shinerite.trait.throwback",
                         "tooltip.jaams_shinerite.trait.throwback.desc");

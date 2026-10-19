@@ -6,14 +6,14 @@
   "enabled": true,
   "priority": 2,
   "condition_mode": "and",
-  "global_chance": 0.03,
+  "global_chance": 0.042,
   "conditions": [],
   "items": [
     {
       "item": "jaams_shinerite:shinerite_sword",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.35,
+      "chance": 0.49,
       "replace_existing": false,
       "nbt": {
         "ImbuedColor": 6053067,
@@ -43,7 +43,7 @@
       "item": "jaams_shinerite:shinerite_axe",
       "slot": "mainhand",
       "count": 1,
-      "chance": 0.22,
+      "chance": 0.31,
       "replace_existing": false,
       "nbt": {
         "ImbuedColor": 6053067,

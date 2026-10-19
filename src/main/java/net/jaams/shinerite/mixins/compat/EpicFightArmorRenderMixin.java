@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.armortrim.ArmorTrim;
 
 import net.jaams.shinerite.item.ShineriteArmorItem;
 import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
+import net.jaams.shinerite.util.ShineriteTrimSupport;
 
 import yesman.epicfight.api.client.model.Mesh;
 import yesman.epicfight.api.client.model.SkinnedMesh;
@@ -61,6 +63,10 @@ public abstract class EpicFightArmorRenderMixin {
 
 	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
 	private static final String SHINERITE_TRIM = "jaams_shinerite:shinerite";
+	/** Base trim color of the Shinerite material on the armor of other mods, no tint applied. */
+	private static final int SHINERITE_TRIM_COLOR = 0xFFFFFF;
+	/** Base trim color on the Shinerite armor itself, which is drawn full bright and needs a readable tint. */
+	private static final int SHINERITE_ARMOR_TRIM_COLOR = 0x949494;
 
 	@Shadow
 	@Final
@@ -170,11 +176,19 @@ public abstract class EpicFightArmorRenderMixin {
 
 		boolean isShinerite = SHINERITE_TRIM.equals(materialId);
 		String materialName = jaams$idPath(materialId);
-		String patternName = jaams$idPath(patternId);
 		boolean inner = slot == EquipmentSlot.LEGS;
-		ResourceLocation spriteId = ResourceLocation.fromNamespaceAndPath("minecraft",
-				"trims/models/armor/" + patternName + (inner ? "_leggings" : "") + "_" + materialName);
-		TextureAtlasSprite sprite = this.armorTrimAtlas.getSprite(spriteId);
+
+		// Trim patterns of other mods keep their own namespace, the sprite is not in minecraft's folder.
+		String namespace = patternId.contains(":") ? patternId.substring(0, patternId.indexOf(':')) : "minecraft";
+		String baseSprite = "trims/models/armor/" + jaams$idPath(patternId) + (inner ? "_leggings" : "");
+		ResourceLocation spriteId = ResourceLocation.fromNamespaceAndPath(namespace, baseSprite + "_" + materialName);
+		TextureAtlasSprite sprite = jaams$findSprite(spriteId);
+		// The atlas source of that mod may not know our trim material, so its paletted sprite does not
+		// exist. Fall back to the unpaletted pattern instead of drawing nothing.
+		boolean palettedSprite = sprite != null;
+		if (!palettedSprite) {
+			sprite = jaams$findSprite(ResourceLocation.fromNamespaceAndPath(namespace, baseSprite));
+		}
 		if (sprite == null) {
 			return;
 		}
@@ -183,8 +197,15 @@ public abstract class EpicFightArmorRenderMixin {
 		float r = 1.0F;
 		float g = 1.0F;
 		float b = 1.0F;
-		if (isShinerite && tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)) {
-			int trimColor = tag.getInt(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR);
+		if (isShinerite) {
+			int trimColor = tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)
+					? tag.getInt(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR)
+					: 0;
+			// An undyed (or white) ingot always uses the natural Shinerite palette, never plain white, so a
+			// pattern that carries its own baked in tint (custom smithing templates) still reads as Shinerite.
+			if (trimColor == 0 || ShineriteTrimSupport.isPlainColor(trimColor)) {
+				trimColor = stack.getItem() instanceof ShineriteArmorItem ? SHINERITE_ARMOR_TRIM_COLOR : SHINERITE_TRIM_COLOR;
+			}
 			r = (trimColor >> 16 & 255) / 255.0F;
 			g = (trimColor >> 8 & 255) / 255.0F;
 			b = (trimColor & 255) / 255.0F;
@@ -200,5 +221,21 @@ public abstract class EpicFightArmorRenderMixin {
 	private static String jaams$idPath(String id) {
 		int i = id.indexOf(':');
 		return i >= 0 ? id.substring(i + 1) : id;
+	}
+
+	/** Looks a sprite up, treating the missing texture sprite as absent. */
+	@Unique
+	private TextureAtlasSprite jaams$findSprite(ResourceLocation location) {
+		if (this.armorTrimAtlas == null) {
+			return null;
+		}
+		TextureAtlasSprite sprite = this.armorTrimAtlas.getSprite(location);
+		// The atlas hands out the missing sprite instead of null, and it is only a plain Sprite, so it can only
+		// be recognized by its type: drawing it would show the pink and black square.
+		if (!(sprite instanceof TextureAtlasSprite)
+				|| MissingTextureAtlasSprite.getLocation().equals(sprite.contents().name())) {
+			return null;
+		}
+		return sprite;
 	}
 }

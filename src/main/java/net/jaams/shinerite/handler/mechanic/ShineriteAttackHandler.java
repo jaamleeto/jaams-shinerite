@@ -12,6 +12,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffect;
@@ -36,6 +37,8 @@ import net.jaams.shinerite.configuration.common.EnchantmentsConfig;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
 import net.jaams.shinerite.capability.glowingcolor.GlowingColorProvider;
 import net.jaams.shinerite.JaamsShineriteMod;
+
+import javax.annotation.Nullable;
 
 public class ShineriteAttackHandler {
 	public static final double BURST_RADIUS = 0.5;
@@ -82,79 +85,43 @@ public class ShineriteAttackHandler {
 		}
 	}
 
-	public static void handleImbuedEffect(ItemStack itemStack, LivingEntity target, LivingEntity attacker, Level world) {
+	public static boolean handleImbuedEffect(ItemStack itemStack, LivingEntity target, LivingEntity attacker, Level world) {
 		if (!MechanicsConfig.IMBUING.get()) {
-			return;
+			return false;
 		}
 		if (itemStack.getItem().isEdible()) {
-			return;
+			return false;
 		}
 		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("ImbuedEffects", Tag.TAG_LIST)) {
-			return;
+			return false;
 		}
 		ListTag effectsTag = tag.getList("ImbuedEffects", Tag.TAG_COMPOUND);
 		if (effectsTag.isEmpty()) {
-			return;
+			return false;
 		}
 		int uses = tag.getInt("ImbuedUses");
 		int maxUses = tag.getInt("MaxImbuedUses");
 		if (uses <= 0 || maxUses <= 0) {
-			return;
+			return false;
 		}
-		float useFraction = (float) uses / maxUses;
+		float useFraction = Math.min(1.0F, (float) uses / maxUses);
 		float scaledFraction = (float) Math.pow(useFraction, MechanicsConfig.IMBUED_EFFECT_DECAY_EXPONENT.get());
 		boolean isCreative = attacker instanceof Player player && player.isCreative();
 		boolean shouldConsume = !isCreative || MechanicsConfig.IMBUED_CONSUME_USES_IN_CREATIVE.get();
-		int imbuedColor = tag.getInt("ImbuedColor");
-		for (int i = 0; i < effectsTag.size(); i++) {
-			CompoundTag effectData = effectsTag.getCompound(i);
-			MobEffectInstance savedEffect = MobEffectInstance.load(effectData);
-			if (savedEffect == null)
-				continue;
-			MobEffect effect = savedEffect.getEffect();
-			int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
-			int finalDuration = Math.max(minTicks, (int) (savedEffect.getDuration() * scaledFraction));
-			int finalAmplifier = Math.max(0, (int) (savedEffect.getAmplifier() * scaledFraction));
-			if (effect.isInstantenous()) {
-				if (effect == MobEffects.HARM) {
-					float amount = 6.0f * (finalAmplifier + 1);
-					int originalInvulnerableTime = target.invulnerableTime;
-					target.invulnerableTime = 0;
-					if (target.isInvertedHealAndHarm()) {
-						target.heal(amount);
-					} else {
-						target.hurt(attacker.damageSources().magic(), amount);
-					}
-					target.invulnerableTime = originalInvulnerableTime;
-				} else if (effect == MobEffects.HEAL) {
-					float amount = 4.0f * (finalAmplifier + 1);
-					int originalInvulnerableTime = target.invulnerableTime;
-					target.invulnerableTime = 0;
-					if (target.isInvertedHealAndHarm()) {
-						target.hurt(attacker.damageSources().magic(), amount);
-					} else {
-						target.heal(amount);
-					}
-					target.invulnerableTime = originalInvulnerableTime;
-				} else {
-					effect.applyInstantenousEffect(attacker, attacker, target, finalAmplifier, 1.0);
-				}
-			} else {
-				target.addEffect(new MobEffectInstance(effect, finalDuration, finalAmplifier, savedEffect.isAmbient(), savedEffect.isVisible(), savedEffect.showIcon()));
-			}
+		int imbuedColor = ModUtils.getImbuedParticleColor(itemStack);
+		boolean applied = applyImbuedEffects(effectsTag, attacker, target, scaledFraction, MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get(), true);
+		if (!applied) {
+			return false;
 		}
 		if (!world.isClientSide()) {
-			float r = ((imbuedColor >> 16) & 255) / 255.0F;
-			float g = ((imbuedColor >> 8) & 255) / 255.0F;
-			float b = (imbuedColor & 255) / 255.0F;
-			spawnCritBurst(world, target, r, g, b, 0.15f, 6);
+			spawnImbuedCritBurst(world, target, imbuedColor, 0.15f, 6);
 		}
 		if (attacker instanceof Player player && shouldConsume) {
 			ItemStack mainHand = player.getMainHandItem();
 			ItemStack offHand = player.getOffhandItem();
 			if (mainHand != itemStack && offHand != itemStack) {
-				return;
+				return true;
 			}
 			ItemStack activeStack = itemStack;
 			if (uses == 1 && activeStack.getCount() > 1) {
@@ -182,6 +149,97 @@ public class ShineriteAttackHandler {
 				}
 			}
 		}
+		return true;
+	}
+
+	/**
+	 * Central, defensive imbuement application used by every source (melee, projectiles, armor, ...).
+	 * Prevents the classic bugs: applying to the source itself, applying on the client side, refreshing
+	 * effects every tick (which leaves them stuck at 0:00 forever) and stacking zero/negative durations.
+	 *
+	 * @return true if at least one effect was actually applied.
+	 */
+	public static boolean applyImbuedEffects(ListTag effectsTag, @Nullable Entity source, LivingEntity target, float scaledFraction, int minDurationTicks, boolean allowInstantaneous) {
+		if (effectsTag == null || effectsTag.isEmpty() || target == null || !target.isAlive() || target.isRemoved()) {
+			return false;
+		}
+		if (isSelfOrRiddenTarget(source, target)) {
+			return false;
+		}
+		int minTicks = Math.max(1, minDurationTicks);
+		float fraction = Math.min(1.0F, Math.max(0.0F, scaledFraction));
+		boolean applied = false;
+		for (int i = 0; i < effectsTag.size(); i++) {
+			CompoundTag effectData = effectsTag.getCompound(i);
+			if (effectData.isEmpty()) {
+				continue;
+			}
+			MobEffectInstance savedEffect = MobEffectInstance.load(effectData);
+			if (savedEffect == null) {
+				continue;
+			}
+			MobEffect effect = savedEffect.getEffect();
+			if (effect == null) {
+				continue;
+			}
+			int finalDuration = Math.max(minTicks, (int) (savedEffect.getDuration() * fraction));
+			int finalAmplifier = Math.max(0, (int) (savedEffect.getAmplifier() * fraction));
+			if (effect.isInstantenous()) {
+				if (!allowInstantaneous || !(source instanceof LivingEntity livingSource) || livingSource == target) {
+					continue;
+				}
+				applyInstantaneousImbuementEffect(effect, target, livingSource, finalAmplifier);
+				applied = true;
+				continue;
+			}
+			if (!target.canBeAffected(new MobEffectInstance(effect, finalDuration, finalAmplifier))) {
+				continue;
+			}
+			MobEffectInstance current = target.getEffect(effect);
+			if (current != null && current.getAmplifier() >= finalAmplifier && current.getDuration() >= finalDuration) {
+				continue;
+			}
+			if (target.addEffect(new MobEffectInstance(effect, finalDuration, finalAmplifier, savedEffect.isAmbient(), savedEffect.isVisible(), savedEffect.showIcon()))) {
+				applied = true;
+			}
+		}
+		return applied;
+	}
+
+	private static void applyInstantaneousImbuementEffect(MobEffect effect, LivingEntity target, LivingEntity source, int amplifier) {
+		if (effect == MobEffects.HARM) {
+			damageOrHealInstant(target, source, 6.0F * (amplifier + 1), false);
+		} else if (effect == MobEffects.HEAL) {
+			damageOrHealInstant(target, source, 4.0F * (amplifier + 1), true);
+		} else {
+			effect.applyInstantenousEffect(source, source, target, amplifier, 1.0);
+		}
+	}
+
+	private static void damageOrHealInstant(LivingEntity target, LivingEntity source, float amount, boolean heal) {
+		int originalInvulnerableTime = target.invulnerableTime;
+		target.invulnerableTime = 0;
+		if (target.isInvertedHealAndHarm()) {
+			if (heal) {
+				target.hurt(source.damageSources().magic(), amount);
+			} else {
+				target.heal(amount);
+			}
+		} else {
+			if (heal) {
+				target.heal(amount);
+			} else {
+				target.hurt(source.damageSources().magic(), amount);
+			}
+		}
+		target.invulnerableTime = originalInvulnerableTime;
+	}
+
+	public static boolean isSelfOrRiddenTarget(@Nullable Entity source, LivingEntity target) {
+		if (source == null || target == null) {
+			return false;
+		}
+		return source == target || source.getVehicle() == target || target.getVehicle() == source;
 	}
 
 	public static void applyGlowEffect(LivingEntity target, Level world, int color, int enchantmentLevel) {
@@ -229,6 +287,22 @@ public class ShineriteAttackHandler {
 			float particleB = Math.min(1.0f, b * colorVar);
 			level.sendParticles(new CustomFireworkParticleData(particleR, particleG, particleB, size), center.x + offsetX, center.y + offsetY, center.z + offsetZ, 1, vx, vy, vz, 0.0);
 		}
+	}
+
+	public static void spawnImbuedCritBurst(Level world, LivingEntity entity, int color, float particleSize, int baseParticleCount) {
+		int safeColor = sanitizeParticleColor(color);
+		float r = ((safeColor >> 16) & 255) / 255.0F;
+		float g = ((safeColor >> 8) & 255) / 255.0F;
+		float b = (safeColor & 255) / 255.0F;
+		spawnCritBurst(world, entity, r, g, b, particleSize, baseParticleCount);
+	}
+
+	public static void spawnImbuedCritBurst(Level world, LivingEntity entity, ItemStack weapon, float particleSize, int baseParticleCount) {
+		spawnImbuedCritBurst(world, entity, ModUtils.getImbuedParticleColor(weapon), particleSize, baseParticleCount);
+	}
+
+	private static int sanitizeParticleColor(int color) {
+		return color >= 0 && color <= 0xFFFFFF ? color : ModUtils.IMBUE_FALLBACK_COLOR;
 	}
 
 	public static void spawnCritBurst(Level world, LivingEntity entity, float r, float g, float b, float particleSize, int baseParticleCount) {

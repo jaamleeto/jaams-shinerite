@@ -87,11 +87,15 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		if (context.getClickedFace() == Direction.DOWN) {
-			boolean flag = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
-			return this.defaultBlockState().setValue(WATERLOGGED, flag);
+		// Like vanilla roots, the only way to hang them is clicking the underside of a block.
+		// Whether that block is sturdy enough is checked afterwards by canSurvive, which receives the
+		// final placement position.
+		if (context.getClickedFace() != Direction.DOWN) {
+			return null;
 		}
-		return null;
+
+		boolean flag = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
+		return this.defaultBlockState().setValue(WATERLOGGED, flag);
 	}
 
 	@Override
@@ -99,16 +103,28 @@ public class ShineriteRootsBlock extends BaseShineriteBlock implements SimpleWat
 		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
+	/**
+	 * The only thing that can hold the roots from above is a block whose lower face is solid, exactly
+	 * like vanilla roots. Shinerite roots are deliberately not accepted as a support, so they can
+	 * never be stacked underneath other Shinerite roots.
+	 *
+	 * @param supportPos position of the candidate support block (the block above the roots)
+	 */
+	private static boolean isValidSupport(LevelReader level, BlockPos supportPos) {
+		return level.getBlockState(supportPos).isFaceSturdy(level, supportPos, Direction.DOWN);
+	}
+
 	@Override
-	public boolean canSurvive(BlockState p_153347_, LevelReader p_153348_, BlockPos p_153349_) {
-		BlockPos blockpos = p_153349_.above();
-		BlockState blockstate = p_153348_.getBlockState(blockpos);
-		return blockstate.is(this) || blockstate.isFaceSturdy(p_153348_, blockpos, Direction.DOWN);
+	public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+		return isValidSupport(level, pos.above());
 	}
 
 	@Override
 	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
-		if (facing == Direction.UP && !facingState.is(this) && !facingState.isFaceSturdy(world, facingPos, Direction.DOWN)) {
+		// Anything placed on top (or any support removed) pops the roots, just like vanilla roots.
+		// Roots hanging from another root are still kept alive so that generated strands do not
+		// collapse, they simply cannot be created that way by hand.
+		if (facing == Direction.UP && !facingState.is(this) && !isValidSupport(world, facingPos)) {
 			return Blocks.AIR.defaultBlockState();
 		}
 		if (state.getValue(WATERLOGGED)) {

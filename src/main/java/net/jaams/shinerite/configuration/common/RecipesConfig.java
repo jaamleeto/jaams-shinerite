@@ -31,8 +31,10 @@ public class RecipesConfig {
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_FREE_MODE;
-	public static ForgeConfigSpec.ConfigValue<Integer> DYE_ITEM_RECIPE_MAX_DYES;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_ALLOW_OVER_DYEING;
+	// Shineritia Flower Dye Recipe
+	public static ForgeConfigSpec.ConfigValue<Boolean> FLOWER_DYE_RECIPE;
+	public static ForgeConfigSpec.ConfigValue<Integer> FLOWER_DYE_RECIPE_OUTPUT_COUNT;
 	// Imbue Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> IMBUE_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> IMBUE_ITEM_RECIPE_3X3_MODE;
@@ -42,12 +44,10 @@ public class RecipesConfig {
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE_FREE_MODE;
-	public static ForgeConfigSpec.ConfigValue<Integer> LIGHTEN_ITEM_RECIPE_MAX_GLOW_INKS;
 	// Darken Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE_FREE_MODE;
-	public static ForgeConfigSpec.ConfigValue<Integer> DARKEN_ITEM_RECIPE_MAX_INKS;
 	// Anvil Item Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_DYE_ONLY_MIX;
@@ -120,8 +120,12 @@ public class RecipesConfig {
 		DYE_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite dyeing crafting recipe entirely").define("Dye Item Recipe", true);
 		DYE_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Dye Item Recipe Bulk Mode", true);
 		DYE_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Dye Item Recipe Free Mode", true);
-		DYE_ITEM_RECIPE_MAX_DYES = builder.comment("Maximum number of dye items allowed in free-form mode").defineInRange("Dye Item Recipe Max Dyes", 8, 0, 8);
+		
 		DYE_ITEM_RECIPE_ALLOW_OVER_DYEING = builder.comment("Allow applying dyes to already dyed items (mixes with existing color)").define("Dye Item Recipe Over-Dyeing", true);
+		builder.pop();
+		builder.push("Flower Dye Recipe");
+		FLOWER_DYE_RECIPE = builder.comment("Master switch: Enable or disable the Shineritia flower -> dye crafting recipe entirely").define("Flower Dye Recipe", true);
+		FLOWER_DYE_RECIPE_OUTPUT_COUNT = builder.comment("How many dyes are produced per flower").defineInRange("Flower Dye Recipe Output Count", 2, 1, 64);
 		builder.pop();
 		builder.push("Imbue Item Recipe");
 		IMBUE_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite imbuing crafting recipe entirely").define("Imbue Item Recipe", true);
@@ -133,13 +137,13 @@ public class RecipesConfig {
 		LIGHTEN_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite lightening crafting recipe entirely").define("Lighten Item Recipe", true);
 		LIGHTEN_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Lighten Item Recipe Bulk Mode", true);
 		LIGHTEN_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Lighten Item Recipe Free Mode", true);
-		LIGHTEN_ITEM_RECIPE_MAX_GLOW_INKS = builder.comment("Maximum number of Glow Ink Sacs allowed in free-form mode").defineInRange("Lighten Item Recipe Max Glow Inks", 8, 0, 8);
+		
 		builder.pop();
 		builder.push("Darken Item Recipe");
 		DARKEN_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite darkening crafting recipe entirely").define("Darken Item Recipe", true);
 		DARKEN_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Darken Item Recipe Bulk Mode", true);
 		DARKEN_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Darken Item Recipe Free Mode", true);
-		DARKEN_ITEM_RECIPE_MAX_INKS = builder.comment("Maximum number of Ink Sacs allowed in free-form mode").defineInRange("Darken Item Recipe Max Inks", 8, 0, 8);
+		
 		builder.pop();
 		builder.pop();
 	}

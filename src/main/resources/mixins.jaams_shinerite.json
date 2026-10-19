@@ -28,6 +28,7 @@
     "mob.PiglinAiMixin"
   ],
   "client": [
+    "client.ParticleAccessor",
     "client.HumanoidArmorLayerMixin",
     "client.ItemModelMixin",
     "client.ItemRendererMixin",

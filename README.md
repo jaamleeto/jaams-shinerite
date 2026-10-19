@@ -5,7 +5,7 @@ A Minecraft Forge 1.20.1 mod that adds a new glowing and dyeable ore used to cra
 ## Content
 
 - **Ore & Materials** — Shinerite ore across the Overworld, deepslate, and Nether, plus raw shinerite, ingots, nuggets, and storage/cut blocks
-- **Equipment** — Full tool, weapon, and armor sets with trim support, plus throwable weapons like the Shinemerang and Shinerite Star
+- **Equipment** — Full tool, weapon, and armor sets with trim support, plus throwable weapons like the Shinerang and Shinerite Star
 - **Mechanics** — Potion imbuement, customizable glow colors, dyeing, waxing, and light-based enchantments
 - **World & Extras** — Ore generation, shinerite roots flowers, custom music discs, and unique food items
 
