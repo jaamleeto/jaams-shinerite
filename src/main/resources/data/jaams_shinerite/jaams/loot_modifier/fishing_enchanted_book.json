@@ -5,7 +5,7 @@
   "condition_mode": "and",
   "conditions": [],
   "loot_tables": [
-    "gameplay/fishing/treasure"
+    "minecraft:gameplay/fishing/treasure"
   ],
   "exclude_loot_tables": [],
   "entries": [

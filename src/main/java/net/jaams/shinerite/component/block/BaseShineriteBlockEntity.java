@@ -223,19 +223,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 	}
 
 	private static int lightenImbuedColor(int color, float fraction) {
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = color & 0xFF;
-		int minR = r / 2;
-		int minG = g / 2;
-		int minB = b / 2;
-		r = (int) (r + (255 - r) * fraction * 0.15f);
-		g = (int) (g + (255 - g) * fraction * 0.15f);
-		b = (int) (b + (255 - b) * fraction * 0.15f);
-		r = Math.max(minR, Math.min(255, r));
-		g = Math.max(minG, Math.min(255, g));
-		b = Math.max(minB, Math.min(255, b));
-		return (r << 16) | (g << 8) | b;
+		return ModUtils.lightenImbuedColor(color, fraction);
 	}
 
 	public boolean registerDirectContact(net.minecraft.world.entity.LivingEntity target) {
@@ -282,7 +270,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
 		for (int i = 0; i < effects.size(); i++) {
 			CompoundTag effectData = effects.getCompound(i);
-			MobEffectInstance savedEffect = MobEffectInstance.load(effectData);
+			MobEffectInstance savedEffect = ModUtils.loadImbuedEffect(effectData);
 			if (savedEffect == null) {
 				continue;
 			}
@@ -316,7 +304,7 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		int minTicks = MechanicsConfig.IMBUED_MIN_DURATION_TICKS.get();
 		for (int i = 0; i < imbuedEffects.size(); i++) {
 			CompoundTag effectData = imbuedEffects.getCompound(i);
-			net.minecraft.world.effect.MobEffectInstance savedEffect = net.minecraft.world.effect.MobEffectInstance.load(effectData);
+			net.minecraft.world.effect.MobEffectInstance savedEffect = ModUtils.loadImbuedEffect(effectData);
 			if (savedEffect == null)
 				continue;
 			net.minecraft.world.effect.MobEffect effect = savedEffect.getEffect();

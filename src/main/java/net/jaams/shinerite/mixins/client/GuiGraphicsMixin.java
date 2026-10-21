@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Font;
 
 import net.jaams.shinerite.configuration.client.ItemStatusBarConfig;
+import net.jaams.shinerite.util.ModUtils;
 
 import javax.annotation.Nullable;
 
@@ -29,6 +30,9 @@ public abstract class GuiGraphicsMixin {
 		if (itemStack.isEmpty() || itemStack.getMaxStackSize() > 1) {
 			return;
 		}
+		if (itemStack.getItem().isEdible()) {
+			return;
+		}
 		CompoundTag tag = itemStack.getTag();
 		if (tag == null) {
 			return;
@@ -37,6 +41,9 @@ public abstract class GuiGraphicsMixin {
 			return;
 		}
 		if (!tag.contains("ImbuedUses", Tag.TAG_INT) || !tag.contains("MaxImbuedUses", Tag.TAG_INT)) {
+			return;
+		}
+		if (tag.getInt("ImbuedUses") <= 0) {
 			return;
 		}
 		GuiGraphics guiGraphics = (GuiGraphics) (Object) this;
@@ -63,7 +70,10 @@ public abstract class GuiGraphicsMixin {
 		if (w == 0 && pct > 0) {
 			w = 1;
 		}
-		int baseColor = tag.contains("ImbuedColor", Tag.TAG_INT) ? tag.getInt("ImbuedColor") : 0x55FFFF;
+		int baseColor = ModUtils.getImbuedColor(itemStack);
+		if (baseColor == -1) {
+			baseColor = 0x55FFFF;
+		}
 		int brighter = lightenColor(baseColor);
 		GuiGraphics guiGraphics = (GuiGraphics) (Object) this;
 		guiGraphics.pose().pushPose();

@@ -1,11 +1,14 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
   "loot_tables": [
-    "minecraft:chests/bastion_treasure"
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/bastion_bridge"
   ],
   "exclude_loot_tables": [],
   "entries": [
@@ -13,8 +16,40 @@
       "item": "jaams_shinerite:shiny_roots",
       "count_min": 1,
       "count_max": 3,
-      "chance": 0.45,
-      "nbt": "",
+      "chance": 0.15,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 3,
+      "chance": 0.15,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 3,
+      "chance": 0.15,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 2,
+      "chance": 0.06,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 2,
+      "chance": 0.06,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
       "enchantments": []
     }
   ]

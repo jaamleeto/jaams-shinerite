@@ -37,7 +37,8 @@
     "particle.TerrainParticleMixin",
     "client.GuiGraphicsMixin",
     "client.ClientTextTooltipMixin",
-    "client.LevelRendererMixin"
+    "client.LevelRendererMixin",
+    "client.PalettedPermutationsMixin"
   ],
   "minVersion": "0.8"
 }

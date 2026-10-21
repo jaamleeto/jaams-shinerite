@@ -132,7 +132,7 @@ public class ShineriteCommand {
 									boolean foundExisting = false;
 									for (int i = 0; i < effectsTag.size(); i++) {
 										CompoundTag existingTag = effectsTag.getCompound(i);
-										MobEffectInstance existing = MobEffectInstance.load(existingTag);
+										MobEffectInstance existing = ModUtils.loadImbuedEffect(existingTag);
 										if (existing != null && existing.getEffect() == effect) {
 											int combinedAmplifier = existing.getAmplifier() + addedAmplifier;
 											MobEffectInstance combined = new MobEffectInstance(effect, Math.max(existing.getDuration(), durationTicks), combinedAmplifier, false, true, true);
@@ -151,7 +151,7 @@ public class ShineriteCommand {
 									tag.putInt("MaxImbuedUses", currentMaxUses + addedUses);
 									List<MobEffectInstance> allEffects = new ArrayList<>();
 									for (int i = 0; i < effectsTag.size(); i++) {
-										allEffects.add(MobEffectInstance.load(effectsTag.getCompound(i)));
+										allEffects.add(ModUtils.loadImbuedEffect(effectsTag.getCompound(i)));
 									}
 									int newColor = PotionUtils.getColor(allEffects);
 									tag.putInt("ImbuedColor", newColor);

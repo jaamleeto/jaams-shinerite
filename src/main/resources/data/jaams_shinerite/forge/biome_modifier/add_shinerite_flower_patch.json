@@ -1,6 +1,6 @@
 {
   "type": "forge:add_features",
-  "biomes": "#minecraft:is_overworld",
+  "biomes": "#jaams_shinerite:has_shinerite_flowers",
   "features": "jaams_shinerite:shinerite_flower_patch",
   "step": "vegetal_decoration"
 }

@@ -52,7 +52,7 @@ public class FlowerDyeRecipe extends CustomRecipe {
 		if (ModUtils.isImbued(stack) || ModUtils.isCoated(stack)) {
 			return false;
 		}
-		return ModUtils.getCurrentColor(stack) != -1;
+		return true;
 	}
 
 	@Override
@@ -68,7 +68,13 @@ public class FlowerDyeRecipe extends CustomRecipe {
 		if (flower.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
-		DyeColor dyeColor = findClosestDyeColor(ModUtils.getCurrentColor(flower));
+		int color = ModUtils.getCurrentColor(flower);
+		DyeColor dyeColor;
+		if (color == -1) {
+			dyeColor = DyeColor.WHITE;
+		} else {
+			dyeColor = findClosestDyeColor(color);
+		}
 		if (dyeColor == null) {
 			return ItemStack.EMPTY;
 		}

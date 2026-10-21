@@ -73,10 +73,10 @@ public abstract class ItemStackMixin {
 		private void addImbuedUses(Player player, TooltipFlag flag, CallbackInfoReturnable<List<Component>> cir, List<Component> list, MutableComponent nombre, int hideFlags) {
 		ItemStack stack = (ItemStack) (Object) this;
 		if (!flag.isAdvanced()) {
-			if (MechanicsConfig.COATING.get() && TooltipsConfig.TOOLTIP_COATABLE_TRAIT.get() && ModUtils.isCoatableItem(stack) && !ModUtils.isCoated(stack)) {
+			if (MechanicsConfig.COATING.get() && ModUtils.isCoatableItem(stack) && !ModUtils.isCoated(stack)) {
 				list.add(Component.translatable("tooltip.jaams_shinerite.coatable").withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
 			}
-			if (MechanicsConfig.IMBUING.get() && TooltipsConfig.TOOLTIP_IMBUABLE_TRAIT.get() && ModUtils.isImbueableItem(stack) && !ModUtils.isImbued(stack)) {
+			if (MechanicsConfig.IMBUING.get() && ModUtils.isImbueableItem(stack) && !ModUtils.isImbued(stack)) {
 				list.add(Component.translatable("tooltip.jaams_shinerite.imbuable").withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
 			}
 		}
@@ -123,7 +123,7 @@ public abstract class ItemStackMixin {
 		list.add(Component.translatable("tooltip.jaams_shinerite.imbued.with").withStyle(ChatFormatting.GRAY));
 		for (int i = 0; i < effectsTag.size(); i++) {
 			CompoundTag effectData = effectsTag.getCompound(i);
-			MobEffectInstance effectInst = MobEffectInstance.load(effectData);
+			MobEffectInstance effectInst = ModUtils.loadImbuedEffect(effectData);
 			if (effectInst == null)
 				continue;
 			MobEffect effect = effectInst.getEffect();
@@ -142,6 +142,26 @@ public abstract class ItemStackMixin {
 				line.append(Component.literal(" (" + time + ")").withStyle(color));
 			}
 			list.add(line);
+		}
+	}
+
+	@Inject(method = "finishUsingItem", at = @At("TAIL"))
+	private void consumeImbueOnEat(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
+		ItemStack stack = (ItemStack) (Object) this;
+		if (!level.isClientSide() && stack.getItem().isEdible()) {
+			if (entity instanceof Player player && player.getAbilities().instabuild) {
+				return;
+			}
+			CompoundTag tag = stack.getTag();
+			if (tag == null || !MechanicsConfig.IMBUING.get() || !ModUtils.isImbueableItem(stack) || !ModUtils.isImbued(stack)) {
+				return;
+			}
+			int uses = tag.getInt("ImbuedUses") - 1;
+			if (uses <= 0) {
+				ModUtils.removeImbuement(stack);
+			} else {
+				tag.putInt("ImbuedUses", uses);
+			}
 		}
 	}
 

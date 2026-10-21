@@ -38,16 +38,33 @@ import com.mojang.serialization.Codec;
  */
 public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration> {
 	private static final int[] NETHER_RED_COLORS = {0x7A0C10, 0x9E1B22, 0xC1272D, 0xE0332B, 0xB22222, 0x8E2C2C};
-	private static final int[] NETHER_YELLOW_COLORS = {0xB8860B, 0xD4A017, 0xE8C547, 0xF0C419, 0xFFD54F, 0xFFE082};
+	/** No more gold: the second red family leans towards blood-red and dark burgundy. */
+	private static final int[] NETHER_CRIMSON_BURGUNDY_COLORS = {0x5C0A0E, 0x741016, 0x8E1418, 0xA81C1C, 0x6B1218, 0x992226};
 	/** Warped forests get the cool end of the spectrum instead: cyans and purples. */
 	private static final int[] NETHER_WARPED_CYAN_COLORS = {0x0F3D3A, 0x16685C, 0x1E8A6E, 0x2FA98A, 0x48C9A6, 0x27C9D6, 0x4FD9E6};
 	private static final int[] NETHER_WARPED_PURPLE_COLORS = {0x2B1B4D, 0x3E2A6B, 0x54348C, 0x6B44AD, 0x8059C9, 0x9A72E0};
+	/** Basalt deltas get the ash-coated palette: plain greys, never the hot red/gold colours. */
+	private static final int[] NETHER_ASH_GREY_COLORS = {0x6E6E6E, 0x828282, 0x9A9A9A, 0x565656, 0x757575, 0xB0B0B0};
+	private static final int[] NETHER_ASH_DARK_COLORS = {0x3A3A3A, 0x4B4B4B, 0x2E2E2E, 0x616161, 0x444444};
+	/** Crimson forests get the deep reds of the crimson fungi plus softer pink accents. */
+	private static final int[] NETHER_CRIMSON_RED_COLORS = {0x8B0E14, 0xA31A21, 0xBC2A2A, 0x7A0C10, 0x9E1B22, 0xB22222};
+	private static final int[] NETHER_CRIMSON_PINK_COLORS = {0xE0537A, 0xD97FA6, 0xC94F6B, 0xE86C96, 0xB54360, 0xF07FA8};
+	/** Soul sand valley palette: spectral cyans and blues, cold like the ghostly fog of the biome. */
+	private static final int[] NETHER_SPECTRAL_CYAN_COLORS = {0x3FC9C9, 0x62E0E0, 0x8FF2F2, 0x4FB3D9, 0x6FD6F0, 0xA6F0F0};
+	private static final int[] NETHER_SPECTRAL_BLUE_COLORS = {0x2C5ED9, 0x4A7BE0, 0x7AA1F0, 0x1F4099, 0x5C8CD9, 0x9FC0F2};
 	private static final int[] OVERWORLD_WHITE_COLORS = {0xFAFAFA, 0xEFEFEF, 0xE0E0E0, 0xD0D0D0, 0xF5F5F5};
 	private static final int[] OVERWORLD_GREY_COLORS = {0xB0B0B0, 0x9E9E9E, 0x8C8C8C, 0x757575, 0x616161};
-	private static final MobEffect[] NETHER_IMBUEMENT_EFFECTS = {MobEffects.WITHER, MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_BOOST};
+	private static final MobEffect[] NETHER_IMBUEMENT_EFFECTS = {MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_BOOST, MobEffects.GLOWING, MobEffects.WITHER};
 	private static final MobEffect[] OVERWORLD_IMBUEMENT_EFFECTS = {MobEffects.POISON, MobEffects.REGENERATION, MobEffects.NIGHT_VISION, MobEffects.DIG_SPEED};
 	/** How far the patch may wander from the anchor looking for one more valid hanging spot. */
 	private static final int NEIGHBOUR_REACH = 2;
+	/**
+	 * How far the feature looks around its origin for a Shinerite ore block to hang roots from. When
+	 * one is found the patch anchors there regardless of the random chance gate, so ore veins
+	 * reliably carry roots on their underside; the root also inherits the ore's exact colour.
+	 */
+	private static final int ORE_SEARCH_RADIUS = 4;
+	private static final int ORE_SEARCH_DEPTH = 6;
 
 	private final boolean nether;
 	private final Block rootsBlock;
@@ -66,31 +83,39 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		}
 
 		RandomSource random = context.random();
-		if (random.nextFloat() > getChance()) {
+		BlockPos oreCeiling = findShineriteOreCeiling(level, context.origin());
+		BlockPos ceiling = oreCeiling != null ? oreCeiling : context.origin();
+
+		// Anchoring directly under a Shinerite ore skips the chance roll: the whole point of finding
+		// an ore nearby is to decorate it, and the roll would discard the patch before the ore is used.
+		boolean anchoredToOre = oreCeiling != null;
+		if (!anchoredToOre && random.nextFloat() > getChance()) {
 			return false;
 		}
 
-		BlockPos ceiling = context.origin();
 		if (!isCeiling(level, ceiling)) {
 			return false;
 		}
 
 		BlockPos anchor = ceiling.below();
 		if (!canPlace(level, anchor)) {
-			return false;
+			return anchoredToOre;
 		}
+
+		int patchColor = anchoredToOre ? readOreColor(level, oreCeiling) : -1;
 
 		int size = WorldGenConfig.rollInt(random, getMinPatchSize(), getMaxPatchSize());
 		int radius = WorldGenConfig.rollInt(random, getMinRadius(), getMaxRadius());
 
 		int placed = 0;
 		BlockPos current = anchor;
-		if (placeRoots(level, current, random)) {
+		if (placeRoots(level, current, random, ceilingColor(level, current.above(), patchColor))) {
 			placed++;
 		}
 
 		// Grow the patch outwards from the last successful spot: sideways (and up or down) to find other
-		// nearby ceilings to hang from.
+		// nearby ceilings to hang from. Each strand takes the colour of the ceiling it hangs from, so
+		// patches that wander across differently coloured ores stay consistent.
 		int attempts = Math.max(8, size * NEIGHBOUR_REACH * 4);
 		for (int i = 0; i < attempts && placed < size; i++) {
 			BlockPos candidate = current.offset(spread(random, radius), random.nextInt(3) - 1, spread(random, radius));
@@ -98,13 +123,62 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			if (target == null || target.equals(current)) {
 				continue;
 			}
-			if (placeRoots(level, target, random)) {
+			if (placeRoots(level, target, random, ceilingColor(level, target.above(), patchColor))) {
 				placed++;
 			}
 			current = target;
 		}
 
 		return placed > 0;
+	}
+
+	/**
+	 * Scans around the feature origin for a Shinerite ore block that acts as a ceiling with room for a
+	 * root underneath. Horizontal reach is {@link #ORE_SEARCH_RADIUS} and vertical reach is
+	 * {@link #ORE_SEARCH_DEPTH}; the closest block below an ore wins.
+	 */
+	private BlockPos findShineriteOreCeiling(WorldGenLevel level, BlockPos origin) {
+		for (int dy = -ORE_SEARCH_DEPTH; dy <= ORE_SEARCH_DEPTH; dy++) {
+			for (int dx = -ORE_SEARCH_RADIUS; dx <= ORE_SEARCH_RADIUS; dx++) {
+				for (int dz = -ORE_SEARCH_RADIUS; dz <= ORE_SEARCH_RADIUS; dz++) {
+					BlockPos ceiling = origin.offset(dx, dy, dz);
+					if (!isShineriteOre(level.getBlockState(ceiling))) {
+						continue;
+					}
+					BlockPos below = ceiling.below();
+					if (!level.isOutsideBuildHeight(below.getY()) && canPlace(level, below)) {
+						return ceiling;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private static boolean isShineriteOre(BlockState state) {
+		return state.is(ModBlocks.SHINERITE_ORE.get()) || state.is(ModBlocks.DEEPSLATE_SHINERITE_ORE.get())
+				|| state.is(ModBlocks.NETHER_SHINERITE_ORE.get());
+	}
+
+	/**
+	 * Colour the next root should take. An ore ceiling always wins, so a root hanging directly beneath
+	 * a (for example) green ore is green itself; otherwise the patch keeps the colour inherited from
+	 * its ore anchor, or lets the normal palette decide when there is none.
+	 */
+	private int ceilingColor(WorldGenLevel level, BlockPos ceilingPos, int fallback) {
+		int oreColor = readOreColor(level, ceilingPos);
+		return oreColor != -1 ? oreColor : fallback;
+	}
+
+	private int readOreColor(WorldGenLevel level, BlockPos ceilingPos) {
+		if (!isShineriteOre(level.getBlockState(ceilingPos))) {
+			return -1;
+		}
+		BlockEntity blockEntity = level.getBlockEntity(ceilingPos);
+		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
+			return shineriteBlockEntity.getColor();
+		}
+		return -1;
 	}
 
 	/**
@@ -161,7 +235,7 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		return isCeiling(level, pos.above());
 	}
 
-	private boolean placeRoots(WorldGenLevel level, BlockPos pos, RandomSource random) {
+	private boolean placeRoots(WorldGenLevel level, BlockPos pos, RandomSource random, int color) {
 		BlockState placed = level.getFluidState(pos).getType() == Fluids.WATER
 				? rootsBlock.defaultBlockState().setValue(ShineriteRootsBlock.WATERLOGGED, true)
 				: rootsBlock.defaultBlockState();
@@ -181,23 +255,47 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			return false;
 		}
 
-		applyGenerationState(level, pos, shineriteBlockEntity, random);
+		applyGenerationState(level, pos, shineriteBlockEntity, random, color);
 		return true;
 	}
 
-	private void applyGenerationState(WorldGenLevel level, BlockPos pos, BaseShineriteBlockEntity blockEntity, RandomSource random) {
+	private void applyGenerationState(WorldGenLevel level, BlockPos pos, BaseShineriteBlockEntity blockEntity, RandomSource random, int inheritedColor) {
 		MobEffect[] pool = nether ? NETHER_IMBUEMENT_EFFECTS : OVERWORLD_IMBUEMENT_EFFECTS;
 		if (ModUtils.applyNaturalImbuement(blockEntity, random, pool, getImbuedChance())) {
 			blockEntity.setChanged();
 			return;
 		}
 
+		// A root hanging from a coloured Shinerite ore keeps the ore's exact colour, so a green ore
+		// gets green roots underneath it. Basalt deltas are the exception: everything there is
+		// ash-coated grey so roots never read as red/gold in a black-and-grey biome.
+		if (inheritedColor != -1 && !isBasaltDeltas(level, pos)) {
+			blockEntity.setColor(inheritedColor);
+			blockEntity.setChanged();
+			return;
+		}
+
 		int[] primary = nether ? NETHER_RED_COLORS : OVERWORLD_WHITE_COLORS;
-		int[] secondary = nether ? NETHER_YELLOW_COLORS : OVERWORLD_GREY_COLORS;
+		int[] secondary = nether ? NETHER_CRIMSON_BURGUNDY_COLORS : OVERWORLD_GREY_COLORS;
 
 		if (nether && isWarpedForest(level, pos)) {
 			primary = NETHER_WARPED_CYAN_COLORS;
 			secondary = NETHER_WARPED_PURPLE_COLORS;
+		}
+
+		if (nether && isBasaltDeltas(level, pos)) {
+			primary = NETHER_ASH_GREY_COLORS;
+			secondary = NETHER_ASH_DARK_COLORS;
+		}
+
+		if (nether && isCrimsonForest(level, pos)) {
+			primary = NETHER_CRIMSON_RED_COLORS;
+			secondary = NETHER_CRIMSON_PINK_COLORS;
+		}
+
+		if (nether && isSoulSandValley(level, pos)) {
+			primary = NETHER_SPECTRAL_CYAN_COLORS;
+			secondary = NETHER_SPECTRAL_BLUE_COLORS;
 		}
 
 		int[] palette = random.nextBoolean() ? primary : secondary;
@@ -211,6 +309,18 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 	 */
 	private boolean isWarpedForest(WorldGenLevel level, BlockPos pos) {
 		return level.getBiome(pos).is(Biomes.WARPED_FOREST);
+	}
+
+	private boolean isBasaltDeltas(WorldGenLevel level, BlockPos pos) {
+		return level.getBiome(pos).is(Biomes.BASALT_DELTAS);
+	}
+
+	private boolean isCrimsonForest(WorldGenLevel level, BlockPos pos) {
+		return level.getBiome(pos).is(Biomes.CRIMSON_FOREST);
+	}
+
+	private boolean isSoulSandValley(WorldGenLevel level, BlockPos pos) {
+		return level.getBiome(pos).is(Biomes.SOUL_SAND_VALLEY);
 	}
 
 	private static int spread(RandomSource random, int radius) {

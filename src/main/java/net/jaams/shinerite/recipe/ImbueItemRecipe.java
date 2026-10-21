@@ -58,15 +58,13 @@ public class ImbueItemRecipe extends CustomRecipe {
 		if (!isValidPotion(center, potionType)) {
 			return false;
 		}
+		List<MobEffectInstance> potionEffects = PotionUtils.getMobEffects(center);
 		Item referenceItem = null;
 		for (int i = 0; i < 9; i++) {
 			if (i == 4)
 				continue;
 			ItemStack stack = container.getItem(i);
-			if (stack.isEmpty() || !ModUtils.isImbueableItem(stack)) {
-				return false;
-			}
-			if (!isValidImbueableStack(stack)) {
+			if (stack.isEmpty() || !isValidImbueableStack(stack, potionEffects)) {
 				return false;
 			}
 			Item item = stack.getItem();
@@ -89,21 +87,29 @@ public class ImbueItemRecipe extends CustomRecipe {
 			ItemStack stack = container.getItem(i);
 			if (stack.isEmpty())
 				continue;
-			if (ModUtils.isImbueableItem(stack)) {
-				if (!imbueableItem.isEmpty())
-					return false;
-				if (!isValidImbueableStack(stack))
-					return false;
-				imbueableItem = stack;
-			} else if (isValidPotion(stack, potionType)) {
-				potionCount++;
-				if (potionCount > 1)
-					return false;
-			} else {
+			if (!ModUtils.isImbueableItem(stack)) {
+				if (isValidPotion(stack, potionType)) {
+					potionCount++;
+					if (potionCount > 1)
+						return false;
+					continue;
+				}
 				return false;
 			}
+			if (!imbueableItem.isEmpty())
+				return false;
+			imbueableItem = stack;
 		}
-		return !imbueableItem.isEmpty() && potionCount == 1;
+		if (imbueableItem.isEmpty() || potionCount != 1) {
+			return false;
+		}
+		for (int i = 0; i < container.getContainerSize(); i++) {
+			ItemStack stack = container.getItem(i);
+			if (!stack.isEmpty() && isValidPotion(stack, potionType)) {
+				return isValidImbueableStack(imbueableItem, PotionUtils.getMobEffects(stack));
+			}
+		}
+		return false;
 	}
 
 	private boolean isValidPotion(ItemStack stack, ModEnums.ImbuePotionType allowedType) {
@@ -117,12 +123,14 @@ public class ImbueItemRecipe extends CustomRecipe {
 		};
 	}
 
-	private boolean isValidImbueableStack(ItemStack stack) {
-		if (ModUtils.isCoated(stack) || ModUtils.isImbued(stack)) {
+	private boolean isValidImbueableStack(ItemStack stack, List<MobEffectInstance> potionEffects) {
+		if (ModUtils.isCoated(stack)) {
 			return false;
 		}
-		int currentColor = ModUtils.getCurrentColor(stack);
-		return currentColor == -1;
+		if (ModUtils.isImbued(stack)) {
+			return !ModUtils.getImbuementUpgrades(stack, potionEffects).isEmpty();
+		}
+		return ModUtils.getCurrentColor(stack) == -1;
 	}
 
 	@Override
@@ -177,25 +185,32 @@ public class ImbueItemRecipe extends CustomRecipe {
 		}
 		List<MobEffectInstance> originalEffects = PotionUtils.getMobEffects(potion);
 		int potionColor = PotionUtils.getColor(potion);
-		int uses;
-		if (item.getMaxStackSize() > 1 || item.isEdible()) {
-			uses = 1;
-		} else {
-			MobEffectInstance main = originalEffects.get(0);
-			uses = InteractionHandler.BASE_IMBUED_USES + (main.getAmplifier() * 2);
-		}
 		ItemStack result = item.copy();
 		result.setCount(outputCount);
 		CompoundTag tag = result.getOrCreateTag();
 		ListTag list = new ListTag();
-		for (MobEffectInstance original : originalEffects) {
-			int reducedDuration = Math.max(1, original.getDuration() / 2);
-			MobEffectInstance reduced = new MobEffectInstance(original.getEffect(), reducedDuration, original.getAmplifier(), original.isAmbient(), original.isVisible(), original.showIcon());
-			list.add(reduced.save(new CompoundTag()));
+		boolean upgrading = ModUtils.isImbued(item);
+		if (upgrading) {
+			for (MobEffectInstance merged : ModUtils.mergeImbuementUpgrades(item, ModUtils.getImbuementUpgrades(item, originalEffects))) {
+				list.add(merged.save(new CompoundTag()));
+			}
+		} else {
+			int uses;
+			if (item.getMaxStackSize() > 1 || item.isEdible()) {
+				uses = 1;
+			} else {
+				MobEffectInstance main = originalEffects.get(0);
+				uses = InteractionHandler.BASE_IMBUED_USES + (main.getAmplifier() * 2);
+			}
+			for (MobEffectInstance original : originalEffects) {
+				int reducedDuration = Math.max(1, original.getDuration() / 2);
+				MobEffectInstance reduced = new MobEffectInstance(original.getEffect(), reducedDuration, original.getAmplifier(), original.isAmbient(), original.isVisible(), original.showIcon());
+				list.add(reduced.save(new CompoundTag()));
+			}
+			tag.putInt("ImbuedUses", uses);
+			tag.putInt("MaxImbuedUses", uses);
 		}
 		tag.put("ImbuedEffects", list);
-		tag.putInt("ImbuedUses", uses);
-		tag.putInt("MaxImbuedUses", uses);
 		tag.putInt("ImbuedColor", potionColor);
 		ModUtils.applyDyeColor(result, potionColor);
 		return result;

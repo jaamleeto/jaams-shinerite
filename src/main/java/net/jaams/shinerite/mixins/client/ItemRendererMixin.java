@@ -43,7 +43,7 @@ public abstract class ItemRendererMixin {
 			ListTag effectsTag = itemStack.getTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 			for (Tag inTag : effectsTag) {
 				CompoundTag effectTag = (CompoundTag) inTag;
-				MobEffectInstance effect = MobEffectInstance.load(effectTag);
+				MobEffectInstance effect = ModUtils.loadImbuedEffect(effectTag);
 				if (effect != null && effect.getEffect() == MobEffects.INVISIBILITY) {
 					ci.cancel();
 					return;

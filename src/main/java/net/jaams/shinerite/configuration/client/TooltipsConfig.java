@@ -17,11 +17,7 @@ public class TooltipsConfig {
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COLOR_HEX_COLORED;
 	// Coating
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATED_STATUS;
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATABLE_TRAIT;
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATABLE_TRAIT_ADVANCED_ONLY;
 	// Imbuing
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUABLE_TRAIT;
-	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUABLE_TRAIT_ADVANCED_ONLY;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUED_EFFECTS;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUED_USES;
 	// Throwing
@@ -52,12 +48,8 @@ public class TooltipsConfig {
 		builder.pop();
 		builder.push("Coating Tooltips");
 		TOOLTIP_COATED_STATUS = builder.comment("Show 'Coated' text when the item is coated").define("Show Coated Status", true);
-		TOOLTIP_COATABLE_TRAIT = builder.comment("Show the 'coatable' trait in tooltips").define("Show coatable Trait", true);
-		TOOLTIP_COATABLE_TRAIT_ADVANCED_ONLY = builder.comment("If true: 'coatable' trait only appears in advanced tooltips\nIf false: appears in normal tooltips too").define("coatable Trait Advanced Only", true);
 		builder.pop();
 		builder.push("Imbuing Tooltips");
-		TOOLTIP_IMBUABLE_TRAIT = builder.comment("Show the 'Imbuable' trait in tooltips").define("Show Imbuable Trait", true);
-		TOOLTIP_IMBUABLE_TRAIT_ADVANCED_ONLY = builder.comment("If true: 'Imbuable' trait only appears in advanced tooltips\nIf false: appears in normal tooltips too").define("Imbuable Trait Advanced Only", true);
 		TOOLTIP_IMBUED_EFFECTS = builder.comment("Show the detailed list of imbued potion effects").define("Show Imbued Effects List", true);
 		TOOLTIP_IMBUED_USES = builder.comment("Show the remaining/max imbued uses counter").define("Show Imbued Uses Counter", true);
 		builder.pop();

@@ -1,0 +1,12 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shapeless",
+  "group": "ingot",
+  "category": "misc",
+  "ingredients": [
+    { "item": "jaams_shinerite:shinerite_block" }
+  ],
+  "result": {
+    "item": "jaams_shinerite:shinerite_ingot",
+    "count": 9
+  }
+}

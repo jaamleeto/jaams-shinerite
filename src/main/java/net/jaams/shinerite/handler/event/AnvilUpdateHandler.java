@@ -94,22 +94,19 @@ public class AnvilUpdateHandler {
 				int usesR = rightImbued ? right.getOrCreateTag().getInt("ImbuedUses") : 0;
 				int maxL = leftImbued ? left.getOrCreateTag().getInt("MaxImbuedUses") : 0;
 				int maxR = rightImbued ? right.getOrCreateTag().getInt("MaxImbuedUses") : 0;
-				boolean bothFull = (usesL == maxL && usesR == maxR && maxL > 0 && maxR > 0);
-				int finalMax;
-				int finalUses;
-				if (bothFull) {
-					finalMax = (int) Math.ceil((maxL + maxR) / 2.0);
-					finalUses = finalMax;
+				int sumMax = maxL + maxR;
+				if (sumMax <= 0) {
+					tag.putInt("ImbuedUses", 0);
+					tag.putInt("MaxImbuedUses", 0);
 				} else {
-					finalMax = (int) Math.ceil((maxL + maxR) / 2.0);
-					int avgUses = (int) Math.ceil((usesL + usesR) / 2.0);
-					finalUses = Math.min(avgUses, finalMax);
+					int finalMax = Math.max(1, (int) Math.ceil(sumMax / 2.0));
+					int finalUses = (usesL == maxL && usesR == maxR && maxL > 0 && maxR > 0)
+							? finalMax
+							: Math.min((int) Math.ceil((usesL + usesR) / 2.0), finalMax);
+					finalUses = Math.max(1, Math.min(finalUses, finalMax));
+					tag.putInt("ImbuedUses", finalUses);
+					tag.putInt("MaxImbuedUses", finalMax);
 				}
-				finalMax = Math.max(1, finalMax);
-				finalUses = Math.max(1, finalUses);
-				finalUses = Math.min(finalUses, finalMax);
-				tag.putInt("ImbuedUses", finalUses);
-				tag.putInt("MaxImbuedUses", finalMax);
 			}
 		}
 		event.setOutput(output);
@@ -121,7 +118,7 @@ public class AnvilUpdateHandler {
 		List<MobEffectInstance> list = new ArrayList<>();
 		ListTag tagList = stack.getOrCreateTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 		for (int i = 0; i < tagList.size(); i++) {
-			MobEffectInstance effect = MobEffectInstance.load(tagList.getCompound(i));
+			MobEffectInstance effect = ModUtils.loadImbuedEffect(tagList.getCompound(i));
 			if (effect != null)
 				list.add(effect);
 		}
@@ -137,7 +134,7 @@ public class AnvilUpdateHandler {
 				map.put(type, e);
 			} else {
 				int newAmp = existing.getAmplifier() + 1;
-				int newDur = Math.max(existing.getDuration(), e.getDuration()) / 2;
+				int newDur = Math.max(1, Math.max(existing.getDuration(), e.getDuration()) / 2);
 				MobEffectInstance upgraded = new MobEffectInstance(type, newDur, newAmp, e.isAmbient(), e.isVisible(), e.showIcon());
 				map.put(type, upgraded);
 			}
@@ -146,8 +143,8 @@ public class AnvilUpdateHandler {
 	}
 
 	private static int calculateAverageColor(ItemStack a, ItemStack b, boolean aImbued, boolean bImbued) {
-		int c1 = aImbued ? a.getOrCreateTag().getInt("ImbuedColor") : ModUtils.getCurrentColor(a);
-		int c2 = bImbued ? b.getOrCreateTag().getInt("ImbuedColor") : ModUtils.getCurrentColor(b);
+		int c1 = aImbued ? ModUtils.getImbuedColor(a) : ModUtils.getCurrentColor(a);
+		int c2 = bImbued ? ModUtils.getImbuedColor(b) : ModUtils.getCurrentColor(b);
 		if (c1 == -1)
 			return c2;
 		if (c2 == -1)

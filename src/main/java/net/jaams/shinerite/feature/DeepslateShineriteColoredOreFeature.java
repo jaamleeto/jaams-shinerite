@@ -27,9 +27,13 @@ public class DeepslateShineriteColoredOreFeature extends AbstractShineriteColore
 
 	public DeepslateShineriteColoredOreFeature(Codec<NoneFeatureConfiguration> codec) {
 		super(codec, ModBlocks.DEEPSLATE_SHINERITE_ORE.get().defaultBlockState(), COLORS, WorldGenConfig.SHINERITE_COLORED_ORE::get,
-				WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE::get, WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE::get,
-				WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE::get, WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
+				WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE::get, OVERWORLD_COLORED_CHANCE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE::get, WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
 	}
+
+	/** Same balance as the stone variant: 70% plain, 30% mimics. */
+	private static final java.util.function.Supplier<Double> OVERWORLD_COLORED_CHANCE = () -> 0.3D;
 
 	@Override
 	protected boolean isValidGround(BlockState state) {

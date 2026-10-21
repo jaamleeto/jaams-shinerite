@@ -179,7 +179,7 @@ public class EnchantmentsHandler {
 			if (uses <= 0 || maxUses <= 0)
 				continue;
 			float scaledFraction = (float) Math.pow((float) uses / maxUses, decayExponent);
-			int imbuedColor = tag.getInt("ImbuedColor");
+			int imbuedColor = ModUtils.getImbuedColor(armor);
 			applyImbuedEffects(effectsTag, target, attacker, scaledFraction, minTicks);
 			retaliated = true;
 			if (imbuedColor != -1) {

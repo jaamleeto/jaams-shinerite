@@ -1,0 +1,29 @@
+{
+  "enabled": true,
+  "chance": 1,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "minecraft:chests/bastion_treasure"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "jaams_shinerite:shinerite_block",
+      "count_min": 1,
+      "count_max": 2,
+      "chance": 0.35,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:raw_shinerite_block",
+      "count_min": 1,
+      "count_max": 4,
+      "chance": 0.15,
+      "nbt": "",
+      "enchantments": []
+    }
+  ]
+}

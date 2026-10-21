@@ -104,7 +104,7 @@ public abstract class AnvilMenuMixin {
 		List<MobEffectInstance> list = new ArrayList<>();
 		ListTag tagList = stack.getOrCreateTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 		for (int i = 0; i < tagList.size(); i++) {
-			MobEffectInstance effect = MobEffectInstance.load(tagList.getCompound(i));
+			MobEffectInstance effect = ModUtils.loadImbuedEffect(tagList.getCompound(i));
 			if (effect != null)
 				list.add(effect);
 		}
@@ -131,8 +131,8 @@ public abstract class AnvilMenuMixin {
 
 	@Unique
 	private static int calculateAverageColor(ItemStack a, ItemStack b, boolean aImbued, boolean bImbued) {
-		int c1 = aImbued ? a.getOrCreateTag().getInt("ImbuedColor") : ModUtils.getCurrentColor(a);
-		int c2 = bImbued ? b.getOrCreateTag().getInt("ImbuedColor") : ModUtils.getCurrentColor(b);
+		int c1 = aImbued ? ModUtils.getImbuedColor(a) : ModUtils.getCurrentColor(a);
+		int c2 = bImbued ? ModUtils.getImbuedColor(b) : ModUtils.getCurrentColor(b);
 		if (c1 == -1)
 			return c2;
 		if (c2 == -1)

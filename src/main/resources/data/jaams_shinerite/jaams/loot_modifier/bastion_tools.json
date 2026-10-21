@@ -1,11 +1,14 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
   "loot_tables": [
-    "minecraft:chests/bastion_treasure"
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/bastion_bridge"
   ],
   "exclude_loot_tables": [],
   "entries": [
@@ -20,6 +23,11 @@
           "id": "jaams_shinerite:lightbringer",
           "level": 1,
           "chance": 0.05
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 1,
+          "chance": 0.4
         }
       ]
     },
@@ -34,6 +42,11 @@
           "id": "jaams_shinerite:lightbringer",
           "level": 1,
           "chance": 0.05
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 1,
+          "chance": 0.4
         }
       ]
     },
@@ -48,6 +61,68 @@
           "id": "jaams_shinerite:lightbringer",
           "level": 1,
           "chance": 0.05
+        },
+        {
+          "id": "minecraft:efficiency",
+          "level": 2,
+          "chance": 0.4
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.08,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 1,
+          "chance": 0.4
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.08,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 1,
+          "chance": 0.4
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.08,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        },
+        {
+          "id": "minecraft:efficiency",
+          "level": 2,
+          "chance": 0.4
         }
       ]
     },
@@ -56,6 +131,14 @@
       "count_min": 1,
       "count_max": 3,
       "chance": 0.15,
+      "nbt": "",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_paint_brush",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
       "nbt": "",
       "enchantments": []
     }

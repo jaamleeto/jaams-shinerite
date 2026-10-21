@@ -133,11 +133,14 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 	}
 
 	private boolean isPlantableSpot(WorldGenLevel level, BlockPos pos) {
-		return level.getBlockState(pos).isAir() && ShineriteFlowerGround.isValidGround(level, pos.below()) && flowerBlock.canSurvive(level, pos);
+		BlockState state = level.getBlockState(pos);
+		// Air, or soft replaceable vegetation (fungi, nether sprouts, roots) the flower may take
+		// the place of; hard terrain and liquids are never touched.
+		return state.isAir() || ShineriteFlowerGround.canReplaceGroundCover(level, pos);
 	}
 
 	private boolean placeFlower(WorldGenLevel level, BlockPos pos, RandomSource random, boolean crimson) {
-		if (!isPlantableSpot(level, pos)) {
+		if (!isPlantableSpot(level, pos) || !ShineriteFlowerGround.isValidGround(level, pos.below()) || !flowerBlock.canSurvive(level, pos)) {
 			return false;
 		}
 

@@ -1,0 +1,284 @@
+{
+  "enabled": true,
+  "chance": 1,
+  "replace_all": false,
+  "condition_mode": "and",
+  "conditions": [],
+  "loot_tables": [
+    "minecraft:chests/bastion_treasure"
+  ],
+  "exclude_loot_tables": [],
+  "entries": [
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.18,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.25
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 2,
+          "chance": 0.7
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        },
+        {
+          "id": "minecraft:fire_aspect",
+          "level": 1,
+          "chance": 0.35
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.15,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.25
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 2,
+          "chance": 0.6
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        },
+        {
+          "id": "minecraft:looting",
+          "level": 1,
+          "chance": 0.3
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_chestplate",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 2,
+          "chance": 0.7
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.55
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.12,
+      "nbt": "{\"color\":16701501}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.15
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 2,
+          "chance": 0.6
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.45
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"color\":16701501}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.15
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 2,
+          "chance": 0.55
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.45
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_chestplate",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.08,
+      "nbt": "{\"color\":16701501}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 2,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerang",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.12,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.25
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:efficiency",
+          "level": 2,
+          "chance": 0.6
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:efficiency",
+          "level": 2,
+          "chance": 0.6
+        },
+        {
+          "id": "minecraft:fortune",
+          "level": 1,
+          "chance": 0.35
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_helmet",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.07,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 2,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_leggings",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.07,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 2,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_boots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.07,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:wither\",\"Amplifier\":0,\"Duration\":800,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":7561558,\"color\":7561558}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 2,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 2,
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_star",
+      "count_min": 1,
+      "count_max": 2,
+      "chance": 0.2,
+      "nbt": "",
+      "enchantments": []
+    }
+  ]
+}

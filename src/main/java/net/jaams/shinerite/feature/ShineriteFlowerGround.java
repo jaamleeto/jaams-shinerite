@@ -42,4 +42,22 @@ public final class ShineriteFlowerGround {
 		// Only full blocks qualify: slabs, stairs, fences, plants and other partial shapes are out.
 		return state.getCollisionShape(level, pos, COLLISION_CONTEXT).equals(Shapes.block());
 	}
+
+	/**
+	 * @return {@code true} when the flower may be planted directly on top of {@code pos}'s ground even
+	 *         though the spot is not air: vanilla patches it replaces on the spot, like pink petals in
+	 *         cherry groves or grass and fern tufts in every meadow-like biome. Only soft, replaceable,
+	 *         block-entity-free plants qualify, so generation never eats into hard terrain.
+	 */
+	public static boolean canReplaceGroundCover(BlockGetter level, BlockPos pos) {
+		if (level == null || level.isOutsideBuildHeight(pos.getY())) {
+			return false;
+		}
+		BlockState state = level.getBlockState(pos);
+		if (state.isAir() || !state.canBeReplaced()) {
+			return false;
+		}
+		// Never overwrite liquids and never trample anything that owns a block entity.
+		return state.getFluidState().isEmpty() && !state.hasBlockEntity();
+	}
 }

@@ -40,6 +40,9 @@ public class CapabilityEvents {
 		if (effectInstance != null && effectInstance.getEffect() == MobEffects.GLOWING) {
 			entity.getCapability(GlowingColorProvider.GLOWING_COLOR).ifPresent(glowingColor -> {
 				JaamsShineriteMod.queueServerWork(5, () -> {
+					if (((LivingEntity) entity).hasEffect(MobEffects.GLOWING)) {
+						return;
+					}
 					glowingColor.setColor(-1);
 					syncGlowColor((LivingEntity) entity, -1);
 				});

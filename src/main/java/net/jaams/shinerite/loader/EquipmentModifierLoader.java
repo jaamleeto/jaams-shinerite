@@ -194,6 +194,9 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
         Item item = ForgeRegistries.ITEMS.getValue(itemId);
         if (item == null || item == Items.AIR) return java.util.Optional.empty();
         ItemStack stack = new ItemStack(item, Math.max(count, 1));
+        if (stack.getMaxStackSize() > 0 && stack.getCount() > stack.getMaxStackSize()) {
+            stack.setCount(stack.getMaxStackSize());
+        }
         applyEnchantments(stack, enchantments, randomEnch);
         applyNbt(stack, nbt);
         return java.util.Optional.of(stack);

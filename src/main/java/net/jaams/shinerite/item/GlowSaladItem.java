@@ -53,6 +53,10 @@ public class GlowSaladItem extends Item implements IDyeableItem {
 	@Override
 	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
 		ItemStack bowl = new ItemStack(Items.BOWL);
+		int glowColor = ModUtils.getCurrentColor(stack);
+		boolean hadColor = hasColor(stack);
+		boolean imbued = ModUtils.isImbued(stack);
+		int poisonColor = getColor(stack);
 		super.finishUsingItem(stack, level, entity);
 		if (!level.isClientSide && entity instanceof Player player) {
 			player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, NIGHT_VISION_DURATION, 0));
@@ -61,14 +65,14 @@ public class GlowSaladItem extends Item implements IDyeableItem {
 			});
 			int xp = level.random.nextInt(EXPERIENCE_MAX - EXPERIENCE_MIN + 1) + EXPERIENCE_MIN;
 			player.giveExperiencePoints(xp);
-			ModUtils.applyGlowingColorAndEffect(player, stack, level, GLOWING_DURATION);
+			ModUtils.applyGlowingColorAndEffect(player, hadColor ? glowColor : -1, level, GLOWING_DURATION);
 			if (level instanceof ServerLevel) {
 				AdvancementsHandler.grantAdvancement((ServerPlayer) player, "glow_like_dat");
 			}
-			if (ModUtils.isImbued(stack)) {
+			if (imbued) {
 				ModUtils.applyImbuedEffect(stack, level, player);
-			} else if (hasColor(stack)) {
-				ModUtils.applyPoisonWithParticles(level, player, getColor(stack), POISON_DURATION);
+			} else if (hadColor) {
+				ModUtils.applyPoisonWithParticles(level, player, poisonColor, POISON_DURATION);
 			}
 		}
 		return stack.isEmpty() ? bowl : stack;

@@ -83,14 +83,10 @@ public final class ShineriteTrimRenderer {
 		ResourceLocation pattern = trim.pattern().value().assetId();
 		TextureAtlasSprite sprite = findSprite(atlas, inner ? trim.innerTexture(material) : trim.outerTexture(material));
 		// The atlas source of that mod may not know our trim material, so its paletted sprite does not exist.
-		// Falling back to the unpaletted pattern still draws the pattern instead of leaving it untextured.
+		// Any other paletted variant of the pattern does: drawing it full bright and tinted with the Shinerite
+		// color (the color of a trim of the Shinerite material) still colors it like expected.
 		if (sprite == null) {
-			String baseSprite = "trims/models/armor/" + pattern.getPath() + (inner ? "_leggings" : "");
-			sprite = findSprite(atlas, ResourceLocation.fromNamespaceAndPath(pattern.getNamespace(),
-					baseSprite + "_" + trim.material().value().assetName()));
-			if (sprite == null) {
-				sprite = findSprite(atlas, ResourceLocation.fromNamespaceAndPath(pattern.getNamespace(), baseSprite));
-			}
+			sprite = findAnyPalettedSprite(atlas, pattern, inner);
 		}
 		if (sprite == null) {
 			return false;
@@ -138,5 +134,25 @@ public final class ShineriteTrimRenderer {
 		}
 		return sprite;
 	}
+
+	/**
+	 * Looks a sprite of the pattern up for a material the atlas of its owner actually knows. The proxy list
+	 * holds the palette suffixes of vanilla: the textures of the trims of virtually every mod are drawn
+	 * against the vanilla palette, so one of those variants exists even when its own material is unknown.
+	 */
+	private static TextureAtlasSprite findAnyPalettedSprite(TextureAtlas atlas, ResourceLocation pattern, boolean inner) {
+		String baseSprite = "trims/models/armor/" + pattern.getPath() + (inner ? "_leggings" : "");
+		for (String suffix : PALETTE_SUFFIXES) {
+			TextureAtlasSprite sprite = findSprite(atlas, ResourceLocation.fromNamespaceAndPath(pattern.getNamespace(), baseSprite + "_" + suffix));
+			if (sprite != null) {
+				return sprite;
+			}
+		}
+		return null;
+	}
+
+	/** Palette suffixes of vanilla, in the order they are picked as proxy for an unknown material. */
+	private static final String[] PALETTE_SUFFIXES = { "iron_darker", "iron", "netherite_darker", "netherite", "gold_darker", "gold",
+			"diamond_darker", "diamond", "quartz", "amethyst", "copper", "emerald", "lapis", "redstone" };
 
 	}

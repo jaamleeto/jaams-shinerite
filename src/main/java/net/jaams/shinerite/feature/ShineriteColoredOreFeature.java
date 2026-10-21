@@ -35,12 +35,16 @@ public class ShineriteColoredOreFeature extends AbstractShineriteColoredOreFeatu
 
 	public ShineriteColoredOreFeature(Codec<NoneFeatureConfiguration> codec) {
 		super(codec, ModBlocks.SHINERITE_ORE.get().defaultBlockState(), COLORS, WorldGenConfig.SHINERITE_COLORED_ORE::get,
-				WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE::get, WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE::get,
-				WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE::get, WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
+				WorldGenConfig.SHINERITE_COLORED_ORE_CHANCE::get, OVERWORLD_COLORED_CHANCE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_MIN_SIZE::get, WorldGenConfig.SHINERITE_COLORED_ORE_MAX_SIZE::get,
+				WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
 	}
+
+	/** 70% of overworld veins stay uncoloured; only 3 in 10 become colour mimics. */
+	private static final java.util.function.Supplier<Double> OVERWORLD_COLORED_CHANCE = () -> 0.3D;
 
 	@Override
 	protected boolean isValidGround(BlockState state) {
-		return state.is(ModBlocks.SHINERITE_ORE.get()) || state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE);
+		return state.is(ModBlocks.SHINERITE_ORE.get()) || state.is(Blocks.STONE);
 	}
 }

@@ -32,6 +32,10 @@ public class ShinyRootsItem extends Item implements IDyeableItem {
 
 	@Override
 	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+		int glowColor = ModUtils.getCurrentColor(stack);
+		boolean hadColor = hasColor(stack);
+		boolean imbued = ModUtils.isImbued(stack);
+		int poisonColor = getColor(stack);
 		ItemStack result = super.finishUsingItem(stack, level, entity);
 		if (!level.isClientSide && entity instanceof Player player) {
 			JaamsShineriteMod.queueServerWork(5, () -> {
@@ -40,11 +44,11 @@ public class ShinyRootsItem extends Item implements IDyeableItem {
 			int xp = level.random.nextInt(EXPERIENCE_MAX - EXPERIENCE_MIN + 1) + EXPERIENCE_MIN;
 			player.giveExperiencePoints(xp);
 			player.giveExperiencePoints(xp);
-			ModUtils.applyGlowingColorAndEffect(player, stack, level, GLOWING_DURATION);
-			if (ModUtils.isImbued(stack)) {
+			ModUtils.applyGlowingColorAndEffect(player, hadColor ? glowColor : -1, level, GLOWING_DURATION);
+			if (imbued) {
 				ModUtils.applyImbuedEffect(stack, level, player);
-			} else if (hasColor(stack)) {
-				ModUtils.applyPoisonWithParticles(level, player, getColor(stack), POISON_DURATION);
+			} else if (hadColor) {
+				ModUtils.applyPoisonWithParticles(level, player, poisonColor, POISON_DURATION);
 			}
 		}
 		return result;

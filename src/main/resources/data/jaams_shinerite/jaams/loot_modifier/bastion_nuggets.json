@@ -1,20 +1,30 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
   "loot_tables": [
-    "minecraft:chests/bastion_treasure"
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/bastion_bridge"
   ],
   "exclude_loot_tables": [],
   "entries": [
     {
       "item": "jaams_shinerite:shinerite_nugget",
-      "count_min": 1,
-      "count_max": 4,
-      "chance": 0.30,
+      "count_min": 2,
+      "count_max": 6,
+      "chance": 0.3,
       "nbt": "",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shinerite_nugget",
+      "count_min": 2,
+      "count_max": 6,
+      "chance": 0.2,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:fire_resistance\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16750848,\"color\":16750848}",
       "enchantments": []
     }
   ]

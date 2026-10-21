@@ -363,19 +363,7 @@ if (!tag.contains("Coated")) {
 	}
 
 	private static int lightenImbuedColor(int color, float fraction) {
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = color & 0xFF;
-		int minR = r / 2;
-		int minG = g / 2;
-		int minB = b / 2;
-		r = (int) (r + (255 - r) * fraction * 0.15f);
-		g = (int) (g + (255 - g) * fraction * 0.15f);
-		b = (int) (b + (255 - b) * fraction * 0.15f);
-		r = Math.max(minR, Math.min(255, r));
-		g = Math.max(minG, Math.min(255, g));
-		b = Math.max(minB, Math.min(255, b));
-		return (r << 16) | (g << 8) | b;
+		return ModUtils.lightenImbuedColor(color, fraction);
 	}
 
 	private static int calculateStepsToWhite(int color) {

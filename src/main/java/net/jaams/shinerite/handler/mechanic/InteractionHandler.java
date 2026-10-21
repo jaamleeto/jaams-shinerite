@@ -130,10 +130,10 @@ public class InteractionHandler {
 			}
 		}
 		if (MechanicsConfig.IMBUING.get() && InteractionsConfig.HAND_IMBUING.get()) {
-			if (ModUtils.isImbueableItem(mainHandStack) && !ModUtils.isCoated(mainHandStack) && !hasCustomColor(mainHandStack) && offHandStack.is(Items.POTION) && PotionUtils.getPotion(offHandStack) != Potions.WATER) {
+			if (ModUtils.isImbueableItem(mainHandStack) && !ModUtils.isCoated(mainHandStack) && (!hasCustomColor(mainHandStack) || ModUtils.isImbued(mainHandStack)) && offHandStack.is(Items.POTION) && PotionUtils.getPotion(offHandStack) != Potions.WATER) {
 				handleImbuingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
-			} else if (ModUtils.isImbueableItem(offHandStack) && !ModUtils.isCoated(offHandStack) && !hasCustomColor(offHandStack) && mainHandStack.is(Items.POTION) && PotionUtils.getPotion(mainHandStack) != Potions.WATER) {
+			} else if (ModUtils.isImbueableItem(offHandStack) && !ModUtils.isCoated(offHandStack) && (!hasCustomColor(offHandStack) || ModUtils.isImbued(offHandStack)) && mainHandStack.is(Items.POTION) && PotionUtils.getPotion(mainHandStack) != Potions.WATER) {
 				handleImbuingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
@@ -252,9 +252,6 @@ public class InteractionHandler {
 	}
 
 	private static void handleImbuingInteraction(Level level, Player player, ItemStack targetStack, ItemStack potionStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
-		if (ModUtils.isImbued(targetStack)) {
-			return;
-		}
 		List<MobEffectInstance> effects = new ArrayList<>();
 		Potion potionType = PotionUtils.getPotion(potionStack);
 		if (potionType != Potions.EMPTY && potionType != Potions.WATER) {
@@ -267,20 +264,34 @@ public class InteractionHandler {
 		if (potionType == Potions.WATER || potionType == Potions.AWKWARD || potionType == Potions.THICK || potionType == Potions.MUNDANE) {
 			return;
 		}
+		boolean alreadyImbued = ModUtils.isImbued(targetStack);
+		List<MobEffectInstance> upgrades = ModUtils.getImbuementUpgrades(targetStack, effects);
+		if (alreadyImbued && upgrades.isEmpty()) {
+			return;
+		}
 		int potionColor = PotionUtils.getColor(potionStack);
 		boolean isInstant = effects.stream().allMatch(e -> e.getDuration() <= 20);
 		int imbuedUses = Math.max(1, isInstant ? 1 : calculateImbuedUses(targetStack, effects));
 		cancelEvent(event, level);
 		handleItemInteraction(level, player, targetStack, potionStack, hand, targetItem -> {
 			CompoundTag tag = targetItem.getOrCreateTag();
+			List<MobEffectInstance> savedEffects = alreadyImbued ? ModUtils.mergeImbuementUpgrades(targetItem, upgrades) : effects;
 			ListTag effectsTag = new ListTag();
-			for (MobEffectInstance effect : effects) {
-				MobEffectInstance savedEffect = new MobEffectInstance(effect.getEffect(), Math.max(1, effect.getDuration() / 2), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon());
-				effectsTag.add(savedEffect.save(new CompoundTag()));
+			if (!alreadyImbued) {
+				for (MobEffectInstance effect : savedEffects) {
+					MobEffectInstance savedEffect = new MobEffectInstance(effect.getEffect(), Math.max(1, effect.getDuration() / 2), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon());
+					effectsTag.add(savedEffect.save(new CompoundTag()));
+				}
+			} else {
+				for (MobEffectInstance effect : savedEffects) {
+					effectsTag.add(effect.save(new CompoundTag()));
+				}
 			}
 			tag.put("ImbuedEffects", effectsTag);
-			tag.putInt("ImbuedUses", imbuedUses);
-			tag.putInt("MaxImbuedUses", imbuedUses);
+			if (!alreadyImbued) {
+				tag.putInt("ImbuedUses", imbuedUses);
+				tag.putInt("MaxImbuedUses", imbuedUses);
+			}
 			tag.putInt("ImbuedColor", potionColor);
 			ModUtils.applyDyeColor(targetItem, potionColor);
 			level.playSound(null, player.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0F, 1.15F);

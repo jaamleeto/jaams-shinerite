@@ -116,6 +116,7 @@ public class ShineriteAttackHandler {
 		}
 		if (!world.isClientSide()) {
 			spawnImbuedCritBurst(world, target, imbuedColor, 0.15f, 6);
+			world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		if (attacker instanceof Player player && shouldConsume) {
 			ItemStack mainHand = player.getMainHandItem();
@@ -148,6 +149,15 @@ public class ShineriteAttackHandler {
 					}
 				}
 			}
+		} else if (!(attacker instanceof Player) && shouldConsume) {
+			int usesAfter = uses - 1;
+			if (usesAfter > 0) {
+				tag.putInt("ImbuedUses", usesAfter);
+				updateImbueColor(itemStack, tag, usesAfter, maxUses);
+			} else {
+				ModUtils.removeImbuement(itemStack);
+				resetItemImbue(itemStack, world, attacker);
+			}
 		}
 		return true;
 	}
@@ -160,10 +170,23 @@ public class ShineriteAttackHandler {
 	 * @return true if at least one effect was actually applied.
 	 */
 	public static boolean applyImbuedEffects(ListTag effectsTag, @Nullable Entity source, LivingEntity target, float scaledFraction, int minDurationTicks, boolean allowInstantaneous) {
+		return applyImbuedEffectsInternal(effectsTag, source, target, scaledFraction, minDurationTicks, allowInstantaneous, false);
+	}
+
+	/**
+	 * Variant used when a player consumes an imbued edible: the eater is the target, so the
+	 * protection against self-application must be bypassed and instantaneous effects (harm/heal)
+	 * must be allowed against oneself.
+	 */
+	public static boolean applyImbuedEffectsOnSelf(ListTag effectsTag, LivingEntity target, float scaledFraction, int minDurationTicks) {
+		return applyImbuedEffectsInternal(effectsTag, target, target, scaledFraction, minDurationTicks, true, true);
+	}
+
+	private static boolean applyImbuedEffectsInternal(ListTag effectsTag, @Nullable Entity source, LivingEntity target, float scaledFraction, int minDurationTicks, boolean allowInstantaneous, boolean allowSelfTarget) {
 		if (effectsTag == null || effectsTag.isEmpty() || target == null || !target.isAlive() || target.isRemoved()) {
 			return false;
 		}
-		if (isSelfOrRiddenTarget(source, target)) {
+		if (!allowSelfTarget && isSelfOrRiddenTarget(source, target)) {
 			return false;
 		}
 		int minTicks = Math.max(1, minDurationTicks);
@@ -174,7 +197,7 @@ public class ShineriteAttackHandler {
 			if (effectData.isEmpty()) {
 				continue;
 			}
-			MobEffectInstance savedEffect = MobEffectInstance.load(effectData);
+			MobEffectInstance savedEffect = ModUtils.loadImbuedEffect(effectData);
 			if (savedEffect == null) {
 				continue;
 			}
@@ -185,7 +208,7 @@ public class ShineriteAttackHandler {
 			int finalDuration = Math.max(minTicks, (int) (savedEffect.getDuration() * fraction));
 			int finalAmplifier = Math.max(0, (int) (savedEffect.getAmplifier() * fraction));
 			if (effect.isInstantenous()) {
-				if (!allowInstantaneous || !(source instanceof LivingEntity livingSource) || livingSource == target) {
+				if (!allowInstantaneous || !(source instanceof LivingEntity livingSource)) {
 					continue;
 				}
 				applyInstantaneousImbuementEffect(effect, target, livingSource, finalAmplifier);
@@ -331,11 +354,7 @@ public class ShineriteAttackHandler {
 	}
 
 	public static void updateImbueColor(ItemStack itemStack, CompoundTag tag, int uses, int maxUses) {
-		int imbuedColor = tag.getInt("ImbuedColor");
-		float progress = uses / (float) maxUses;
-		int newColor = lightenImbuedColor(imbuedColor, 1.0f - progress);
-		ModUtils.applyDyeColor(itemStack, newColor);
-		tag.putInt("ImbuedColor", newColor);
+		ModUtils.updateImbuedUseColor(itemStack, tag, uses, maxUses);
 	}
 
 	private static void resetItemImbue(ItemStack itemStack, Level world, LivingEntity attacker) {
@@ -399,13 +418,6 @@ public class ShineriteAttackHandler {
 	}
 
 	private static int lightenImbuedColor(int color, float fraction) {
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = color & 0xFF;
-		int minR = r / 2, minG = g / 2, minB = b / 2;
-		r = Math.max(minR, Math.min(255, (int) (r + (255 - r) * fraction * 0.15f)));
-		g = Math.max(minG, Math.min(255, (int) (g + (255 - g) * fraction * 0.15f)));
-		b = Math.max(minB, Math.min(255, (int) (b + (255 - b) * fraction * 0.15f)));
-		return (r << 16) | (g << 8) | b;
+		return ModUtils.lightenImbuedColor(color, fraction);
 	}
 }

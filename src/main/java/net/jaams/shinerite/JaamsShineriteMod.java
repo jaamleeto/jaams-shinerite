@@ -33,6 +33,7 @@ import net.jaams.shinerite.init.ModTabs;
 import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.init.ModBlocks;
 import net.jaams.shinerite.init.ModBlockEntities;
+import net.jaams.shinerite.init.ModLootModifiers;
 import net.jaams.shinerite.init.ModRecipes;
 import net.jaams.shinerite.init.ModParticles;
 import net.jaams.shinerite.packet.GlowColorPacket;
@@ -100,6 +101,8 @@ public class JaamsShineriteMod {
 		// Custom Block Registry
 		ModBlockEntities.REGISTRY.register(bus);
 		ModBlocks.REGISTRY.register(bus);
+		// Loot Modifiers
+		ModLootModifiers.register(bus);
 		// Recipe Registry
 		ModRecipes.register(bus);
 		// Custom Particles Data

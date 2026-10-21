@@ -46,7 +46,7 @@ public abstract class FlowerPotBlockMixin {
 				ListTag effects = stack.getTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 				int uses = stack.getTag().getInt("ImbuedUses");
 				int maxUses = stack.getTag().getInt("MaxImbuedUses");
-				int imbuedColor = stack.getTag().getInt("ImbuedColor");
+				int imbuedColor = ModUtils.getImbuedColor(stack);
 				shineriteBlockEntity.setImbuedState(effects, uses, maxUses, imbuedColor);
 				if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
 					serverLevel.sendParticles(new CustomEffectParticleData(

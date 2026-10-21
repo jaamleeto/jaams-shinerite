@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
@@ -13,13 +13,33 @@
       "item": "jaams_shinerite:shinerite_sword",
       "count_min": 1,
       "count_max": 1,
-      "chance": 0.15,
-      "nbt": "",
+      "chance": 0.12,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
       "enchantments": [
         {
           "id": "jaams_shinerite:lightbringer",
-          "level": 1,
-          "chance": 0.05
+          "level": 2,
+          "chance": 0.4
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 4,
+          "chance": 0.85
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.7
+        },
+        {
+          "id": "minecraft:fire_aspect",
+          "level": 2,
+          "chance": 0.5
+        },
+        {
+          "id": "minecraft:knockback",
+          "level": 2,
+          "chance": 0.4
         }
       ]
     },
@@ -27,13 +47,196 @@
       "item": "jaams_shinerite:shinerite_axe",
       "count_min": 1,
       "count_max": 1,
-      "chance": 0.15,
-      "nbt": "",
+      "chance": 0.14,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:slow_falling\",\"Amplifier\":0,\"Duration\":80,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":15978425,\"color\":15978425}",
       "enchantments": [
         {
           "id": "jaams_shinerite:lightbringer",
-          "level": 1,
-          "chance": 0.05
+          "level": 2,
+          "chance": 0.4
+        },
+        {
+          "id": "minecraft:sharpness",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.7
+        },
+        {
+          "id": "minecraft:looting",
+          "level": 2,
+          "chance": 0.45
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.14,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 2,
+          "chance": 0.4
+        },
+        {
+          "id": "minecraft:efficiency",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:fortune",
+          "level": 3,
+          "chance": 0.45
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.7
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.12,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:slow_falling\",\"Amplifier\":0,\"Duration\":80,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":15978425,\"color\":15978425}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 2,
+          "chance": 0.4
+        },
+        {
+          "id": "minecraft:efficiency",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.7
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerang",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 2,
+          "chance": 0.4
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.65
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_helmet",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:thorns",
+          "level": 2,
+          "chance": 0.35
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_chestplate",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:thorns",
+          "level": 2,
+          "chance": 0.35
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_leggings",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:thorns",
+          "level": 2,
+          "chance": 0.35
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_boots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.1,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "minecraft:protection",
+          "level": 4,
+          "chance": 0.8
+        },
+        {
+          "id": "minecraft:unbreaking",
+          "level": 3,
+          "chance": 0.65
+        },
+        {
+          "id": "minecraft:thorns",
+          "level": 2,
+          "chance": 0.35
         }
       ]
     },

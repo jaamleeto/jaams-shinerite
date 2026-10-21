@@ -392,11 +392,7 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 	}
 
 	private static void updateImbueColor(ItemStack itemStack, CompoundTag tag, int uses, int maxUses) {
-		int imbuedColor = tag.getInt("ImbuedColor");
-		float progress = uses / (float) maxUses;
-		int newColor = lightenImbuedColor(imbuedColor, 1.0f - progress);
-		ModUtils.applyDyeColor(itemStack, newColor);
-		tag.putInt("ImbuedColor", newColor);
+		ModUtils.updateImbuedUseColor(itemStack, tag, uses, maxUses);
 	}
 
 	private static void resetItemImbue(ItemStack itemStack, Level world, Entity projectile) {
@@ -407,14 +403,7 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 	}
 
 	private static int lightenImbuedColor(int color, float fraction) {
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = color & 0xFF;
-		int minR = r / 2, minG = g / 2, minB = b / 2;
-		r = Math.max(minR, Math.min(255, (int) (r + (255 - r) * fraction * 0.15f)));
-		g = Math.max(minG, Math.min(255, (int) (g + (255 - g) * fraction * 0.15f)));
-		b = Math.max(minB, Math.min(255, (int) (b + (255 - b) * fraction * 0.15f)));
-		return (r << 16) | (g << 8) | b;
+		return ModUtils.lightenImbuedColor(color, fraction);
 	}
 
 	private static void handleItemEntitiesInArea(ServerLevel level, ThrownPotion potion, ItemStack potionStack, Vec3 pos, int totalAffected) {
@@ -423,7 +412,7 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 		AABB aabb = potion.getBoundingBox().inflate(radius);
 		for (ItemEntity ie : level.getEntitiesOfClass(ItemEntity.class, aabb, e -> e.position().distanceTo(pos) <= distanceFactor)) {
 			ItemStack stack = ie.getItem();
-			if (!ModUtils.isImbueableItem(stack) || ModUtils.isImbued(stack) || InteractionHandler.hasCustomColor(stack))
+			if (!ModUtils.isImbueableItem(stack) || (InteractionHandler.hasCustomColor(stack) && !ModUtils.isImbued(stack)))
 				continue;
 			imbueItemStack(level, stack, potionStack, ie, pos, totalAffected);
 			ie.setItem(stack);
@@ -440,7 +429,7 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 			if (!nbt.contains("WeaponItem", 10))
 				continue;
 			ItemStack weapon = ItemStack.of(nbt.getCompound("WeaponItem"));
-			if (!ModUtils.isImbueableItem(weapon) || ModUtils.isImbued(weapon) || InteractionHandler.hasCustomColor(weapon))
+			if (!ModUtils.isImbueableItem(weapon) || (InteractionHandler.hasCustomColor(weapon) && !ModUtils.isImbued(weapon)))
 				continue;
 			imbueItemStack(level, weapon, potionStack, arrow, pos, totalAffected);
 			nbt.put("WeaponItem", weapon.save(new CompoundTag()));
@@ -456,6 +445,10 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 		effects.addAll(PotionUtils.getCustomEffects(potionStack));
 		if (effects.isEmpty())
 			return;
+		boolean upgrading = ModUtils.isImbued(target);
+		List<MobEffectInstance> upgrades = upgrading ? ModUtils.getImbuementUpgrades(target, effects) : List.of();
+		if (upgrading && upgrades.isEmpty())
+			return;
 		boolean isInstant = effects.stream().allMatch(e -> e.getDuration() <= 20);
 		int baseUses = isInstant ? 1 : InteractionHandler.calculateImbuedUses(target, effects);
 		double distance = entity.position().distanceTo(pos);
@@ -467,14 +460,22 @@ if (tag != null && tag.contains("Washable") && !tag.getBoolean("Washable")) {
 		int potionColor = PotionUtils.getColor(potionStack);
 		CompoundTag tag = target.getOrCreateTag();
 		ListTag effectsTag = new ListTag();
-		for (MobEffectInstance effect : effects) {
-			int adjustedDuration = Math.max(1, (int) (effect.getDuration() * 0.5f * overallFactor));
-			MobEffectInstance saved = new MobEffectInstance(effect.getEffect(), adjustedDuration, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon());
-			effectsTag.add(saved.save(new CompoundTag()));
+		if (upgrading) {
+			for (MobEffectInstance merged : ModUtils.mergeImbuementUpgrades(target, upgrades)) {
+				effectsTag.add(merged.save(new CompoundTag()));
+			}
+		} else {
+			for (MobEffectInstance effect : effects) {
+				int adjustedDuration = Math.max(1, (int) (effect.getDuration() * 0.5f * overallFactor));
+				MobEffectInstance saved = new MobEffectInstance(effect.getEffect(), adjustedDuration, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon());
+				effectsTag.add(saved.save(new CompoundTag()));
+			}
 		}
 		tag.put("ImbuedEffects", effectsTag);
-		tag.putInt("ImbuedUses", imbuedUses);
-		tag.putInt("MaxImbuedUses", imbuedUses);
+		if (!upgrading) {
+			tag.putInt("ImbuedUses", imbuedUses);
+			tag.putInt("MaxImbuedUses", imbuedUses);
+		}
 		tag.putInt("ImbuedColor", potionColor);
 		ModUtils.applyDyeColor(target, potionColor);
 		level.sendParticles(ParticleTypes.SPLASH, entity.getX(), entity.getY() + entity.getEyeHeight() / 2, entity.getZ(), 10, 0.2, 0.2, 0.2, 0.0);

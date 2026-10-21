@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
@@ -74,6 +74,328 @@
       "enchantments": [
         {
           "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:haste\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":14270531,\"color\":14270531}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:haste\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":14270531,\"color\":14270531}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:poison\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":8889187,\"color\":8889187}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_hoe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_hoe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:instant_damage\",\"Amplifier\":0,\"Duration\":1,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":11101546,\"color\":11101546}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:slow_falling\",\"Amplifier\":0,\"Duration\":80,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":15978425,\"color\":15978425}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:poison\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":8889187,\"color\":8889187}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_sword",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:strength\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":16762624,\"color\":16762624}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_axe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_pickaxe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightguard",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:speed\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":3402751,\"color\":3402751}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightbringer",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_shovel",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:levitation\",\"Amplifier\":0,\"Duration\":40,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":3,\"MaxImbuedUses\":3,\"ImbuedColor\":13565951,\"color\":13565951}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
+          "level": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    {
+      "item": "jaams_shinerite:shinerite_hoe",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.03,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:poison\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":8889187,\"color\":8889187}",
+      "enchantments": [
+        {
+          "id": "jaams_shinerite:lightsteal",
           "level": 1,
           "chance": 0.05
         }

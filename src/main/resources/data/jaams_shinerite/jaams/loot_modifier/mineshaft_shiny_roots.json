@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "chance": 1.0,
+  "chance": 1,
   "replace_all": false,
   "condition_mode": "and",
   "conditions": [],
@@ -13,8 +13,72 @@
       "item": "jaams_shinerite:shiny_roots",
       "count_min": 1,
       "count_max": 3,
-      "chance": 0.45,
-      "nbt": "",
+      "chance": 0.25,
+      "nbt": null,
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.05,
+      "nbt": null,
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:poison\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":8889187,\"color\":8889187}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:night_vision\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":12779366,\"color\":12779366}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:shiny_roots",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:haste\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":14270531,\"color\":14270531}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:regeneration\",\"Amplifier\":0,\"Duration\":600,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":13458603,\"color\":13458603}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:speed\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":3402751,\"color\":3402751}",
+      "enchantments": []
+    },
+    {
+      "item": "jaams_shinerite:glow_salad",
+      "count_min": 1,
+      "count_max": 1,
+      "chance": 0.01,
+      "nbt": "{\"ImbuedEffects\":[{\"Id\":\"minecraft:luck\",\"Amplifier\":0,\"Duration\":1200,\"Ambient\":false,\"ShowParticles\":true,\"ShowIcon\":true}],\"ImbuedUses\":5,\"MaxImbuedUses\":5,\"ImbuedColor\":5882118,\"color\":5882118}",
       "enchantments": []
     }
   ]

@@ -505,7 +505,7 @@ public class BaseShineriteStairBlock extends StairBlock implements EntityBlock {
 					ListTag effects = tag.getList("ImbuedEffects", Tag.TAG_COMPOUND);
 					int uses = tag.getInt("ImbuedUses");
 					int maxUses = tag.getInt("MaxImbuedUses");
-					int imbuedColor = tag.getInt("ImbuedColor");
+					int imbuedColor = ModUtils.getImbuedColor(stack);
 					shineriteBaseBlockEntity.setImbuedState(effects, uses, maxUses, imbuedColor);
 				}
 			}

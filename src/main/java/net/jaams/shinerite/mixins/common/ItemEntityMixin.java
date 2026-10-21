@@ -26,7 +26,7 @@ public abstract class ItemEntityMixin {
 			ListTag effectsTag = stack.getTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 			for (Tag tag : effectsTag) {
 				CompoundTag effectTag = (CompoundTag) tag;
-				MobEffectInstance effect = MobEffectInstance.load(effectTag);
+				MobEffectInstance effect = ModUtils.loadImbuedEffect(effectTag);
 				if (effect != null && effect.getEffect() == MobEffects.FIRE_RESISTANCE) {
 					cir.setReturnValue(true);
 					return;

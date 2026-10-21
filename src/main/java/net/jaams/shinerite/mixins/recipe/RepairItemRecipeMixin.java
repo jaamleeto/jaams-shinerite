@@ -96,8 +96,8 @@ public abstract class RepairItemRecipeMixin {
 				resultTag.putInt("ImbuedUses", finalUses);
 				resultTag.putInt("MaxImbuedUses", finalMax);
 				if (dyeingActive) {
-					int color1 = imbuedInputs.get(0).getOrCreateTag().getInt("ImbuedColor");
-					int color2 = imbuedInputs.get(1).getOrCreateTag().getInt("ImbuedColor");
+					int color1 = ModUtils.getImbuedColor(imbuedInputs.get(0));
+					int color2 = ModUtils.getImbuedColor(imbuedInputs.get(1));
 					int finalColor = calculateAverageColorSimple(color1, color2);
 					if (finalColor != -1) {
 						resultTag.putInt("ImbuedColor", finalColor);
@@ -181,8 +181,8 @@ public abstract class RepairItemRecipeMixin {
 		if (srcTag.contains("MaxImbuedUses")) {
 			tgtTag.putInt("MaxImbuedUses", srcTag.getInt("MaxImbuedUses"));
 		}
-		if (srcTag.contains("ImbuedColor")) {
-			int color = srcTag.getInt("ImbuedColor");
+		int color = ModUtils.getImbuedColor(source);
+		if (color != -1) {
 			tgtTag.putInt("ImbuedColor", color);
 			ModUtils.applyDyeColor(target, color);
 		}
@@ -193,7 +193,7 @@ public abstract class RepairItemRecipeMixin {
 		ListTag tagList = stack.getOrCreateTag().getList("ImbuedEffects", Tag.TAG_COMPOUND);
 		for (int i = 0; i < tagList.size(); i++) {
 			CompoundTag effectTag = tagList.getCompound(i);
-			MobEffectInstance effect = MobEffectInstance.load(effectTag);
+			MobEffectInstance effect = ModUtils.loadImbuedEffect(effectTag);
 			if (effect != null) {
 				list.add(effect);
 			}
