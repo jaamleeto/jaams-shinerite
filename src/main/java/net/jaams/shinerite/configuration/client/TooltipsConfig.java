@@ -5,31 +5,24 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import java.util.List;
 
 public class TooltipsConfig {
-	// Tooltips System 
 	public static ForgeConfigSpec.BooleanValue TOOLTIPS;
 	public static ForgeConfigSpec.BooleanValue CONTROL_TOOLTIPS;
 	public static ForgeConfigSpec.BooleanValue ALT_TOOLTIPS;
 	public static ForgeConfigSpec.ConfigValue<List<? extends String>> EXCLUDED_TOOLTIPS_ITEMS;
 	public static ForgeConfigSpec.ConfigValue<List<? extends String>> EXCLUDED_CONTROL_TOOLTIPS_ITEMS;
 	public static ForgeConfigSpec.ConfigValue<List<? extends String>> EXCLUDED_ALT_TOOLTIPS_ITEMS;
-	// Dyeing
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_DYED_STATUS;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COLOR_HEX_COLORED;
-	// Coating
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COATED_STATUS;
-	// Imbuing
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUED_EFFECTS;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_IMBUED_USES;
-	// Throwing
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_THROWING_PROPERTIES;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_THROWING_MODE;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_THROWBACK_PROPERTIES;
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_COLLECTOR_PROPERTIES;
-	// Frailglow
 	public static ForgeConfigSpec.BooleanValue TOOLTIP_FRAILGLOW_PROPERTIES;
 
 	public static void register(ForgeConfigSpec.Builder builder) {
-		// Tooltips System Handler
 		builder.push("Tooltips System Handler");
 		builder.push("Tooltips Base Settings");
 		TOOLTIPS = builder.comment("Enable or disable ALL custom tooltips added by the mod").define("Enable Tooltips", true);

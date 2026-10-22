@@ -2,8 +2,6 @@ package net.jaams.shinerite.util;
 
 import org.joml.Vector3f;
 
-import org.checkerframework.checker.units.qual.m;
-import org.checkerframework.checker.units.qual.g;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -110,7 +108,7 @@ import java.util.ArrayList;
 public class ModUtils {
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	/** Fallback RGB for imbuement feedback when the item has no usable color. */
+
 	public static final int IMBUE_FALLBACK_COLOR = 0xFFFFFF;
 
 	public static final MobEffect[] NATURAL_IMBUE_EFFECTS = {
@@ -247,7 +245,7 @@ public class ModUtils {
 			return;
 		}
 		float yaw = entity.getYHeadRot() * ((float) Math.PI / 180F);
-		float pitch = (entity instanceof Player player) ? player.getXRot() * ((float) Math.PI / 180F) : 0.0F; // Default pitch for mobs
+		float pitch = (entity instanceof Player player) ? player.getXRot() * ((float) Math.PI / 180F) : 0.0F;
 		double motionX = Math.sin(yaw) * horizontalRecoil * Math.cos(pitch);
 		double motionZ = -Math.cos(yaw) * horizontalRecoil * Math.cos(pitch);
 		double motionY = 0.0;
@@ -330,6 +328,9 @@ public class ModUtils {
 			return false;
 		}
 		CompoundTag tag = stack.getTag();
+		if (tag != null && tag.contains("Coatable")) {
+			return tag.getBoolean("Coatable");
+		}
 		if (tag != null && tag.contains("coatable")) {
 			return tag.getBoolean("coatable");
 		}
@@ -376,7 +377,8 @@ public class ModUtils {
 		if (!MechanicsConfig.COATING.get()) {
 			return false;
 		}
-		return stack.getOrCreateTag().getBoolean("Coated");
+		CompoundTag tag = stack.getTag();
+		return tag != null && tag.getBoolean("Coated");
 	}
 
 	public static Component formatDuration(int ticks, ChatFormatting color) {
@@ -475,7 +477,7 @@ public class ModUtils {
 			serverLevel.sendParticles(particle, particleX, particleY, particleZ, particleCount, 0.1d, 0.1d, 0.1d, 0.05d);
 			SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(soundEvent));
 			if (sound != null) {
-				serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundSource.HOSTILE, 1.0F, 1.0F); // Cambiado a HOSTILE
+				serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundSource.HOSTILE, 1.0F, 1.0F);
 			}
 			itemStack.shrink(1);
 		}
@@ -823,15 +825,54 @@ public class ModUtils {
 		if (tag.contains("ImbuedColor", Tag.TAG_INT)) {
 			return tag.getInt("ImbuedColor");
 		}
-		// No explicit color stored: derive it from the imbued effects themselves,
-		// mirroring how vanilla computes potion colors from MobEffect.getColor().
 		if (tag.contains("ImbuedEffects", Tag.TAG_LIST)) {
 			return getImbuedColorFromEffects(tag.getList("ImbuedEffects", Tag.TAG_COMPOUND));
 		}
 		return -1;
 	}
 
-	/** Potion-style color blended from an ImbuedEffects list, weighted by effect duration. */
+	public static void ensureImbuedColor(ItemStack stack) {
+		if (stack.isEmpty() || !isImbued(stack)) {
+			return;
+		}
+		CompoundTag tag = stack.getTag();
+		if (tag == null) {
+			return;
+		}
+		int currentColor = getCurrentColor(stack);
+		int derivedColor = -1;
+		if (currentColor == -1) {
+			ListTag effectsTag = tag.getList("ImbuedEffects", Tag.TAG_COMPOUND);
+			List<MobEffectInstance> effects = new ArrayList<>();
+			for (int i = 0; i < effectsTag.size(); i++) {
+				MobEffectInstance effect = loadImbuedEffect(effectsTag.getCompound(i));
+				if (effect != null) {
+					effects.add(effect);
+				}
+			}
+			if (effects.isEmpty()) {
+				return;
+			}
+			derivedColor = PotionUtils.getColor(effects);
+		}
+		synchronized (stack) {
+			if (stack.isEmpty() || !isImbued(stack)) {
+				return;
+			}
+			CompoundTag freshTag = stack.getTag();
+			if (freshTag == null || freshTag.contains("ImbuedColor", Tag.TAG_INT)) {
+				return;
+			}
+			if (currentColor != -1) {
+				freshTag.putInt("ImbuedColor", currentColor);
+				return;
+			}
+			freshTag.putInt("ImbuedColor", derivedColor);
+			applyDyeColor(stack, derivedColor);
+		}
+	}
+
+
 	public static int getImbuedColorFromEffects(ListTag effectsTag) {
 		long redSum = 0;
 		long greenSum = 0;
@@ -858,17 +899,8 @@ public class ModUtils {
 		return (r << 16) | (g << 8) | b;
 	}
 
-	/**
-	 * Central loader for MobEffectInstance NBT. Accepts every id format the imbuement
-	 * data can realistically contain:
-	 * <ul>
-	 * <li>numeric map id under "Id" (vanilla-saved data) </li>
-	 * <li>string id under "Id" or "id" ("minecraft:speed" / "speed", from loot JSON)</li>
-	 * <li>string id under "forge:id" (Forge extension)</li>
-	 * </ul>
-	 * Falls back to the vanilla loader for anything else, so round-tripped vanilla
-	 * data (HiddenEffect, FactorCalculationData, ...) keeps working.
-	 */
+
+
 	@Nullable
 	public static MobEffectInstance loadImbuedEffect(CompoundTag tag) {
 		MobEffect effect = null;
@@ -894,7 +926,7 @@ public class ModUtils {
 		return new MobEffectInstance(effect, duration, Math.max(0, amplifier), ambient, visible, showIcon, hiddenEffect, Optional.empty());
 	}
 
-	/** Loads every saved effect of an imbued stack into a list of instances. */
+
 	public static List<MobEffectInstance> loadImbuedEffectsList(ItemStack stack) {
 		List<MobEffectInstance> list = new ArrayList<>();
 		CompoundTag tag = stack.getTag();
@@ -911,12 +943,8 @@ public class ModUtils {
 		return list;
 	}
 
-	/**
-	 * Filters raw potion effects that would be worth applying to a stack. A boosted effect
-	 * keeps the item if the stored one has the same effect and its amplifier is higher, or the
-	 * same amplifier with a longer duration; its candidates are scaled by half like a fresh imbue.
-	 * New effects (not present in the imbue) are always accepted.
-	 */
+
+
 	public static List<MobEffectInstance> getImbuementUpgrades(ItemStack stack, List<MobEffectInstance> incoming) {
 		List<MobEffectInstance> upgrades = new ArrayList<>();
 		if (incoming == null || incoming.isEmpty()) {
@@ -939,10 +967,8 @@ public class ModUtils {
 		return upgrades;
 	}
 
-	/**
-	 * Merges saved effects of a imbued stack with upgrades so upgraded effects replace the
-	 * stored instance and the rest are kept untouched.
-	 */
+
+
 	public static List<MobEffectInstance> mergeImbuementUpgrades(ItemStack stack, List<MobEffectInstance> upgrades) {
 		Map<MobEffect, MobEffectInstance> merged = new LinkedHashMap<>();
 		for (MobEffectInstance e : loadImbuedEffectsList(stack)) {
@@ -962,7 +988,7 @@ public class ModUtils {
 		return ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.tryParse(raw.contains(":") ? raw : "minecraft:" + raw));
 	}
 
-	/** Safe RGB color used for imbuement feedback particles; never white/transparent. */
+
 	public static int getImbuedParticleColor(ItemStack stack) {
 		if (stack == null || stack.isEmpty()) {
 			return IMBUE_FALLBACK_COLOR;
@@ -971,7 +997,6 @@ public class ModUtils {
 		if (isValidParticleColor(currentColor) && currentColor != 0xFFFFFF) {
 			return currentColor & 0xFFFFFF;
 		}
-		// Fall back to the explicit or effect-derived imbued color.
 		int imbuedColor = getImbuedColor(stack);
 		if (isValidParticleColor(imbuedColor)) {
 			return imbuedColor & 0xFFFFFF;
@@ -994,7 +1019,7 @@ public class ModUtils {
 		tag.remove("ImbuedColor");
 	}
 
-	/** Shifts the item color toward white as imbued uses are consumed. */
+
 	public static void updateImbuedUseColor(ItemStack itemStack, CompoundTag tag, int uses, int maxUses) {
 		int imbuedColor = getImbuedColor(itemStack);
 		float progress = maxUses > 0 ? uses / (float) maxUses : 1.0F;
@@ -1128,18 +1153,14 @@ public class ModUtils {
 		return false;
 	}
 
-	/**
-	 * The color names this mod understands, in the order used by {@code /jaams_shinerite color set}.
-	 * Kept here so the command and the data driven loaders share a single palette.
-	 */
+
+
 	public static final String[] SUPPORTED_COLOR_NAMES = {"red", "green", "blue", "white", "black", "yellow", "purple",
 			"cyan", "orange", "pink", "lime", "magenta", "gray", "light_gray", "brown", "gold", "aqua", "violet",
 			"indigo", "teal"};
 
-	/**
-	 * Resolves a color name such as {@code "red"} or a hex value such as {@code "#8B4513"} into a packed
-	 * RGB int. Throws {@link IllegalArgumentException} for anything the mod does not know.
-	 */
+
+
 	public static int parseColor(String input) {
 		String s = input.toLowerCase(java.util.Locale.ROOT).trim();
 		if (s.startsWith("#") || s.startsWith("0x")) {
@@ -1174,7 +1195,7 @@ public class ModUtils {
 		};
 	}
 
-	/** Returns a uniformly random color from {@link #SUPPORTED_COLOR_NAMES}. */
+
 	public static int randomSupportedColor(net.minecraft.util.RandomSource random) {
 		return parseColor(SUPPORTED_COLOR_NAMES[random.nextInt(SUPPORTED_COLOR_NAMES.length)]);
 	}
@@ -1350,17 +1371,8 @@ public class ModUtils {
 		return true;
 	}
 
-	/**
-	 * Imbues a block entity with exactly ONE effect picked from {@code pool}.
-	 *
-	 * <p>Worldgen deliberately never stacks several effects on the same block: each generated
-	 * Shinerite flower or root carries a single, readable effect so a player can tell at a glance
-	 * which one they stumbled upon. The pool is chosen per biome so the effect always matches where
-	 * the block grew.</p>
-	 *
-	 * @return true when the block entity ended up imbued, false when the roll failed (in which case
-	 * the caller should fall back to its plain colour palette)
-	 */
+
+
 	public static boolean applyNaturalImbuement(BaseShineriteBlockEntity blockEntity, RandomSource random, MobEffect[] pool, double chance) {
 		if (!MechanicsConfig.IMBUING.get() || !InteractionsConfig.BLOCK_IMBUING.get()) {
 			return false;
@@ -1370,8 +1382,6 @@ public class ModUtils {
 		}
 
 		MobEffect effect = pool[random.nextInt(pool.length)];
-		// Instantaneous effects (instant health/harm) are allowed on purpose: the flower applies
-		// them at the moment of use, so no duration is needed and the player gets an instant heal.
 
 		int duration = 100 + random.nextInt(200);
 		int amplifier = random.nextInt(2);

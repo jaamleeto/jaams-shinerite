@@ -51,7 +51,6 @@ public class ModItems {
 	public static final RegistryObject<Item> SHINERITE_ARMOR_BOOTS = REGISTRY.register("shinerite_boots", () -> new ShineriteArmorItem.Boots());
 	public static final RegistryObject<Item> MUSIC_DISC_SHINY = REGISTRY.register("music_disc_shiny", () -> new MusicDiscShinyItem());
 	public static final RegistryObject<Item> DISC_FRAGMENT_SHINY = REGISTRY.register("disc_fragment_shiny", () -> new DiscFragmentShinyItem());
-	// Block Items
 	public static final RegistryObject<Item> SHINERITE_BLOCK = REGISTRY.register("shinerite_block", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_BLOCK.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITE_ORE = REGISTRY.register("shinerite_ore", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_ORE.get(), new Item.Properties()));
 	public static final RegistryObject<Item> DEEPSLATE_SHINERITE_ORE = REGISTRY.register("deepslate_shinerite_ore", () -> new BaseShineriteBlockItem(ModBlocks.DEEPSLATE_SHINERITE_ORE.get(), new Item.Properties()));

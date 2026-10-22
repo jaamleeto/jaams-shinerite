@@ -42,10 +42,8 @@ public class ArmorColorRegister {
 		return -1;
 	}
 
-	/**
-	 * Returns the dye color that was captured from the Shinerite ingot when the trim was applied,
-	 * or {@code -1} when the stack has no Shinerite trim.
-	 */
+
+
 	public static int getShineriteTrimColor(ItemStack stack) {
 		CompoundTag tag = stack.getTag();
 		if (tag == null || !tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)) {

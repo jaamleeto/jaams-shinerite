@@ -33,6 +33,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import net.jaams.shinerite.loader.ItemModifierLoader;
 import net.jaams.shinerite.data.ItemModifierData;
+import net.jaams.shinerite.util.ModUtils;
 
 import java.util.UUID;
 import java.util.Objects;
@@ -53,6 +54,7 @@ public class ItemModifierHandler {
         ItemStack stack = event.getItemStack();
         if (stack.isEmpty())
             return;
+        ModUtils.ensureImbuedColor(stack);
         List<ItemModifierData> datas = ItemModifierLoader.INSTANCE.getForItem(stack.getItem());
         if (datas.isEmpty())
             return;

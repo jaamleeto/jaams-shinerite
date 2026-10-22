@@ -2,7 +2,6 @@ package net.jaams.shinerite.handler.mechanic;
 
 import org.joml.Vector3f;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.network.PacketDistributor;
 
@@ -53,12 +52,7 @@ public class ShineriteAttackHandler {
 		float baseHeal = EnchantmentsConfig.LIGHTSTEAL_HEAL_AMOUNT.get().floatValue();
 		float healPerLevel = EnchantmentsConfig.LIGHTSTEAL_HEAL_PER_LEVEL.get().floatValue();
 		float totalHealAmount = baseHeal + (healPerLevel * (lightstealLevel - 1));
-		int successes = 0;
-		for (int i = 0; i < lightstealLevel; i++) {
-			if (world.random.nextFloat() < chance) {
-				successes++;
-			}
-		}
+		int successes = world.random.nextFloat() < chance ? 1 : 0;
 		if (successes > 0) {
 			float finalHeal = totalHealAmount * successes;
 			attacker.heal(finalHeal);
@@ -119,12 +113,10 @@ public class ShineriteAttackHandler {
 			world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		if (attacker instanceof Player player && shouldConsume) {
-			ItemStack mainHand = player.getMainHandItem();
-			ItemStack offHand = player.getOffhandItem();
-			if (mainHand != itemStack && offHand != itemStack) {
+			ItemStack activeStack = resolveHeldStack(player, itemStack);
+			if (activeStack == null) {
 				return true;
 			}
-			ItemStack activeStack = itemStack;
 			if (uses == 1 && activeStack.getCount() > 1) {
 				activeStack = activeStack.split(1);
 			}
@@ -162,22 +154,14 @@ public class ShineriteAttackHandler {
 		return true;
 	}
 
-	/**
-	 * Central, defensive imbuement application used by every source (melee, projectiles, armor, ...).
-	 * Prevents the classic bugs: applying to the source itself, applying on the client side, refreshing
-	 * effects every tick (which leaves them stuck at 0:00 forever) and stacking zero/negative durations.
-	 *
-	 * @return true if at least one effect was actually applied.
-	 */
+
+
 	public static boolean applyImbuedEffects(ListTag effectsTag, @Nullable Entity source, LivingEntity target, float scaledFraction, int minDurationTicks, boolean allowInstantaneous) {
 		return applyImbuedEffectsInternal(effectsTag, source, target, scaledFraction, minDurationTicks, allowInstantaneous, false);
 	}
 
-	/**
-	 * Variant used when a player consumes an imbued edible: the eater is the target, so the
-	 * protection against self-application must be bypassed and instantaneous effects (harm/heal)
-	 * must be allowed against oneself.
-	 */
+
+
 	public static boolean applyImbuedEffectsOnSelf(ListTag effectsTag, LivingEntity target, float scaledFraction, int minDurationTicks) {
 		return applyImbuedEffectsInternal(effectsTag, target, target, scaledFraction, minDurationTicks, true, true);
 	}
@@ -360,14 +344,25 @@ public class ShineriteAttackHandler {
 	private static void resetItemImbue(ItemStack itemStack, Level world, LivingEntity attacker) {
 		ModUtils.removeColor(itemStack);
 		if (!world.isClientSide() && attacker instanceof Player player) {
-			ItemStack mainHand = player.getMainHandItem();
-			ItemStack offHand = player.getOffhandItem();
-			if (mainHand != itemStack && offHand != itemStack) {
+			if (resolveHeldStack(player, itemStack) == null) {
 				playSound(world, attacker, SoundEvents.BREWING_STAND_BREW);
 			}
 			Vec3 handPos = getHandPosition(attacker, player.getUsedItemHand());
 			((ServerLevel) world).sendParticles(new DustParticleOptions(new Vector3f(1.0f, 1.0f, 1.0f), 1.0f), handPos.x, handPos.y, handPos.z, 10, 0.2, 0.2, 0.2, 0.05);
 		}
+	}
+
+	private static ItemStack resolveHeldStack(Player player, ItemStack stack) {
+		if (player.getMainHandItem() == stack || player.getOffhandItem() == stack) {
+			return stack;
+		}
+		if (ItemStack.isSameItemSameTags(player.getMainHandItem(), stack)) {
+			return player.getMainHandItem();
+		}
+		if (ItemStack.isSameItemSameTags(player.getOffhandItem(), stack)) {
+			return player.getOffhandItem();
+		}
+		return null;
 	}
 
 	private static void spawnHeartParticles(ServerLevel serverLevel, LivingEntity target, int color, int count, double offsetScale, double speedScale, int lightstealLevel) {

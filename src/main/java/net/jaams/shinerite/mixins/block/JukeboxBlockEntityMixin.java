@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Mixin;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.network.PacketDistributor;
 
@@ -65,23 +64,23 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 
 	private static int getLengthForCategory(String colorCategory) {
 		return switch (colorCategory) {
-			case "WHITE" -> (1 * 60 + 34) * 20; // Shiny → 1:34
-			case "ORANGE" -> (0 * 60 + 53) * 20; // California → 0:53
-			case "MAGENTA" -> (1 * 60 + 17) * 20; // Lithium → 1:17
-			case "LIGHT_BLUE" -> (1 * 60 + 40) * 20; // Sadness → 1:40
-			case "YELLOW" -> (1 * 60 + 29) * 20; // Special → 1:29
-			case "LIME" -> (0 * 60 + 58) * 20; // Spy → 0:58
-			case "PINK" -> (1 * 60 + 7) * 20; // Family → 1:07
-			case "GRAY" -> (1 * 60 + 36) * 20; // Blade → 1:36
-			case "LIGHT_GRAY" -> (1 * 60 + 48) * 20; // Hunter → 1:48
-			case "CYAN" -> (1 * 60 + 35) * 20; // Holy → 1:35
-			case "PURPLE" -> (1 * 60 + 42) * 20; // Gurenge → 1:42
-			case "BLUE" -> (1 * 60 + 40) * 20; // Sadness → 1:40 (igual que LIGHT_BLUE)
-			case "BROWN" -> (1 * 60 + 29) * 20; // War → 1:29
-			case "GREEN" -> (1 * 60 + 23) * 20; // Toxicity → 1:23
-			case "RED" -> (1 * 60 + 23) * 20; // Bloody → 1:23
-			case "BLACK" -> (1 * 60 + 26) * 20; // Revenge → 1:26
-			default -> (1 * 60 + 1) * 20; // Never Gonna Give You Up → 1:01 (fallback)
+			case "WHITE" -> (1 * 60 + 34) * 20;
+			case "ORANGE" -> (0 * 60 + 53) * 20;
+			case "MAGENTA" -> (1 * 60 + 17) * 20;
+			case "LIGHT_BLUE" -> (1 * 60 + 40) * 20;
+			case "YELLOW" -> (1 * 60 + 29) * 20;
+			case "LIME" -> (0 * 60 + 58) * 20;
+			case "PINK" -> (1 * 60 + 7) * 20;
+			case "GRAY" -> (1 * 60 + 36) * 20;
+			case "LIGHT_GRAY" -> (1 * 60 + 48) * 20;
+			case "CYAN" -> (1 * 60 + 35) * 20;
+			case "PURPLE" -> (1 * 60 + 42) * 20;
+			case "BLUE" -> (1 * 60 + 40) * 20;
+			case "BROWN" -> (1 * 60 + 29) * 20;
+			case "GREEN" -> (1 * 60 + 23) * 20;
+			case "RED" -> (1 * 60 + 23) * 20;
+			case "BLACK" -> (1 * 60 + 26) * 20;
+			default -> (1 * 60 + 1) * 20;
 		};
 	}
 

@@ -7,7 +7,6 @@ import net.minecraft.world.item.UseAnim;
 import net.jaams.shinerite.util.ModEnums;
 
 public class ThrowableConfig {
-	// Shinerang
 	public static ForgeConfigSpec.BooleanValue THROWABLE_SHINERANG;
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERANG_MIN_CHARGE;
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERANG_MAX_CHARGE;
@@ -29,7 +28,6 @@ public class ThrowableConfig {
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERANG_USE_DURATION_TICKS;
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERANG_MIN_REMAINING_DURABILITY;
 	public static ForgeConfigSpec.EnumValue<UseAnim> THROWABLE_SHINERANG_USE_ANIMATION;
-	// Shinerite Star 
 	public static ForgeConfigSpec.BooleanValue THROWABLE_SHINERITE_STAR;
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERITE_STAR_MIN_CHARGE;
 	public static ForgeConfigSpec.IntValue THROWABLE_SHINERITE_STAR_MAX_CHARGE;

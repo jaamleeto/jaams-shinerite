@@ -21,19 +21,12 @@ import net.jaams.shinerite.util.ModUtils;
 
 import com.mojang.serialization.Codec;
 
-/**
- * Generates Shineritia flowers inside the nether forests.
- *
- * <p>The datapack placement picks a uniformly random height inside the nether column, so this feature
- * walks that column looking for the first patch of ground the flower can actually root on. Crimson
- * forests only ever roll reddish colours and warped forests only bluish-green ones; each also has a
- * small chance of a natural imbuement themed after its forest: fire resistance for crimson, jump
- * boost for warped.</p>
- */
+
+
 public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguration> {
 	private static final int[] CRIMSON_COLORS = {0x7A0C10, 0x9E1B22, 0xC1272D, 0xE0332B, 0xF0563C, 0xB22222};
 	private static final int[] WARPED_COLORS = {0x0F3D3A, 0x16685C, 0x1E8A6E, 0x2FA98A, 0x48C9A6, 0x2B4F7C};
-	/** One effect per flower, picked at random from the biome's own pool. */
+
 	private static final MobEffect[] CRIMSON_IMBUEMENT_EFFECTS = {MobEffects.DAMAGE_BOOST, MobEffects.FIRE_RESISTANCE, MobEffects.WITHER};
 	private static final MobEffect[] WARPED_IMBUEMENT_EFFECTS = {MobEffects.POISON, MobEffects.JUMP, MobEffects.DIG_SPEED};
 
@@ -54,8 +47,6 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 		RandomSource random = context.random();
 		BlockPos origin = context.origin();
 
-		// The origin is picked at a random height, so the forest it lands in can still be a few blocks
-		// above or below the real floor. Look the biome up again once the ground is known.
 		boolean crimson = isForest(level, origin, Biomes.CRIMSON_FOREST);
 		boolean warped = !crimson && isForest(level, origin, Biomes.WARPED_FOREST);
 
@@ -95,7 +86,6 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 
 			BlockPos candidate = ground.above().offset(x, 0, z);
 			if (!isPlantableSpot(level, candidate)) {
-				// The neighbour sits on a different height, look for its own floor before giving up.
 				BlockPos neighbourGround = findGround(level, candidate, WorldGenConfig.NETHER_SHINERITIA_FLOWER_SEARCH_DEPTH.get());
 				if (neighbourGround == null) {
 					continue;
@@ -113,10 +103,8 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 		return level.getBiome(pos).is(biome);
 	}
 
-	/**
-	 * Walks the column around {@code pos} looking for the closest air block the flower can root on,
-	 * starting a little above the candidate height so that floors higher up are found too.
-	 */
+
+
 	private BlockPos findGround(WorldGenLevel level, BlockPos pos, int searchDepth) {
 		int top = Math.min(pos.getY() + searchDepth, level.getMaxBuildHeight() - 2);
 		int bottom = Math.max(level.getMinBuildHeight(), pos.getY() - searchDepth * 2);
@@ -134,8 +122,6 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 
 	private boolean isPlantableSpot(WorldGenLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
-		// Air, or soft replaceable vegetation (fungi, nether sprouts, roots) the flower may take
-		// the place of; hard terrain and liquids are never touched.
 		return state.isAir() || ShineriteFlowerGround.canReplaceGroundCover(level, pos);
 	}
 
@@ -144,8 +130,6 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 			return false;
 		}
 
-		// Flag 2 only: no neighbour or client updates. This runs against a WorldGenLevel proto-chunk,
-		// and BaseShineriteBlockEntity#sync is a no-op there since there is no ServerLevel to broadcast to.
 		if (!level.setBlock(pos, flowerBlock, 2)) {
 			return false;
 		}

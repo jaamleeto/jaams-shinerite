@@ -30,19 +30,11 @@ import net.jaams.shinerite.item.ShinyPaintBrushItem;
 import net.jaams.shinerite.item.ShinyScraperItem;
 import net.jaams.shinerite.util.ModUtils;
 
-/**
- * Lets mobs holding a Shiny Paint Brush or a Shiny Scraper use those tools on nearby Shinerite
- * blocks, the same way a player would by right clicking them: the brush pushes a block towards the
- * brush's own color, the scraper pulls it back and strips imbuements.
- *
- * <p>This is flavour only. It never consumes the tool and it never hands the block's imbuement to
- * the mob; it only reshapes the block, which is what makes a shinerite-carrying mob feel like it
- * belongs in a shinerite world. Everything is gated behind {@link MechanicsConfig#DYEING} plus the
- * interaction switches so it can be disabled without touching code.
- */
+
+
 public class MobToolBehaviorHandler {
 
-	
+
 
 	private static final Map<UUID, State> STATES = new HashMap<>();
 
@@ -50,7 +42,6 @@ public class MobToolBehaviorHandler {
 	}
 
 	private static final int APPROACH_REPATH_TICKS = 10;
-	// Candidate stand spots around a target block: same level, one step down, one step up and two/three down.
 	private static final BlockPos[] NEIGHBORS = new BlockPos[]{
 		new BlockPos(1, 0, 0), new BlockPos(-1, 0, 0), new BlockPos(0, 0, 1), new BlockPos(0, 0, -1),
 		new BlockPos(1, -1, 0), new BlockPos(-1, -1, 0), new BlockPos(0, -1, 1), new BlockPos(0, -1, -1),
@@ -95,7 +86,6 @@ public class MobToolBehaviorHandler {
 			return false;
 		}
 
-		// In reach: stop dead, look straight at the block and swing as the tool touches it.
 		stopAndFace(mob, state.target);
 		BaseShineriteBlockEntity blockEntity = getBlockEntity(mob.level(), state.target);
 		if (blockEntity == null) {
@@ -111,17 +101,13 @@ public class MobToolBehaviorHandler {
 			worked = applyScraper(mob, pos, blockEntity, tool);
 		}
 		clearTarget(mob, state);
-		// Always consume the cooldown, worked or not, so a mob does not act every single tick.
 		state.nextActionTick = tick + MobBehaviorConfig.MOB_TOOL_COOLDOWN_TICKS.get();
 		state.nextScanTick = state.nextActionTick;
 		return worked;
 	}
 
-	/**
-	 * Walks the mob towards a spot right next to its target block. The path is only rebuilt when the
-	 * current one is gone (finished, blocked or interrupted), so the mob never starts and stops every few
-	 * ticks while closing the distance.
-	 */
+
+
 	private static void approach(Mob mob, State state, long tick) {
 		faceBlock(mob, state.target);
 		BlockPos standPos = state.standPos;
@@ -130,14 +116,12 @@ public class MobToolBehaviorHandler {
 			state.standPos = standPos;
 			state.nextRepathTick = tick;
 		}
-		// Re-path when there is no path left, when the mob got stuck, or periodically to recover from stalls.
 		boolean needsPath = mob.getNavigation().isDone() || tick >= state.nextRepathTick;
 		if (!needsPath) {
 			return;
 		}
 		state.nextRepathTick = tick + APPROACH_REPATH_TICKS;
 		if (standPos == null) {
-			// No reachable spot nearby: fall back to a plain walk and retry the search later.
 			state.target = null;
 			mob.getNavigation().stop();
 			state.nextScanTick = tick + MobBehaviorConfig.MOB_TOOL_SCAN_INTERVAL.get();
@@ -154,10 +138,8 @@ public class MobToolBehaviorHandler {
 		mob.getNavigation().stop();
 	}
 
-	/**
-	 * Looks for a safe spot (solid ground, two free blocks for the body) as close as possible to the
-	 * target block, so the mob can actually reach it instead of shuffling around it.
-	 */
+
+
 	private static BlockPos findStandPos(Mob mob, BlockPos target) {
 		Level level = mob.level();
 		BlockPos best = null;
@@ -241,7 +223,6 @@ public class MobToolBehaviorHandler {
 			color = ModUtils.lightenColor(color);
 		}
 		Level level = mob.level();
-		// applyDye already plays the dye sound and spawns the color dust particles.
 		ModUtils.applyDye(level, pos, level.getBlockState(pos), color);
 		performSwing(mob, tool, pos);
 		consumeTool(mob, tool);

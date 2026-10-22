@@ -52,11 +52,8 @@ public abstract class ItemRendererMixin {
 		}
 	}
 
-	/**
-	 * Generates the armor trim icon on the fly for every trimmable stack, so armor from other mods shows its trim
-	 * without needing a hand written model. Runs after vanilla resolved its own overrides, and only replaces that
-	 * model when vanilla has no trim model for this stack.
-	 */
+
+
 	@Inject(method = "getModel", at = @At("RETURN"), cancellable = true)
 	private void shinerite$generateTrimIcon(ItemStack itemStack, @Nullable Level level, @Nullable LivingEntity entity, int seed,
 			CallbackInfoReturnable<BakedModel> cir) {

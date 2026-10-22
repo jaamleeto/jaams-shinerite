@@ -401,8 +401,6 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 			if (tag.contains("Coated", Tag.TAG_BYTE)) {
 				isCoated = tag.getBoolean("Coated");
 			}
-			// The imbuement is consumed by breaking the block (see transferImbuementToBreaker), so the drop
-			// is always clean: neither the stored effects nor the imbuement color are carried over.
 			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
 				color = -1;
 			}
@@ -453,9 +451,6 @@ public abstract class BaseShineriteBlock extends Block implements EntityBlock {
 	@Override
 	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		// Colour, coating and imbuement are deliberately not carried over by hand here: vanilla pistons
-		// already copy the block entity NBT of a moved block into its new block entity, and doing it a
-		// second time through a side table only ever duplicated data between unrelated blocks.
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity && !world.isClientSide) {
 			int color = shineriteBaseBlockEntity.getColor();
 			if (world instanceof ServerLevel serverLevel) {

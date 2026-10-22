@@ -114,6 +114,20 @@ public class EnchantmentsHandler {
 		Level world = target.level();
 		handleLightguard(target, attacker, world);
 		handleArmorImbuedEffects(target, attacker, world);
+		if (!(attacker instanceof Player)) {
+			handleMobImbuedAttack(target, attacker, world, event.getSource().getDirectEntity() == attacker);
+		}
+	}
+
+	private static void handleMobImbuedAttack(LivingEntity target, LivingEntity attacker, Level world, boolean directAttack) {
+		if (!MechanicsConfig.IMBUING.get() || world.isClientSide() || !directAttack) {
+			return;
+		}
+		ItemStack weapon = attacker.getMainHandItem();
+		if (weapon.isEmpty() || !ModUtils.isImbueableItem(weapon) || !ModUtils.isImbued(weapon)) {
+			return;
+		}
+		ShineriteAttackHandler.handleImbuedEffect(weapon, target, attacker, world);
 	}
 
 	private static void handleLightguard(LivingEntity target, LivingEntity attacker, Level world) {

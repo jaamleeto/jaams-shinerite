@@ -3,11 +3,9 @@ package net.jaams.shinerite.configuration.client;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ProjectileClientConfig {
-	// Shinerang
 	public static ForgeConfigSpec.DoubleValue SHINERANG_PROJECTILE_SCALE;
 	public static ForgeConfigSpec.BooleanValue SHINERANG_PROJECTILE_TRAIL;
 	public static ForgeConfigSpec.IntValue SHINERANG_PROJECTILE_TRAIL_SPAWN_RATE;
-	// Shinerite Star
 	public static ForgeConfigSpec.DoubleValue SHINERITE_STAR_PROJECTILE_SCALE;
 	public static ForgeConfigSpec.BooleanValue SHINERITE_STAR_PROJECTILE_TRAIL;
 	public static ForgeConfigSpec.IntValue SHINERITE_STAR_PROJECTILE_TRAIL_SPAWN_RATE;

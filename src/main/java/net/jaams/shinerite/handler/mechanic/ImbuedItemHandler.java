@@ -1,12 +1,14 @@
 package net.jaams.shinerite.handler.mechanic;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.TickEvent;
 
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.Level;
@@ -27,15 +29,16 @@ import net.jaams.shinerite.particle.CustomEffectParticleData;
 import java.util.stream.StreamSupport;
 import java.util.UUID;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber
 public class ImbuedItemHandler {
-	private static final Map<UUID, Integer> particleTickCounterMainHand = new HashMap<>();
-	private static final Map<UUID, Integer> particleTickCounterOffHand = new HashMap<>();
-	private static final Map<UUID, Integer> particleTickCounterGround = new HashMap<>();
-	private static final Map<UUID, Integer> particleTickCounterProjectile = new HashMap<>();
+	private static final Map<UUID, Integer> particleTickCounterMainHand = new ConcurrentHashMap<>();
+	private static final Map<UUID, Integer> particleTickCounterOffHand = new ConcurrentHashMap<>();
+	private static final Map<UUID, Integer> particleTickCounterGround = new ConcurrentHashMap<>();
+	private static final Map<UUID, Integer> particleTickCounterProjectile = new ConcurrentHashMap<>();
 	private static final int PARTICLE_INTERVAL = 10;
+	private static final Map<UUID, Map<String, Integer>> particleTickCounterArmor = new ConcurrentHashMap<>();
 
 	@SubscribeEvent
 	public static void onEntityImbuedTick(LivingEvent.LivingTickEvent event) {
@@ -47,6 +50,31 @@ public class ImbuedItemHandler {
 		processHand(entity, world, entityId, entity.getMainHandItem(), InteractionHand.MAIN_HAND, particleTickCounterMainHand);
 		processHand(entity, world, entityId, entity.getOffhandItem(), InteractionHand.OFF_HAND, particleTickCounterOffHand);
 		processArmor(entity, world, entityId);
+	}
+
+	@SubscribeEvent
+	public static void onPlayerInventoryTick(TickEvent.PlayerTickEvent event) {
+		if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide())
+			return;
+		Player player = event.player;
+		for (ItemStack stack : player.getInventory().items) {
+			ModUtils.ensureImbuedColor(stack);
+		}
+		ModUtils.ensureImbuedColor(player.getInventory().offhand.get(0));
+		ModUtils.ensureImbuedColor(player.containerMenu.getCarried());
+	}
+
+	@SubscribeEvent
+	public static void onContainerOpen(PlayerContainerEvent.Open event) {
+		Level world = event.getEntity().level();
+		if (world.isClientSide())
+			return;
+		AbstractContainerMenu menu = event.getContainer();
+		for (Slot slot : menu.slots) {
+			if (slot.hasItem()) {
+				ModUtils.ensureImbuedColor(slot.getItem());
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -75,6 +103,7 @@ public class ImbuedItemHandler {
 			counterMap.remove(entityId);
 			return;
 		}
+		ModUtils.ensureImbuedColor(stack);
 		int tickCounter = counterMap.compute(entityId, (id, count) -> {
 			if (count == null)
 				return 0;
@@ -87,6 +116,7 @@ public class ImbuedItemHandler {
 	}
 
 	private static void processGroundItem(ItemEntity itemEntity, ServerLevel world, ItemStack stack) {
+		ModUtils.ensureImbuedColor(stack);
 		UUID entityId = itemEntity.getUUID();
 		int tickCounter = particleTickCounterGround.compute(entityId, (id, count) -> {
 			if (count == null)
@@ -110,6 +140,7 @@ public class ImbuedItemHandler {
 			particleTickCounterProjectile.remove(projectile.getUUID());
 			return;
 		}
+		ModUtils.ensureImbuedColor(weaponItem);
 		UUID projectileId = projectile.getUUID();
 		int tickCounter = particleTickCounterProjectile.compute(projectileId, (id, count) -> {
 			if (count == null)
@@ -159,24 +190,23 @@ public class ImbuedItemHandler {
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
 			if (slot.getType() != EquipmentSlot.Type.ARMOR)
 				continue;
-			ItemStack stack = entity.getItemBySlot(slot);
-			if (stack.isEmpty() || !ModUtils.isImbued(stack))
+			ItemStack armor = entity.getItemBySlot(slot);
+			if (armor.isEmpty() || !ModUtils.isImbued(armor))
 				continue;
+			ModUtils.ensureImbuedColor(armor);
 			String key = entityId.toString() + "_armor_" + slot.getName();
-			Map<String, Integer> armorCounter = particleTickCounterArmor.computeIfAbsent(entityId, k -> new HashMap<>());
+			Map<String, Integer> armorCounter = particleTickCounterArmor.computeIfAbsent(entityId, k -> new ConcurrentHashMap<>());
 			int tickCounter = armorCounter.compute(slot.getName(), (k, count) -> {
 				if (count == null)
 					return 0;
 				return count + 1;
 			});
 			if (tickCounter >= PARTICLE_INTERVAL) {
-				spawnArmorImbuedParticles(stack, entity, world, slot);
+				spawnArmorImbuedParticles(armor, entity, world, slot);
 				armorCounter.put(slot.getName(), 0);
 			}
 		}
 	}
-
-	private static final Map<UUID, Map<String, Integer>> particleTickCounterArmor = new HashMap<>();
 
 	private static void spawnArmorImbuedParticles(ItemStack stack, LivingEntity entity, Level world, EquipmentSlot slot) {
 		int color = ModUtils.getImbuedColor(stack);

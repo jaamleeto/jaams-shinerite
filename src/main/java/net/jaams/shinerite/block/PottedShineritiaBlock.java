@@ -273,7 +273,6 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 
 	private static ItemStack createPlantItem(BaseShineriteBlockEntity blockEntity) {
 		ItemStack plant = new ItemStack(ModItems.SHINERITIA.get());
-		// Breaking the pot consumes the imbuement (see transferImbuementToBreaker), so the plant drops clean.
 		int color = blockEntity.isImbued() ? -1 : blockEntity.getColor();
 		if (color != -1) {
 			if (plant.getItem() instanceof IDyeableItem dyeableItem) {

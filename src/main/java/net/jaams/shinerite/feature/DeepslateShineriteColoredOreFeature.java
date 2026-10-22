@@ -9,10 +9,8 @@ import net.jaams.shinerite.init.ModBlocks;
 
 import com.mojang.serialization.Codec;
 
-/**
- * Deepslate depth palette: dominated by diamond and emerald mimics (cyan, green and blue) with
- * gold as the secondary mimic, so a deepslate vein reads as a more valuable seam than the stone one.
- */
+
+
 public class DeepslateShineriteColoredOreFeature extends AbstractShineriteColoredOreFeature {
 	private static final int[] COLORS = {
 			0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8, 0x5BE3E8,
@@ -32,7 +30,7 @@ public class DeepslateShineriteColoredOreFeature extends AbstractShineriteColore
 				WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
 	}
 
-	/** Same balance as the stone variant: 70% plain, 30% mimics. */
+
 	private static final java.util.function.Supplier<Double> OVERWORLD_COLORED_CHANCE = () -> 0.3D;
 
 	@Override

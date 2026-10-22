@@ -20,6 +20,5 @@ public class ShineriteStewRecipeSerializer implements RecipeSerializer<Shinerite
 
 	@Override
 	public void toNetwork(FriendlyByteBuf buffer, ShineriteStewRecipe recipe) {
-		// No need to write category since it's fixed as MISC
 	}
 }

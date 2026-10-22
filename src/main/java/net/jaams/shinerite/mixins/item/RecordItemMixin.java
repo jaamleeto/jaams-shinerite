@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.Mixin;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.TooltipFlag;
@@ -52,8 +51,8 @@ public abstract class RecordItemMixin {
 	}
 
 	private String getColorCategory(int color) {
-		int[][] preciseColors = {{0xF9FFFE, /* WHITE */}, {0xF9801D, /* ORANGE */}, {0xC74EBD, /* MAGENTA */}, {0x3AB3DA, /* LIGHT_BLUE */}, {0xFED83D, /* YELLOW */}, {0x80C71F, /* LIME */}, {0xF38BAA, /* PINK */}, {0x474F52, /* GRAY */},
-				{0x9D9D97, /* LIGHT_GRAY */}, {0x169C9C, /* CYAN */}, {0x8932B8, /* PURPLE */}, {0x3C44AA, /* BLUE */}, {0x835432, /* BROWN */}, {0x5E7C16, /* GREEN */}, {0xB02E26, /* RED */}, {0x1D1D21, /* BLACK */}};
+		int[][] preciseColors = {{0xF9FFFE, }, {0xF9801D, }, {0xC74EBD, }, {0x3AB3DA, }, {0xFED83D, }, {0x80C71F, }, {0xF38BAA, }, {0x474F52, },
+				{0x9D9D97, }, {0x169C9C, }, {0x8932B8, }, {0x3C44AA, }, {0x835432, }, {0x5E7C16, }, {0xB02E26, }, {0x1D1D21, }};
 		String[] names = {"WHITE", "ORANGE", "MAGENTA", "LIGHT_BLUE", "YELLOW", "LIME", "PINK", "GRAY", "LIGHT_GRAY", "CYAN", "PURPLE", "BLUE", "BROWN", "GREEN", "RED", "BLACK"};
 		for (int i = 0; i < preciseColors.length; i++) {
 			int target = preciseColors[i][0];

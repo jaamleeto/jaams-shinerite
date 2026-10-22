@@ -3,20 +3,17 @@ package net.jaams.shinerite.configuration.common;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class InteractionsConfig {
-	// Master switches
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue CAULDRON_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue HAND_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_INTERACTIONS;
 	public static ForgeConfigSpec.BooleanValue BLOCK_INTERACTIONS;
-	// Projectile impact - Washing
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_LIVING_ENTITIES;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_BACK_ITEM;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_DROPPED_ITEMS;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_PROJECTILES;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_WASHING_BLOCKS;
-	// Projectile impact - Imbuing
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_DROPPED_ITEMS;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_PROJECTILES;
@@ -25,10 +22,8 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_CONSUME_ON_ENTITY_HIT;
 	public static ForgeConfigSpec.BooleanValue PROJECTILE_IMPACT_IMBUING_CONSUME_ON_BLOCK_HIT;
 	public static ForgeConfigSpec.IntValue PROJECTILE_IMPACT_IMBUING_USES_PER_HIT;
-	// Cauldron
 	public static ForgeConfigSpec.BooleanValue CAULDRON_WASH_COLOR;
 	public static ForgeConfigSpec.BooleanValue CAULDRON_WASH_IMBUEMENT;
-	// Hand interactions
 	public static ForgeConfigSpec.BooleanValue HAND_COATING;
 	public static ForgeConfigSpec.BooleanValue HAND_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue HAND_DUAL_SCRAPING;
@@ -38,7 +33,6 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue HAND_DARKENING;
 	public static ForgeConfigSpec.BooleanValue HAND_IMBUING;
 	public static ForgeConfigSpec.BooleanValue HAND_WASHING_WATER_BOTTLE;
-	// Dispenser interactions
 	public static ForgeConfigSpec.BooleanValue DISPENSER_PROJECTILE_SHINERITE_STAR;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_LIGHTENING;
@@ -47,7 +41,6 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_SCRAPING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_WASHING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_IMBUING;
-	// Block interactions
 	public static ForgeConfigSpec.BooleanValue BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_LIGHTENING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_DARKENING;
@@ -56,7 +49,6 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue BLOCK_WASHING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_IMBUING;
 	public static ForgeConfigSpec.BooleanValue BLOCK_BREAK_TRANSFER_IMBUEMENT;
-	// Armor interactions
 	public static ForgeConfigSpec.BooleanValue ARMOR_IMBUING;
 
 	public static void register(ForgeConfigSpec.Builder builder) {
@@ -114,7 +106,7 @@ public class InteractionsConfig {
 		builder.push("Washing");
 		HAND_WASHING_WATER_BOTTLE = builder.define("Washing with Water Bottle", true);
 		builder.pop();
-		builder.pop(); // Hand Interactions
+		builder.pop();
 		builder.push("Dispenser Interactions");
 		DISPENSER_INTERACTIONS = builder.comment("Master switch: Enable or disable ALL dispenser interactions").define("Dispenser Interactions", true);
 		builder.push("Projectiles");

@@ -35,51 +35,32 @@ import net.jaams.shinerite.item.ShineriteArmorItem;
 import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
 import net.jaams.shinerite.util.ShineriteTrimSupport;
 
-/**
- * Runtime generator of the armor trim <b>item icon</b>: the flat sprite that vanilla draws on top of an armor
- * piece in the inventory, on the ground or in the hand.
- *
- * <p>Vanilla ships one hand written model per (armor piece x trim material) pair, which is why armor from other
- * mods never shows a trim. Instead of shipping those models, this generator builds the trim layer on the fly for
- * every trimmable stack: it takes the armor's own model, bakes
- * {@code minecraft:trims/items/&lt;slot&gt;_trim_&lt;palette&gt;} as an extra layer and wraps the result in a
- * {@link TrimmedArmorBakedModel}.
- *
- * <p>The Shinerite palette has one extra step: when a colored Shinerite ingot was used, the smithing recipe
- * freezes that dye color into the stack NBT ({@link ShineriteTrimSmithingRecipe#TAG_TRIM_COLOR}) and the generator
- * bakes it into the trim quads, so the icon always shows the same color as the worn armor.
- */
+
+
 public final class ArmorTrimModelGenerator {
 
-	/** Flat icon layers of every armor slot, paletted once per trim material by the texture atlas. */
+
 	private static final String ITEM_TRIM_PATH = "trims/items/";
 	private static final ResourceLocation TRIM_MODEL_LOCATION = ResourceLocation.fromNamespaceAndPath(JaamsShineriteMod.MODID, "trim_icon");
 
-	/**
-	 * The layer is baked with tint index {@code -1} on purpose: an untinted quad is rendered with the vertex
-	 * color baked into it, so no item color handler has to be registered for every (possibly foreign) armor item.
-	 */
+
+
 	private static final int UNTINTED_LAYER = -1;
 	private static final ModelState IDENTITY_STATE = new ModelState() {
 	};
 
-	/** Baked vertex layout: 8 ints per vertex, the RGBA color lives in the int number 3. */
+
 	private static final int VERTEX_INTS = 8;
 	private static final int COLOR_INT = 3;
 
-	/** Baked models are cached per base model + sprite + color, they must be dropped on resource reload. */
+
 	private static final Map<BakedModel, Map<String, BakedModel>> CACHE = new IdentityHashMap<>();
 
 	private ArmorTrimModelGenerator() {
 	}
 
-	/**
-	 * Builds (or reuses) the item model of {@code stack} with its armor trim drawn on top.
-	 *
-	 * @param base     the plain, non resolved model of the item
-	 * @param resolved the model vanilla picked for this stack, i.e. its own trim model when it has one
-	 * @return the trimmed model, or {@code null} when there is nothing to generate
-	 */
+
+
 	@Nullable
 	public static BakedModel generate(ItemStack stack, @Nullable BakedModel base, @Nullable BakedModel resolved) {
 		if (stack.isEmpty() || base == null || base.isCustomRenderer()) {
@@ -99,11 +80,8 @@ public final class ArmorTrimModelGenerator {
 		ArmorTrim trim = optionalTrim.get();
 		boolean shinerite = isShineriteTrim(trim);
 
-		/*
-		 * A Shinerite trim always rebuilds on top of the plain model, otherwise the trim would be drawn twice on
-		 * armor that already resolves to a trim model of its own. Any other material only steps in when vanilla
-		 * resolved nothing, i.e. when the item model has no trim override at all (armor from another mod).
-		 */
+
+
 		if (!shinerite && resolved != null && resolved != base) {
 			return null;
 		}
@@ -113,7 +91,6 @@ public final class ArmorTrimModelGenerator {
 				ITEM_TRIM_PATH + slot(item) + "_trim_" + paletteSuffix(trim.material().value(), item));
 		TextureAtlasSprite sprite = sprite(mc, spriteLocation);
 		if (sprite == null) {
-			// No trim sprite for this slot/material, nothing to draw.
 			return null;
 		}
 
@@ -128,17 +105,17 @@ public final class ArmorTrimModelGenerator {
 		});
 	}
 
-	/** Drops every cached model, called whenever the resource packs (and thus the models) are reloaded. */
+
 	public static void clearCache() {
 		CACHE.clear();
 	}
 
-	/** {@code true} when the trim uses the Shinerite material of this mod. */
+
 	public static boolean isShineriteTrim(ArmorTrim trim) {
 		return trim.material().unwrapKey().map(key -> key.location().equals(SHINERITE_TRIM_MATERIAL)).orElse(false);
 	}
 
-	/** {@code true} when the trim of this stack uses the Shinerite material of this mod. */
+
 	public static boolean hasShineriteTrim(ItemStack stack) {
 		if (stack.isEmpty() || stack.getTag() == null || !stack.getTag().contains(ArmorTrim.TAG_TRIM_ID)) {
 			return false;
@@ -149,16 +126,13 @@ public final class ArmorTrimModelGenerator {
 
 	private static final ResourceLocation SHINERITE_TRIM_MATERIAL = ResourceLocation.fromNamespaceAndPath(JaamsShineriteMod.MODID, "shinerite");
 
-	/** Base trim color of the Shinerite material on the armor of other mods, no tint applied. */
+
 	private static final int SHINERITE_TRIM_COLOR = 0xFFFFFF;
-	/** Base trim color on the Shinerite armor itself, which is drawn full bright and needs a readable tint. */
+
 	private static final int SHINERITE_ARMOR_TRIM_COLOR = 0x949494;
 
-	/**
-	 * The dye color frozen into the stack by the smithing recipe. An undyed (or white) ingot has no
-	 * color stored, in which case the natural color of the Shinerite palette is used instead of plain white,
-	 * so the icon always matches the worn trim.
-	 */
+
+
 	private static int trimColor(ItemStack stack) {
 		CompoundTag tag = stack.getTag();
 		int base = stack.getItem() instanceof ShineriteArmorItem ? SHINERITE_ARMOR_TRIM_COLOR : SHINERITE_TRIM_COLOR;
@@ -183,15 +157,8 @@ public final class ArmorTrimModelGenerator {
 		return sprite;
 	}
 
-	/**
-	 * Multiplies the vertex colors of the quads with the trim color. Since the quads are untinted, vanilla
-	 * renders them with this baked color, which works for any item without registering an item color handler.
-	 *
-	 * <p>A baked vertex is 8 ints: position (3 floats = bytes 0-11), color (4 bytes, RGBA, stored in the int
-	 * number 3 as {@code R | G << 8 | B << 16 | A << 24}), UV, overlay, light and normal. The color of the
-	 * stack is a plain {@code 0xRRGGBB} value, so its red and blue channels have to be swapped when packing it
-	 * into the vertex, otherwise a red trim comes out blue.
-	 */
+
+
 	private static void applyColor(List<BakedQuad> quads, int color) {
 		if (color == 0xFFFFFF) {
 			return;
@@ -210,10 +177,8 @@ public final class ArmorTrimModelGenerator {
 		}
 	}
 
-	/**
-	 * The palette suffix of the trim, honoring the {@code override_armor_materials} field so that e.g. an iron
-	 * trim on iron armor keeps using the darker iron palette, exactly like vanilla does.
-	 */
+
+
 	private static String paletteSuffix(TrimMaterial material, Item item) {
 		Map<ArmorMaterials, String> overrides = material.overrideArmorMaterials();
 		if (!overrides.isEmpty() && item instanceof ArmorItem armorItem) {
@@ -228,11 +193,8 @@ public final class ArmorTrimModelGenerator {
 		return material.assetName();
 	}
 
-	/**
-	 * The armor slot of an item, used to pick the trim sprite ({@code helmet_trim_*}, {@code boots_trim_*}...).
-	 * Items that are not armor pieces fall back to the helmet sprite, which is what vanilla does for the turtle
-	 * helmet, and are then guessed from the registry name.
-	 */
+
+
 	private static String slot(Item item) {
 		if (item instanceof ArmorItem armorItem) {
 			return switch (armorItem.getType()) {

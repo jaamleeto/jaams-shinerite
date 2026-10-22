@@ -1,7 +1,5 @@
 package net.jaams.shinerite.command;
 
-import org.checkerframework.checker.units.qual.s;
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fml.common.Mod;
@@ -63,7 +61,6 @@ public class ShineriteCommand {
 			ctx.getSource().sendSuccess(() -> Component.translatable("commands.jaams_shinerite.version", Component.literal(getModVersion()).withStyle(ChatFormatting.YELLOW)), false);
 			return 1;
 		}))
-				// ── COLOR COMMANDS ───────────────────────────────────────────────
 				.then(Commands.literal("color").requires(s -> s.hasPermission(2)).then(Commands.literal("set").then(Commands.argument("color", StringArgumentType.string()).suggests(ShineriteCommand::suggestMatchingColors).executes(ctx -> {
 					ServerPlayer p = ctx.getSource().getPlayerOrException();
 					ItemStack stack = p.getMainHandItem();
@@ -106,7 +103,6 @@ public class ShineriteCommand {
 							ctx.getSource().sendSuccess(() -> Component.translatable("commands.jaams_shinerite.color.clear.success").withStyle(ChatFormatting.GREEN), false);
 							return 1;
 						})))
-				// ── IMBUE COMMANDS ───────────────────────────────────────────────
 				.then(Commands.literal("imbue").requires(s -> s.hasPermission(2)).then(
 						Commands.literal("set").then(Commands.argument("effect", ResourceLocationArgument.id()).suggests(ShineriteCommand::suggestMatchingEffects).then(Commands.argument("uses", IntegerArgumentType.integer(MIN_USES, MAX_USES)).then(
 								Commands.argument("duration", IntegerArgumentType.integer(MIN_DURATION_SECONDS, MAX_DURATION_SECONDS)).then(Commands.argument("amplifier", IntegerArgumentType.integer(MIN_AMPLIFIER, MAX_AMPLIFIER)).executes(ctx -> {

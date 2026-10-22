@@ -44,7 +44,6 @@ public class ModTabs {
 			() -> CreativeModeTab.builder().title(Component.translatable("item_group.jaams_shinerite.tab_icon").withStyle(style -> style.withFont(ResourceLocation.fromNamespaceAndPath("jaams_shinerite", "default")))).icon(() -> getTabIcon())
 					.withTabsBefore(getPreferredTabBefore()).displayItems((parameters, tabData) -> {
 						List<ItemStack> items = new ArrayList<>();
-						// Shinerite Items
 						items.add(new ItemStack(ModItems.SHINERITE_SWORD.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_AXE.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_PICKAXE.get()));
@@ -78,7 +77,6 @@ public class ModTabs {
 						items.add(new ItemStack(ModItems.SHINERITE_TILE_SLAB.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_ROOTS.get()));
 						items.add(new ItemStack(ModItems.SHINERITIA.get()));
-						// Enchanted Books
 						if (EnchantmentsConfig.LIGHTBRINGER.get()) {
 							items.add(addEnchantments(new ItemStack(Items.ENCHANTED_BOOK), ModEnchantments.LIGHTBRINGER.get(), EnchantmentsConfig.LIGHTBRINGER_MAX_LEVEL.get()));
 						}
@@ -272,7 +270,6 @@ public class ModTabs {
 	@SubscribeEvent
 	public static void buildTabContentsVanilla(BuildCreativeModeTabContentsEvent tabData) {
 		MutableHashedLinkedMap<ItemStack, CreativeModeTab.TabVisibility> entries = tabData.getEntries();
-		// Combat Tab
 		if (tabData.getTabKey() == CreativeModeTabs.COMBAT) {
 			putAfter(entries, Items.GOLDEN_SWORD, ModItems.SHINERITE_SWORD);
 			putAfter(entries, Items.GOLDEN_AXE, ModItems.SHINERITE_AXE);
@@ -283,7 +280,6 @@ public class ModTabs {
 			putAfter(entries, Items.BOW, ModItems.SHINERANG);
 			putAfter(entries, ModItems.SHINERANG.get(), ModItems.SHINERITE_STAR);
 		}
-		// Tools and Utilities Tab
 		if (tabData.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			putAfter(entries, Items.GOLDEN_PICKAXE, ModItems.SHINERITE_PICKAXE);
 			putAfter(entries, Items.GOLDEN_AXE, ModItems.SHINERITE_AXE);
@@ -292,7 +288,6 @@ public class ModTabs {
 			putAfter(entries, Items.BRUSH, ModItems.SHINY_PAINT_BRUSH);
 			putAfter(entries, ModItems.SHINY_PAINT_BRUSH.get(), ModItems.SHINY_SCRAPER);
 		}
-		// Building Blocks Tab
 		if (tabData.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
 			putAfter(entries, Items.GOLD_BLOCK, ModItems.SHINERITE_BLOCK);
 			putAfter(entries, ModItems.SHINERITE_BLOCK.get(), ModItems.CUT_SHINERITE);
@@ -302,14 +297,12 @@ public class ModTabs {
 			putAfter(entries, ModItems.SHINERITE_TILES.get(), ModItems.SHINERITE_TILE_STAIRS);
 			putAfter(entries, ModItems.SHINERITE_TILE_STAIRS.get(), ModItems.SHINERITE_TILE_SLAB);
 		}
-		// Ingredients Tab
 		if (tabData.getTabKey() == CreativeModeTabs.INGREDIENTS) {
 			putAfter(entries, Items.GOLD_INGOT, ModItems.SHINERITE_INGOT);
 			putAfter(entries, Items.GOLD_NUGGET, ModItems.SHINERITE_NUGGET);
 			putAfter(entries, Items.RAW_GOLD, ModItems.RAW_SHINERITE);
 			putAfter(entries, Items.DISC_FRAGMENT_5, ModItems.DISC_FRAGMENT_SHINY);
 		}
-		// Natural Blocks Tab
 		if (tabData.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
 			putAfter(entries, Items.GOLD_ORE, ModItems.SHINERITE_ORE);
 			putAfter(entries, ModItems.SHINERITE_ORE.get(), ModItems.DEEPSLATE_SHINERITE_ORE);
@@ -318,12 +311,10 @@ public class ModTabs {
 			putAfter(entries, Items.GLOW_LICHEN, ModItems.SHINERITE_ROOTS);
 			putAfter(entries, ModItems.SHINERITE_ROOTS.get(), ModItems.SHINERITIA);
 		}
-		// Food and Drinks Tab
 		if (tabData.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
 			putAfter(entries, Items.GLOW_BERRIES, ModItems.GLOW_SALAD);
 			putAfter(entries, ModItems.GLOW_SALAD.get(), ModItems.SHINY_ROOTS);
 		}
-		// Functional Blocks Tab
 		if (tabData.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
 			putAfter(entries, Items.MUSIC_DISC_5, ModItems.MUSIC_DISC_SHINY);
 		}

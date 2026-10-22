@@ -2,7 +2,6 @@ package net.jaams.shinerite.handler.mechanic;
 
 import org.joml.Vector3f;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

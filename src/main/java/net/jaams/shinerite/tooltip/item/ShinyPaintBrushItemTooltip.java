@@ -13,7 +13,6 @@ public class ShinyPaintBrushItemTooltip {
 	public static void add(ItemStack stack, List<Component> tooltip) {
 		if (!(stack.getItem() instanceof ShinyPaintBrushItem))
 			return;
-		// Long Description
 		ModTooltips.addLongDescription(stack, tooltip, "tooltip.jaams_shinerite.shiny_paint_brush.long_desc", ChatFormatting.GRAY);
 	}
 }

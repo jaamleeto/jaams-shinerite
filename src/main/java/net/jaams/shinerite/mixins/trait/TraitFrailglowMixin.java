@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.Mixin;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.network.PacketDistributor;
 

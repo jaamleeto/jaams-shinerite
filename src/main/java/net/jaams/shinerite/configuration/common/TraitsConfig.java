@@ -3,24 +3,19 @@ package net.jaams.shinerite.configuration.common;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class TraitsConfig {
-	// Projectile Traits Global Toggles
 	public static ForgeConfigSpec.BooleanValue THROWABLE;
 	public static ForgeConfigSpec.BooleanValue THROWBACK;
 	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR;
-	// Item Traits Global Toggles
 	public static ForgeConfigSpec.BooleanValue FRAILGLOW;
-	// Frailglow
 	public static ForgeConfigSpec.DoubleValue FRAILGLOW_BREAK_CHANCE;
 	public static ForgeConfigSpec.BooleanValue FRAILGLOW_GLOWING_ON_BREAK;
 	public static ForgeConfigSpec.IntValue FRAILGLOW_GLOW_DURATION;
 	public static ForgeConfigSpec.IntValue FRAILGLOW_GLOW_AMPLIFIER;
-	// Throwback
 	public static ForgeConfigSpec.IntValue THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE;
 	public static ForgeConfigSpec.IntValue THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE;
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE;
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_HIT;
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK;
-	// Radiant Collector
 	public static ForgeConfigSpec.IntValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_MAX_ITEMS;
 	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_GLOW;
 

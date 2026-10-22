@@ -77,16 +77,16 @@ public class AttributeTooltipHandler {
 					if (args.length < 2 || !NumberUtils.isCreatable(args[0].toString()))
 						continue;
 					var attrName = ((TranslatableContents) ((MutableComponent) args[1]).getContents()).getKey();
-					double value = Double.parseDouble(args[0].toString()); // Sin multiplicar
-					attributesBySlot.get(currentSlot).merge(attrName + "_percent", value, Double::sum); // Guardar tal cual con sufijo _percent
+					double value = Double.parseDouble(args[0].toString());
+					attributesBySlot.get(currentSlot).merge(attrName + "_percent", value, Double::sum);
 					it.remove();
 				} else if (ttc.getKey().startsWith("attribute.modifier.take.1") && currentSlot != null) {
 					Object[] args = ttc.getArgs();
 					if (args.length < 2 || !NumberUtils.isCreatable(args[0].toString()))
 						continue;
 					var attrName = ((TranslatableContents) ((MutableComponent) args[1]).getContents()).getKey();
-					double value = -Double.parseDouble(args[0].toString()); // Sin multiplicar
-					attributesBySlot.get(currentSlot).merge(attrName + "_percent", value, Double::sum); // Guardar tal cual con sufijo _percent
+					double value = -Double.parseDouble(args[0].toString());
+					attributesBySlot.get(currentSlot).merge(attrName + "_percent", value, Double::sum);
 					it.remove();
 				}
 			} else {
@@ -124,7 +124,7 @@ public class AttributeTooltipHandler {
 				double value = attrEntry.getValue();
 				boolean isPercent = attrKey.endsWith("_percent");
 				String attrName = isPercent ? attrKey.substring(0, attrKey.length() - "_percent".length()) : attrKey;
-				String formattedValue = formatNumber(Math.abs(value)) + (isPercent ? "%" : ""); // Valor tal cual con % si es porcentual
+				String formattedValue = formatNumber(Math.abs(value)) + (isPercent ? "%" : "");
 				Component newLine;
 				if (!isPercent && greenAttributes.contains(attrName)) {
 					newLine = Component.literal(" ").append(Component.literal(formattedValue).withStyle(ChatFormatting.DARK_GREEN)).append(" ").append(Component.translatable(attrName).withStyle(ChatFormatting.DARK_GREEN));

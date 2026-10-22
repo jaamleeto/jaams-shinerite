@@ -243,15 +243,8 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		return true;
 	}
 
-	/**
-	 * Hands the stored effects over to the player that broke this block. Shared by every Shinerite
-	 * block type (solid blocks, flowers, roots, potted plants) so the behavior is identical everywhere.
-	 *
-	 * <p>Duration is scaled by {@link MechanicsConfig#IMBUED_BLOCK_BREAK_DURATION_FACTOR} so breaking is
-	 * deliberately weaker than the sneak right-click transfer ({@link #registerDirectContact}), which
-	 * always uses the full stored duration. Mining has no skill component, so it should not be the best
-	 * way to get a buff.
-	 */
+
+
 	public void transferImbuementToBreaker(Level level, BlockPos pos, Player player) {
 		if (level.isClientSide || !isImbued()) {
 			return;
@@ -436,17 +429,8 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		}
 	}
 
-	/**
-	 * Pushes the current state to every client tracking this block entity.
-	 *
-	 * <p>Deliberately a no-op outside of a {@link ServerLevel}. The setters above ({@code setColor},
-	 * {@code setCoated}, {@code setImbuedState}, {@code clearImbuedState}) call this on every change, and
-	 * they are reachable from the worldgen features, where the block entity is attached to a
-	 * {@code WorldGenLevel} proto-chunk that has no server to broadcast to. Calling
-	 * {@code Level#sendBlockUpdated} there reaches a null server and stalls spawn-area generation.
-	 * Worldgen only needs {@code setChanged()} so the data ends up in the region file; the client picks it
-	 * up from the chunk's block entity NBT when the chunk is sent.
-	 */
+
+
 	public void sync() {
 		if (this.level instanceof ServerLevel) {
 			this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);

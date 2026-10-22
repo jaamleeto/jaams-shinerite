@@ -37,13 +37,11 @@ public class EquipmentData {
 
         public Map<String, Object> nbt = new HashMap<>();
 
-        /**
-         * When true the item is dyed with a random color from the mod palette instead of (or on top of)
-         * whatever the {@code nbt} block specifies. Use {@link #random_colors} to restrict the pool.
-         */
+
+
         public boolean random_color = false;
 
-        /** Optional restricted pool of color names (e.g. {@code ["red","purple"]}). Empty = all supported colors. */
+
         public List<String> random_colors = new ArrayList<>();
 
         public List<ItemCondition> conditions = new ArrayList<>();
@@ -78,7 +76,7 @@ public class EquipmentData {
 
         public Map<String, Object> nbt = new HashMap<>();
 
-        /** Same random dye behavior as {@link ItemEntry#random_color}, for nested equipment entries. */
+
         public boolean random_color = false;
 
         public List<String> random_colors = new ArrayList<>();

@@ -71,55 +71,28 @@ public class JaamsShineriteMod {
 	}
 
 	public JaamsShineriteMod(FMLJavaModLoadingContext context) {
-		// Start of user code block mod constructor
-		/*
-		// End of user code block mod constructor
-		MinecraftForge.EVENT_BUS.register(this);
-		JaamsShineriteMod.MOD_LOADING_CONTEXT = context;
-		IEventBus bus = context.getModEventBus();
-		ModSounds.REGISTRY.register(bus);
-		ModBlocks.REGISTRY.register(bus);
-		JaamsShineriteModBlockEntities.REGISTRY.register(bus);
-		ModItems.REGISTRY.register(bus);
-		ModEntities.REGISTRY.register(bus);
-		ModEnchantments.REGISTRY.register(bus);
-		JaamsShineriteModTabs.REGISTRY.register(bus);
-		ModMenus.REGISTRY.register(bus);
-		// Start of user code block mod init
-		*/
+
+
 		MinecraftForge.EVENT_BUS.register(this);
 		MOD_LOADING_CONTEXT = context;
 		IEventBus bus = context.getModEventBus();
-		// Default Registry
 		ModSounds.REGISTRY.register(bus);
 		ModEntities.REGISTRY.register(bus);
 		ModEnchantments.REGISTRY.register(bus);
-		// Creative Tab
 		ModTabs.REGISTRY.register(bus);
-		// Custom Item Registry
 		ModItems.REGISTRY.register(bus);
-		// Custom Block Registry
 		ModBlockEntities.REGISTRY.register(bus);
 		ModBlocks.REGISTRY.register(bus);
-		// Loot Modifiers
 		ModLootModifiers.register(bus);
-		// Recipe Registry
 		ModRecipes.register(bus);
-		// Custom Particles Data
 		ModParticles.register(bus);
-		// Features
 		ShineriteFeaturesRegister.FEATURES.register(bus);
-		// Common Setup
 		bus.addListener(this::commonSetup);
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-			// Oreganized renders its electrum armor with its own model and its own trim draw, so it must not be
-			// taken over here; its trim only gets the Shinerite glow and color through the renderTrim of Forge.
 			ShineriteTrimCompat.excludeNamespace("oreganized");
 		});
-		// End of user code block mod init
 	}
 
-	// Start of user code block mod methods
 	private void commonSetup(final FMLCommonSetupEvent event) {
 		((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(ForgeRegistries.BLOCKS.getKey(ModBlocks.SHINERITIA.get()), () -> ModBlocks.POTTED_SHINERITIA.get());
 		for (DyeColor dyeColor : DyeColor.values()) {
@@ -137,7 +110,6 @@ public class JaamsShineriteMod {
 		addNetworkMessage(SyncModDataMessage.class, SyncModDataMessage::encode, SyncModDataMessage::decode, SyncModDataMessage::handle);
 	}
 
-	// End of user code block mod methods
 	private static final String PROTOCOL_VERSION = "1";
 	public static final SimpleChannel PACKET_HANDLER = NetworkRegistry.newSimpleChannel(ResourceLocation.fromNamespaceAndPath(MODID, MODID), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 	private static int messageID = 0;

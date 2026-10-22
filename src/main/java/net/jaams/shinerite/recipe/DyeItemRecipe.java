@@ -1,6 +1,5 @@
 package net.jaams.shinerite.recipe;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.crafting.RecipeSerializer;

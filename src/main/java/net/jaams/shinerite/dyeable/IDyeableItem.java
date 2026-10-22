@@ -1,7 +1,6 @@
 
 package net.jaams.shinerite.dyeable;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.DyeItem;

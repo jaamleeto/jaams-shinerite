@@ -13,7 +13,6 @@ public class ShinyScraperItemTooltip {
 	public static void add(ItemStack stack, List<Component> tooltip) {
 		if (!(stack.getItem() instanceof ShinyScraperItem))
 			return;
-		// Long Description
 		ModTooltips.addLongDescription(stack, tooltip, "tooltip.jaams_shinerite.shiny_scraper.long_desc", ChatFormatting.GRAY);
 	}
 }

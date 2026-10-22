@@ -24,45 +24,32 @@ import net.jaams.shinerite.util.ModUtils;
 
 import com.mojang.serialization.Codec;
 
-/**
- * Grows patches of Shinerite Roots from the underside of solid blocks, the same way lush cave vines
- * cling to ceilings.
- *
- * <p>The datapack placement follows the vanilla {@code cave_vines} recipe: a uniformly random height
- * across the whole column, followed by {@code environment_scan} walking up through air until it hits
- * a ceiling. That means the origin this feature receives is always the ceiling block, so the roots go
- * on {@code origin.below()} and grow sideways/downwards from there.</p>
- *
- * <p>One implementation serves both dimensions; the {@code nether} flag only picks the colour palette,
- * the natural imbuement pool and which config section is read.</p>
- */
+
+
 public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration> {
 	private static final int[] NETHER_RED_COLORS = {0x7A0C10, 0x9E1B22, 0xC1272D, 0xE0332B, 0xB22222, 0x8E2C2C};
-	/** No more gold: the second red family leans towards blood-red and dark burgundy. */
+
 	private static final int[] NETHER_CRIMSON_BURGUNDY_COLORS = {0x5C0A0E, 0x741016, 0x8E1418, 0xA81C1C, 0x6B1218, 0x992226};
-	/** Warped forests get the cool end of the spectrum instead: cyans and purples. */
+
 	private static final int[] NETHER_WARPED_CYAN_COLORS = {0x0F3D3A, 0x16685C, 0x1E8A6E, 0x2FA98A, 0x48C9A6, 0x27C9D6, 0x4FD9E6};
 	private static final int[] NETHER_WARPED_PURPLE_COLORS = {0x2B1B4D, 0x3E2A6B, 0x54348C, 0x6B44AD, 0x8059C9, 0x9A72E0};
-	/** Basalt deltas get the ash-coated palette: plain greys, never the hot red/gold colours. */
+
 	private static final int[] NETHER_ASH_GREY_COLORS = {0x6E6E6E, 0x828282, 0x9A9A9A, 0x565656, 0x757575, 0xB0B0B0};
 	private static final int[] NETHER_ASH_DARK_COLORS = {0x3A3A3A, 0x4B4B4B, 0x2E2E2E, 0x616161, 0x444444};
-	/** Crimson forests get the deep reds of the crimson fungi plus softer pink accents. */
+
 	private static final int[] NETHER_CRIMSON_RED_COLORS = {0x8B0E14, 0xA31A21, 0xBC2A2A, 0x7A0C10, 0x9E1B22, 0xB22222};
 	private static final int[] NETHER_CRIMSON_PINK_COLORS = {0xE0537A, 0xD97FA6, 0xC94F6B, 0xE86C96, 0xB54360, 0xF07FA8};
-	/** Soul sand valley palette: spectral cyans and blues, cold like the ghostly fog of the biome. */
+
 	private static final int[] NETHER_SPECTRAL_CYAN_COLORS = {0x3FC9C9, 0x62E0E0, 0x8FF2F2, 0x4FB3D9, 0x6FD6F0, 0xA6F0F0};
 	private static final int[] NETHER_SPECTRAL_BLUE_COLORS = {0x2C5ED9, 0x4A7BE0, 0x7AA1F0, 0x1F4099, 0x5C8CD9, 0x9FC0F2};
 	private static final int[] OVERWORLD_WHITE_COLORS = {0xFAFAFA, 0xEFEFEF, 0xE0E0E0, 0xD0D0D0, 0xF5F5F5};
 	private static final int[] OVERWORLD_GREY_COLORS = {0xB0B0B0, 0x9E9E9E, 0x8C8C8C, 0x757575, 0x616161};
 	private static final MobEffect[] NETHER_IMBUEMENT_EFFECTS = {MobEffects.FIRE_RESISTANCE, MobEffects.DAMAGE_BOOST, MobEffects.GLOWING, MobEffects.WITHER};
 	private static final MobEffect[] OVERWORLD_IMBUEMENT_EFFECTS = {MobEffects.POISON, MobEffects.REGENERATION, MobEffects.NIGHT_VISION, MobEffects.DIG_SPEED};
-	/** How far the patch may wander from the anchor looking for one more valid hanging spot. */
+
 	private static final int NEIGHBOUR_REACH = 2;
-	/**
-	 * How far the feature looks around its origin for a Shinerite ore block to hang roots from. When
-	 * one is found the patch anchors there regardless of the random chance gate, so ore veins
-	 * reliably carry roots on their underside; the root also inherits the ore's exact colour.
-	 */
+
+
 	private static final int ORE_SEARCH_RADIUS = 4;
 	private static final int ORE_SEARCH_DEPTH = 6;
 
@@ -86,8 +73,6 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		BlockPos oreCeiling = findShineriteOreCeiling(level, context.origin());
 		BlockPos ceiling = oreCeiling != null ? oreCeiling : context.origin();
 
-		// Anchoring directly under a Shinerite ore skips the chance roll: the whole point of finding
-		// an ore nearby is to decorate it, and the roll would discard the patch before the ore is used.
 		boolean anchoredToOre = oreCeiling != null;
 		if (!anchoredToOre && random.nextFloat() > getChance()) {
 			return false;
@@ -113,9 +98,6 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			placed++;
 		}
 
-		// Grow the patch outwards from the last successful spot: sideways (and up or down) to find other
-		// nearby ceilings to hang from. Each strand takes the colour of the ceiling it hangs from, so
-		// patches that wander across differently coloured ores stay consistent.
 		int attempts = Math.max(8, size * NEIGHBOUR_REACH * 4);
 		for (int i = 0; i < attempts && placed < size; i++) {
 			BlockPos candidate = current.offset(spread(random, radius), random.nextInt(3) - 1, spread(random, radius));
@@ -132,11 +114,8 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		return placed > 0;
 	}
 
-	/**
-	 * Scans around the feature origin for a Shinerite ore block that acts as a ceiling with room for a
-	 * root underneath. Horizontal reach is {@link #ORE_SEARCH_RADIUS} and vertical reach is
-	 * {@link #ORE_SEARCH_DEPTH}; the closest block below an ore wins.
-	 */
+
+
 	private BlockPos findShineriteOreCeiling(WorldGenLevel level, BlockPos origin) {
 		for (int dy = -ORE_SEARCH_DEPTH; dy <= ORE_SEARCH_DEPTH; dy++) {
 			for (int dx = -ORE_SEARCH_RADIUS; dx <= ORE_SEARCH_RADIUS; dx++) {
@@ -160,11 +139,8 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 				|| state.is(ModBlocks.NETHER_SHINERITE_ORE.get());
 	}
 
-	/**
-	 * Colour the next root should take. An ore ceiling always wins, so a root hanging directly beneath
-	 * a (for example) green ore is green itself; otherwise the patch keeps the colour inherited from
-	 * its ore anchor, or lets the normal palette decide when there is none.
-	 */
+
+
 	private int ceilingColor(WorldGenLevel level, BlockPos ceilingPos, int fallback) {
 		int oreColor = readOreColor(level, ceilingPos);
 		return oreColor != -1 ? oreColor : fallback;
@@ -181,10 +157,8 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		return -1;
 	}
 
-	/**
-	 * Turns a wanted position into one the roots can actually occupy: either it already hangs under a
-	 * ceiling, or one of its immediate neighbours does.
-	 */
+
+
 	private BlockPos resolveHangingSpot(WorldGenLevel level, BlockPos wanted) {
 		if (canPlace(level, wanted) && isCeiling(level, wanted.above())) {
 			return wanted;
@@ -204,10 +178,8 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		return null;
 	}
 
-	/**
-	 * A ceiling is only a block whose lower face is solid. Roots are never a ceiling: like vanilla
-	 * roots, Shinerite roots cannot hang from other roots, so strands never stack downwards.
-	 */
+
+
 	private boolean isCeiling(WorldGenLevel level, BlockPos pos) {
 		if (level.isOutsideBuildHeight(pos.getY())) {
 			return false;
@@ -225,13 +197,11 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			return false;
 		}
 
-		// Never hang inside lava, the patch would burn away the moment it is lit.
 		FluidState fluid = here.getFluidState();
 		if (fluid.is(Fluids.LAVA) || fluid.is(Fluids.FLOWING_LAVA)) {
 			return false;
 		}
 
-		// The roots survive only while a solid block holds them from above.
 		return isCeiling(level, pos.above());
 	}
 
@@ -240,8 +210,6 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 				? rootsBlock.defaultBlockState().setValue(ShineriteRootsBlock.WATERLOGGED, true)
 				: rootsBlock.defaultBlockState();
 
-		// Flag 2 only: no neighbour or client updates. This runs against a WorldGenLevel proto-chunk,
-		// and BaseShineriteBlockEntity#sync is a no-op there since there is no ServerLevel to broadcast to.
 		if (!level.setBlock(pos, placed, 2)) {
 			return false;
 		}
@@ -266,9 +234,6 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			return;
 		}
 
-		// A root hanging from a coloured Shinerite ore keeps the ore's exact colour, so a green ore
-		// gets green roots underneath it. Basalt deltas are the exception: everything there is
-		// ash-coated grey so roots never read as red/gold in a black-and-grey biome.
 		if (inheritedColor != -1 && !isBasaltDeltas(level, pos)) {
 			blockEntity.setColor(inheritedColor);
 			blockEntity.setChanged();
@@ -303,10 +268,7 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 		blockEntity.setChanged();
 	}
 
-	/**
-	 * Roots hanging inside a warped forest (or one of its basalt deltas) take the cool cyan/purple
-	 * palette instead of the crimson red/gold one.
-	 */
+
 	private boolean isWarpedForest(WorldGenLevel level, BlockPos pos) {
 		return level.getBiome(pos).is(Biomes.WARPED_FOREST);
 	}

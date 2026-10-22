@@ -2,7 +2,6 @@ package net.jaams.shinerite.handler.mechanic;
 
 import org.joml.Vector3f;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -128,11 +127,8 @@ public class ProjectileImpactHandler {
 		}
 	}
 
-	/**
-	 * Applies the imbued effects of the weapon carried by the projectile to the entity that was hit.
-	 * Strictly server side, never the shooter itself, never the projectile, and at most once per target
-	 * within the cooldown so returning projectiles can't re-apply the effect every tick.
-	 */
+
+
 	private static boolean applyImbuedEffectsToHitTarget(CompoundTag nbt, ListTag effectsTag, Projectile projectile, @Nullable Entity ownerEntity, LivingEntity hitTarget, ItemStack weaponItem, int uses, int maxUses) {
 		if (projectile == null || hitTarget == null || !hitTarget.isAlive() || hitTarget.isRemoved() || effectsTag.isEmpty()) {
 			return false;

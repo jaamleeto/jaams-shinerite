@@ -5,57 +5,45 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.jaams.shinerite.util.ModEnums;
 
 public class RecipesConfig {
-	// Coat Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> COAT_ITEM_RECIPE_FREE_MODE;
-	// Water Bottle Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> WATER_BOTTLE_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> WATER_BOTTLE_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> WATER_BOTTLE_RECIPE_FREE_MODE;
-	// Scraper Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_SCRAPER_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_SCRAPER_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_SCRAPER_RECIPE_FREE_MODE;
 	public static ForgeConfigSpec.IntValue SHINY_SCRAPER_RECIPE_DAMAGE_PER_USE_FREE;
 	public static ForgeConfigSpec.IntValue SHINY_SCRAPER_RECIPE_DAMAGE_PER_USE_BULK;
-	// Paint Brush Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_PAINT_BRUSH_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_PAINT_BRUSH_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINY_PAINT_BRUSH_RECIPE_FREE_MODE;
 	public static ForgeConfigSpec.IntValue SHINY_PAINT_BRUSH_RECIPE_DAMAGE_PER_USE_FREE;
 	public static ForgeConfigSpec.IntValue SHINY_PAINT_BRUSH_RECIPE_DAMAGE_PER_USE_BULK;
-	// Shineritia Stew Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> SHINERITIA_STEW_RECIPE;
-	// Dye Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_FREE_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DYE_ITEM_RECIPE_ALLOW_OVER_DYEING;
-	// Shineritia Flower Dye Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> FLOWER_DYE_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Integer> FLOWER_DYE_RECIPE_OUTPUT_COUNT;
-	// Imbue Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> IMBUE_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> IMBUE_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> IMBUE_ITEM_RECIPE_FREE_MODE;
 	public static ForgeConfigSpec.EnumValue<ModEnums.ImbuePotionType> IMBUE_ITEM_RECIPE_POTION_TYPE;
-	// Lighten Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> LIGHTEN_ITEM_RECIPE_FREE_MODE;
-	// Darken Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE_3X3_MODE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> DARKEN_ITEM_RECIPE_FREE_MODE;
-	// Anvil Item Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_DYE_ONLY_MIX;
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_IMBUING_MERGE_EFFECTS;
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_IMBUING_TRANSFER_COLOR;
 	public static ForgeConfigSpec.ConfigValue<Boolean> ANVIL_IMBUING_PRESERVE_USES;
 	public static ForgeConfigSpec.IntValue ANVIL_IMBUE_COST_LEVEL;
-	// Repair Item Recipe
 	public static ForgeConfigSpec.ConfigValue<Boolean> REPAIR_ITEM_RECIPE;
 	public static ForgeConfigSpec.ConfigValue<Boolean> REPAIR_DYEING_ACTIVE;
 	public static ForgeConfigSpec.EnumValue<ModEnums.RepairColorMode> REPAIR_DYE_MODE;

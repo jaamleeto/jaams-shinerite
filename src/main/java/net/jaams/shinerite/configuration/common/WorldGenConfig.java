@@ -58,7 +58,7 @@ public static ForgeConfigSpec.DoubleValue NETHER_SHINERITE_COLORED_ORE_CHANCE;
 private static final int DEFAULT_ROOTS_MAX_RADIUS = 2;
 private static final int DEFAULT_ORE_MIN_SIZE = 4;
 	private static final int DEFAULT_ORE_MAX_SIZE = 9;
-	/** The nether is shinerite's home, so its veins are bigger and more plentiful. */
+
 	private static final int DEFAULT_NETHER_ORE_MIN_SIZE = 6;
 	private static final int DEFAULT_NETHER_ORE_MAX_SIZE = 18;
 

@@ -23,23 +23,8 @@ import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
-/**
- * Tints the weapon trails Epic Fight draws while swinging with the color stored on the Shinerite
- * weapon being used.
- *
- * <p>Epic Fight creates a trail particle per swing from a {@link TrailInfo}, whose
- * {@code rCol/gCol/bCol} come from the animation datapack (white for the default sword trail) and
- * are copied into the particle's color fields at the very end of the constructor. The injection
- * therefore sits at {@code RETURN} of {@link AnimationTrailParticle}'s constructors, so the weapon
- * color wins over the datapack one.
- *
- * <p>{@code owner}/{@code trailInfo} are inherited from {@link AbstractTrailParticle} and the color
- * fields come from the vanilla {@link TextureSheetParticle}, so they are read/written through
- * accessor mixins.
- *
- * <p>Untinted Shinerite weapons (no dye/imbue color) keep Epic Fight's default trail color, so a
- * base Shinerite sword still gets the plain white trail.
- */
+
+
 @Mixin(value = AnimationTrailParticle.class, remap = false)
 public abstract class EpicFightTrailColorMixin {
 

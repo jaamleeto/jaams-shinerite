@@ -43,29 +43,16 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
 import yesman.epicfight.client.renderer.patched.layer.WearableItemLayer;
 
-/**
- * Makes Shinerite armor (and its armor trim) render with the mod's stored colors and a full-bright
- * (emissive) look while Epic Fight draws the player with its own skinned mesh.
- *
- * <p>Epic Fight's {@link WearableItemLayer} only applies a per-stack tint when the equipped armor
- * implements vanilla's {@code DyeableLeatherItem}. Shinerite armor uses the mod's own
- * {@link net.jaams.shinerite.dyeable.IDyeableItem} color storage, so Epic Fight falls back to an
- * untinted (white) draw and also uses the world light, leaving the armor dark in the shadows.
- *
- * <p>The trim layer is drawn here directly from the armor's NBT (pattern + material ids) instead
- * of relying on {@code ArmorTrim.getTrim}, because that lookup can fail on the client when the
- * custom trim material is not present in the client's synced registry. This guarantees the Shinerite
- * trim always renders, and always renders full-bright with the dye color captured from the ingot at
- * smithing time.
- */
+
+
 @Mixin(value = WearableItemLayer.class, remap = false)
 public abstract class EpicFightArmorRenderMixin {
 
 	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
 	private static final String SHINERITE_TRIM = "jaams_shinerite:shinerite";
-	/** Base trim color of the Shinerite material on the armor of other mods, no tint applied. */
+
 	private static final int SHINERITE_TRIM_COLOR = 0xFFFFFF;
-	/** Base trim color on the Shinerite armor itself, which is drawn full bright and needs a readable tint. */
+
 	private static final int SHINERITE_ARMOR_TRIM_COLOR = 0x949494;
 
 	@Shadow
@@ -101,13 +88,8 @@ public abstract class EpicFightArmorRenderMixin {
 			return;
 		}
 
-		// Epic Fight calls renderArmor twice for DyeableLeatherItem (base pass + overlay pass).
-		// The trim must only be drawn once, on the base pass, otherwise it is drawn twice.
 		boolean overlayPass = armorTexture != null && armorTexture.getPath().contains("overlay");
 
-		// ---- base pass ----
-		// Order matters: the armor piece has to be drawn BEFORE the trim, otherwise the piece
-		// covers the trim layer (which is what made the Shinerite trims disappear).
 		float cr = r;
 		float cg = g;
 		float cb = b;
@@ -122,7 +104,6 @@ public abstract class EpicFightArmorRenderMixin {
 		model.draw(poseStack, bufferSource, RenderType.armorCutoutNoCull(armorTexture), light, cr, cg, cb, 1.0F,
 				OverlayTexture.NO_OVERLAY, armature, poses);
 
-		// ---- trim pass (after the armor piece) ----
 		if (isShineriteTrim && !overlayPass) {
 			this.jaams$drawTrim(poseStack, bufferSource, packedLight, model, armature, stack,
 					this.jaams$shineriteArmorSlot != null ? this.jaams$shineriteArmorSlot : EquipmentSlot.CHEST,
@@ -132,12 +113,8 @@ public abstract class EpicFightArmorRenderMixin {
 		ci.cancel();
 	}
 
-	/**
-	 * Epic Fight draws its own trim via {@code renderTrim}, using the world light and a hardcoded
-	 * white color. The Shinerite trim is already drawn right after the armor piece in
-	 * {@code renderArmor} (so it also works when the trim material is missing from the client
-	 * registry), therefore skip Epic Fight's unlit/white trim draw to avoid drawing it twice.
-	 */
+
+
 	@Inject(method = "renderTrim", at = @At("HEAD"), cancellable = true, remap = false)
 	private void jaams$skipVanillaShineriteTrim(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
 			SkinnedMesh model, Armature armature, ArmorMaterial material, ArmorTrim trim, EquipmentSlot slot,
@@ -178,13 +155,10 @@ public abstract class EpicFightArmorRenderMixin {
 		String materialName = jaams$idPath(materialId);
 		boolean inner = slot == EquipmentSlot.LEGS;
 
-		// Trim patterns of other mods keep their own namespace, the sprite is not in minecraft's folder.
 		String namespace = patternId.contains(":") ? patternId.substring(0, patternId.indexOf(':')) : "minecraft";
 		String baseSprite = "trims/models/armor/" + jaams$idPath(patternId) + (inner ? "_leggings" : "");
 		ResourceLocation spriteId = ResourceLocation.fromNamespaceAndPath(namespace, baseSprite + "_" + materialName);
 		TextureAtlasSprite sprite = jaams$findSprite(spriteId);
-		// The atlas source of that mod may not know our trim material, so its paletted sprite does not
-		// exist. Fall back to the unpaletted pattern instead of drawing nothing.
 		boolean palettedSprite = sprite != null;
 		if (!palettedSprite) {
 			sprite = jaams$findSprite(ResourceLocation.fromNamespaceAndPath(namespace, baseSprite));
@@ -201,8 +175,6 @@ public abstract class EpicFightArmorRenderMixin {
 			int trimColor = tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)
 					? tag.getInt(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR)
 					: 0;
-			// An undyed (or white) ingot always uses the natural Shinerite palette, never plain white, so a
-			// pattern that carries its own baked in tint (custom smithing templates) still reads as Shinerite.
 			if (trimColor == 0 || ShineriteTrimSupport.isPlainColor(trimColor)) {
 				trimColor = stack.getItem() instanceof ShineriteArmorItem ? SHINERITE_ARMOR_TRIM_COLOR : SHINERITE_TRIM_COLOR;
 			}
@@ -223,15 +195,13 @@ public abstract class EpicFightArmorRenderMixin {
 		return i >= 0 ? id.substring(i + 1) : id;
 	}
 
-	/** Looks a sprite up, treating the missing texture sprite as absent. */
+
 	@Unique
 	private TextureAtlasSprite jaams$findSprite(ResourceLocation location) {
 		if (this.armorTrimAtlas == null) {
 			return null;
 		}
 		TextureAtlasSprite sprite = this.armorTrimAtlas.getSprite(location);
-		// The atlas hands out the missing sprite instead of null, and it is only a plain Sprite, so it can only
-		// be recognized by its type: drawing it would show the pink and black square.
 		if (!(sprite instanceof TextureAtlasSprite)
 				|| MissingTextureAtlasSprite.getLocation().equals(sprite.contents().name())) {
 			return null;

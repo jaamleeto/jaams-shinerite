@@ -12,14 +12,14 @@ public class CopyNBTBlastingRecipeSerializer implements RecipeSerializer<CopyNBT
 	@Override
 	public CopyNBTBlastingRecipe fromJson(ResourceLocation id, JsonObject json) {
 		BlastingRecipe baseRecipe = RecipeSerializer.BLASTING_RECIPE.fromJson(id, json);
-		return new CopyNBTBlastingRecipe(id, baseRecipe.getGroup(), CookingBookCategory.MISC, // Usa una categoría predeterminada.
+		return new CopyNBTBlastingRecipe(id, baseRecipe.getGroup(), CookingBookCategory.MISC,
 				baseRecipe.getIngredients().get(0), baseRecipe.getResultItem(null), baseRecipe.getExperience(), baseRecipe.getCookingTime());
 	}
 
 	@Override
 	public CopyNBTBlastingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
 		BlastingRecipe baseRecipe = RecipeSerializer.BLASTING_RECIPE.fromNetwork(id, buffer);
-		return new CopyNBTBlastingRecipe(id, baseRecipe.getGroup(), CookingBookCategory.MISC, // Usa una categoría predeterminada.
+		return new CopyNBTBlastingRecipe(id, baseRecipe.getGroup(), CookingBookCategory.MISC,
 				baseRecipe.getIngredients().get(0), baseRecipe.getResultItem(null), baseRecipe.getExperience(), baseRecipe.getCookingTime());
 	}
 

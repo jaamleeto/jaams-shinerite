@@ -98,7 +98,6 @@ public class AddItemLootModifier extends LootModifier {
 
                 ItemStack stack = new ItemStack(item, count);
 
-                // Never exceed the item's natural stack size (foods etc. are limited to 1 per slot).
                 int maxStack = stack.getMaxStackSize();
                 if (maxStack > 0 && count > maxStack) {
                     stack.setCount(maxStack);
@@ -163,7 +162,6 @@ public class AddItemLootModifier extends LootModifier {
             if (value.isJsonPrimitive()) {
                 JsonPrimitive prim = value.getAsJsonPrimitive();
                 if (prim.isNumber()) {
-                    // JSON numbers become plain integers; the reader decides the final NBT type.
                     tag.putInt(key, prim.getAsInt());
                 } else if (prim.isBoolean()) {
                     tag.putBoolean(key, prim.getAsBoolean());

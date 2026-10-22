@@ -13,7 +13,7 @@ public class AssortedCommonConfig {
 		builder.comment("Miscellaneous common settings that do not fit any other category.");
 		builder.push("Piglin Shinerite Behavior");
 		builder.push("Piglin Bartering");
-		BARTERING = builder.comment("Piglins treat yellow-dyed Shinerite Ingots as gold currency for bartering").define("Bartering", true);
+		BARTERING = builder.comment("Piglins treat yellow-dyed Shinerite Ingots as gold currency for bartering").define("Shinerite Bartering", true);
 		BARTERING_BETRAY_CHANCE = builder.comment("Chance that a Piglin realizes the deception when bartering a yellow-dyed Shinerite Ingot and turns hostile instead of giving items. 0 = never, 1 = always").defineInRange("Betrayal Chance", 0.15, 0.0, 1.0);
 		builder.pop();
 		builder.push("Piglin Disguise");

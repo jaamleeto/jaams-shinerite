@@ -7,7 +7,6 @@ public class MechanicsConfig {
 	public static ForgeConfigSpec.BooleanValue IMBUING;
 	public static ForgeConfigSpec.BooleanValue DYEING;
 	public static ForgeConfigSpec.BooleanValue WASHING;
-	// Washing details
 	public static ForgeConfigSpec.BooleanValue WASHING_RAIN;
 	public static ForgeConfigSpec.BooleanValue WASHING_WATER;
 	public static ForgeConfigSpec.BooleanValue WASHING_THUNDERSTORM_BOOST;
@@ -19,25 +18,21 @@ public class MechanicsConfig {
 	public static ForgeConfigSpec.BooleanValue WASHING_AFFECT_BLOCKS;
 	public static ForgeConfigSpec.BooleanValue WASHING_RAIN_SIDES;
 	public static ForgeConfigSpec.IntValue WASHING_TICKS_PER_STEP;
-	// Imbuing details
 	public static ForgeConfigSpec.DoubleValue IMBUED_EFFECT_DECAY_EXPONENT;
 	public static ForgeConfigSpec.IntValue IMBUED_MIN_DURATION_TICKS;
 	public static ForgeConfigSpec.IntValue IMBUED_DAMAGE_PER_HIT;
 	public static ForgeConfigSpec.BooleanValue IMBUED_CONSUME_USES_IN_CREATIVE;
 	public static ForgeConfigSpec.BooleanValue IMBUED_FIRE_RESISTANCE_FIREPROOF;
 	public static ForgeConfigSpec.BooleanValue IMBUED_INVISIBILITY_HIDE_ITEM;
-	// Imbuable item categories
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_FOOD;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_WEAPONS;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_ARMOR;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_BLOCKS;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_MATERIALS;
 	public static ForgeConfigSpec.BooleanValue IMBUABLE_MUSIC_DISCS;
-	// Imbued armor
 	public static ForgeConfigSpec.IntValue IMBUED_ARMOR_TICK_INTERVAL;
 	public static ForgeConfigSpec.BooleanValue IMBUED_ARMOR_RETALIATE_ON_HIT;
 	public static ForgeConfigSpec.BooleanValue IMBUED_ARMOR_RETALIATE_HOSTILE_ONLY;
-	// Imbued blocks
 	public static ForgeConfigSpec.IntValue IMBUED_BLOCK_PARTICLE_INTERVAL;
 	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_COATED_CAN_IMBUE;
 	public static ForgeConfigSpec.BooleanValue IMBUED_BLOCK_APPLY_TO_HOSTILE;
@@ -107,6 +102,6 @@ public class MechanicsConfig {
 		builder.push("Coating");
 		COATING = builder.define("Coating", true);
 		builder.pop();
-		builder.pop(); // Global Mechanics Handler
+		builder.pop();
 	}
 }

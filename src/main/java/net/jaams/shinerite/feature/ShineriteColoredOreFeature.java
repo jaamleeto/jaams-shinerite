@@ -9,11 +9,8 @@ import net.jaams.shinerite.init.ModBlocks;
 
 import com.mojang.serialization.Codec;
 
-/**
- * Overworld stone depth palette: mostly white and black so the blobs read as coal, with copper and
- * gold as the common mimics, a broad spread of greys as the neutral accents and the remaining
- * spectrum colours as low moderate extras.
- */
+
+
 public class ShineriteColoredOreFeature extends AbstractShineriteColoredOreFeature {
 	private static final int[] COLORS = {
 			0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF,
@@ -40,7 +37,7 @@ public class ShineriteColoredOreFeature extends AbstractShineriteColoredOreFeatu
 				WorldGenConfig.SHINERITE_COLORED_ORE_SPREAD::get);
 	}
 
-	/** 70% of overworld veins stay uncoloured; only 3 in 10 become colour mimics. */
+
 	private static final java.util.function.Supplier<Double> OVERWORLD_COLORED_CHANCE = () -> 0.3D;
 
 	@Override

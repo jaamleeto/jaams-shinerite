@@ -364,7 +364,6 @@ public class BaseShineriteSlabBlock extends SlabBlock implements EntityBlock {
 			if (tag.contains("Coated", Tag.TAG_BYTE)) {
 				isCoated = tag.getBoolean("Coated");
 			}
-			// Breaking consumes the imbuement (see transferImbuementToBreaker), so the drop is always clean.
 			if (blockEntity instanceof BaseShineriteBlockEntity shineriteBE && shineriteBE.isImbued()) {
 				color = -1;
 			}

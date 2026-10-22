@@ -21,29 +21,26 @@ import net.jaams.shinerite.util.ModUtils;
 
 import com.mojang.serialization.Codec;
 
-/**
- * Shared implementation of the recoloured Shinerite ore blobs. Each dimension / depth variant only
- * supplies its ore block, its ground predicate and a weighted colour palette; the palette is a flat
- * array where a repeated entry simply raises that colour's weight.
- */
+
+
 public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFeatureConfiguration> {
 	private static final int NEIGHBOUR_SEARCH = 2;
 	private static final ThreadLocal<Direction[]> DIRECTIONS = ThreadLocal.withInitial(Direction::values);
 
-	/** Effects generated ore rows can carry: poison, haste, harm / luck, blindness, night vision / nausea, glowing. */
+
 	private static final MobEffect[] ORE_IMBUEMENT_EFFECTS = {
 			MobEffects.POISON, MobEffects.DIG_SPEED, MobEffects.HARM,
 			MobEffects.LUCK, MobEffects.BLINDNESS, MobEffects.NIGHT_VISION,
 			MobEffects.CONFUSION, MobEffects.GLOWING
 	};
-	/** Very low: an imbued ore is a rare find, not the rule. */
+
 	private static final double ORE_IMBUEMENT_CHANCE = 0.005D;
 
 	private final BlockState oreBlock;
 	private final int[] palette;
 	private final Supplier<Boolean> enabled;
 	private final Supplier<Double> chance;
-	/** Chance a generated blob is COLOURED at all; the rest spawn in the plain, uncoloured default. */
+
 	private final Supplier<Double> coloredChance;
 	private final IntSupplier minSize;
 	private final IntSupplier maxSize;
@@ -62,7 +59,7 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 		this.spread = spread;
 	}
 
-	/** Blocks this ore may replace. */
+
 	protected abstract boolean isValidGround(BlockState state);
 
 	@Override
@@ -78,14 +75,9 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 		BlockPos origin = context.origin();
 		int attempts = rollInt(random, minSize.getAsInt(), maxSize.getAsInt());
 		int spread = this.spread.getAsInt();
-		// One roll per vein decides the whole blob's colouring: plain ore is the common case, the
-		// coloured mimics are the exception, so mixtures of colours and plain ore stay consistent.
 		boolean colored = random.nextDouble() < coloredChance.get();
 		int color = colored ? palette[random.nextInt(palette.length)] : -1;
 		BlockPos.MutableBlockPos target = new BlockPos.MutableBlockPos();
-		// The vein always grows out of a single stone cell found near the origin, exactly like a
-		// vanilla ore vein grows out of its first block: that way the whole blob stays embedded in
-		// the terrain surface and reads as a vein with depth instead of a flat single-block patch.
 		target.set(origin);
 		if (!findGround(level, target, spread)) {
 			return false;
@@ -101,11 +93,7 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 		return placed;
 	}
 
-	/**
-	 * Walks the growth head to a random valid neighbour of the current cell. Placed ore counts as
-	 * ground, so the walk tends to thread through the vein itself, keeping blobs contiguous
-	 * (ore "with depth behind it") rather than scattered single blocks.
-	 */
+
 	private void stepToNeighbour(WorldGenLevel level, RandomSource random, BlockPos.MutableBlockPos target, int spread) {
 		Direction[] directions = DIRECTIONS.get();
 		shuffle(random, directions);
@@ -116,7 +104,6 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 				return;
 			}
 		}
-		// Dead end: rescan the wider neighbourhood from the current cell before giving up.
 		findGround(level, target, spread);
 	}
 
@@ -151,17 +138,10 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 	}
 
 	private boolean placeOreWithColor(WorldGenLevel level, RandomSource random, BlockPos pos, int color) {
-		// A Shinerite ore blob must never land on top of an existing block entity. LevelChunk reuses
-		// whatever block entity already sits at a position instead of creating the right one, so the
-		// chunk would end up holding (for example) a deepslate ore block entity under a stone ore block
-		// and vanilla would log "invalid for ticking" forever while never ticking it.
 		if (level.getBlockState(pos).hasBlockEntity()) {
 			return false;
 		}
 
-		// Same check as vanilla OreFeature with discard_chance_on_air_exposure = 0.5: if the ore
-		// touches air (cave wall / floor / ceiling) it is discarded half the time, so most blobs
-		// stay embedded in stone while a few cut through and are visible naturally.
 		if (level.getBlockState(pos.above()).isAir() || level.getBlockState(pos.below()).isAir()
 				|| level.getBlockState(pos.north()).isAir() || level.getBlockState(pos.south()).isAir()
 				|| level.getBlockState(pos.west()).isAir() || level.getBlockState(pos.east()).isAir()) {
@@ -170,8 +150,6 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 			}
 		}
 
-		// Flag 2 only: no client notification. This runs against a WorldGenLevel proto-chunk, and
-		// BaseShineriteBlockEntity#sync is a no-op there anyway since there is no ServerLevel to broadcast to.
 		if (!level.setBlock(pos, oreBlock, 2)) {
 			return false;
 		}
@@ -187,7 +165,6 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 		}
 
 		if (!blockEntity.getType().isValid(placedState)) {
-			// Defensive: never let a stale block entity of another type survive next to our ore.
 			if (level instanceof Level realLevel) {
 				realLevel.removeBlockEntity(pos);
 			}
@@ -198,7 +175,6 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 			if (color != -1) {
 				shineriteBlockEntity.setColor(color);
 			}
-			// Ore blocks themselves can rarely be found already imbued with one random effect.
 			ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, ORE_IMBUEMENT_EFFECTS, ORE_IMBUEMENT_CHANCE);
 			shineriteBlockEntity.setChanged();
 			return true;

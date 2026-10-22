@@ -1,6 +1,5 @@
 package net.jaams.shinerite.handler.event;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

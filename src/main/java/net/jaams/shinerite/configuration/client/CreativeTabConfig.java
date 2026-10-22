@@ -6,7 +6,6 @@ public class CreativeTabConfig {
 	public static ForgeConfigSpec.ConfigValue<String> CREATIVE_TAB_ICON;
 
 	public static void register(ForgeConfigSpec.Builder builder) {
-		// Creative Tab Handler
 		builder.push("Creative Tab Handler");
 		CREATIVE_TAB_ICON = builder.comment("The item to use as the creative tab icon (requires restart)").worldRestart().define("Creative Tab Icon", "jaams_shinerite:shinerite_ingot");
 		builder.pop();

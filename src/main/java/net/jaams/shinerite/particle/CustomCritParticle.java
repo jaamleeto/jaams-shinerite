@@ -1,6 +1,5 @@
 package net.jaams.shinerite.particle;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.api.distmarker.Dist;

@@ -18,14 +18,12 @@ import net.minecraft.core.BlockPos;
 public class ShineriteBlocksHandler {
 	@SubscribeEvent
 	public static void onShineriteBlockBreak(BlockEvent.BreakEvent event) {
-		//handleShineriteEvent(event.getState().getBlock(), event.getLevel(), event.getPos(), SoundEvents.AMETHYST_BLOCK_BREAK);
 	}
 
 	@SubscribeEvent
 	public static void onShineriteBlockPlace(BlockEvent.EntityPlaceEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
-		//handleShineriteEvent(event.getPlacedBlock().getBlock(), event.getLevel(), event.getPos(), SoundEvents.AMETHYST_BLOCK_PLACE);
 	}
 
 	private static void handleShineriteEvent(Block block, LevelAccessor levelAccessor, BlockPos pos, SoundEvent sound) {

@@ -1,7 +1,6 @@
 
 package net.jaams.shinerite.entity;
 
-import org.checkerframework.checker.units.qual.g;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.network.PlayMessages;

@@ -160,11 +160,8 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
         return stack;
     }
 
-    /**
-     * Dyes the stack with a random color from the mod palette. Applied after the {@code nbt} block so a
-     * random color always wins over a hardcoded one. Only items that support the mod's dye storage are
-     * touched, so this is a no-op for plain vanilla gear.
-     */
+
+
     private void applyRandomColor(ItemStack stack, boolean randomColor, List<String> pool) {
         if (!randomColor) return;
         if (!(stack.getItem() instanceof net.jaams.shinerite.dyeable.IDyeableItem dyeable)) return;
@@ -176,7 +173,6 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
                 try {
                     resolved.add(ModUtils.parseColor(name));
                 } catch (IllegalArgumentException ignored) {
-                    // Unknown color name, silently skip it rather than failing the whole modifier.
                 }
             }
             if (resolved.isEmpty()) return;
@@ -266,11 +262,8 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
 		return StringTag.valueOf(String.valueOf(value));
 	}
 
-	/**
-	 * Converts a JSON object into a {@link CompoundTag}. Whole numbers are written as {@link IntTag}
-	 * rather than {@link DoubleTag}, otherwise reads such as {@code CompoundTag#getInt} (used for
-	 * durations, amplifiers, use counters, ...) would silently return 0.
-	 */
+
+
 	private CompoundTag convertToTag(JsonObject obj) {
 		CompoundTag c = new CompoundTag();
 		for (var e : obj.entrySet()) {
@@ -292,10 +285,8 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
 		return c;
 	}
 
-	/**
-	 * Converts a JSON array into a {@link ListTag}. Needed for list-shaped NBT such as
-	 * {@code ImbuedEffects}, which stores a list of serialized {@code MobEffectInstance}.
-	 */
+
+
 	private ListTag convertToTag(JsonArray arr) {
 		ListTag list = new ListTag();
 		for (JsonElement el : arr) {

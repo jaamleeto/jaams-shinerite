@@ -28,7 +28,7 @@ import net.jaams.shinerite.util.ShineriteTrimSupport;
 
 public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 	public static final String TAG_TRIM_COLOR = "shinerite_trim_color";
-	
+
 
 	final ResourceLocation id;
 	final Ingredient template;
@@ -47,12 +47,8 @@ public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 		return this.canApply(container.getItem(0), container.getItem(1), container.getItem(2));
 	}
 
-	/**
-	 * A Shinerite trim may always be applied to any trimmable armor, colored ingot included: the trim icon is
-	 * generated at runtime and the worn trim is rendered by the armor layer mixin, so the dye color is
-	 * rendered for the armor of every mod, not only for the pieces listed in
-	 * {@link ShineriteTrimSupport#isTintable(ItemStack)}.
-	 */
+
+
 	private boolean canApply(ItemStack templateStack, ItemStack baseStack, ItemStack additionStack) {
 		return this.template.test(templateStack) && this.base.test(baseStack) && this.addition.test(additionStack);
 	}

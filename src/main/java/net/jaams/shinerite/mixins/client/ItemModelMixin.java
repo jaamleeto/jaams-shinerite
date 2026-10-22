@@ -16,11 +16,8 @@ import net.jaams.shinerite.init.ModItems;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-/**
- * Forces a full bright light on everything that carries a Shinerite trim, so the armor and its trim keep glowing
- * in dark places: the four Shinerite pieces and, since the trim icon is generated at runtime, any trimmable item
- * of any mod that was given a Shinerite trim.
- */
+
+
 @Mixin(ItemRenderer.class)
 public abstract class ItemModelMixin {
 	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;

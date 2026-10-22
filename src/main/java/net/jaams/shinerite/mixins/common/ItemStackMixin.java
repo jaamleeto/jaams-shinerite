@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.Mixin;
 
-import org.checkerframework.checker.units.qual.s;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -149,7 +148,7 @@ public abstract class ItemStackMixin {
 	private void consumeImbueOnEat(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
 		ItemStack stack = (ItemStack) (Object) this;
 		if (!level.isClientSide() && stack.getItem().isEdible()) {
-			if (entity instanceof Player player && player.getAbilities().instabuild) {
+			if (entity instanceof Player player && player.getAbilities().instabuild && !MechanicsConfig.IMBUED_CONSUME_USES_IN_CREATIVE.get()) {
 				return;
 			}
 			CompoundTag tag = stack.getTag();

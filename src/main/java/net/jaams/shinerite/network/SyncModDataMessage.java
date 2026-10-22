@@ -13,11 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * Server -> client snapshot of every {@link NetworkSyncable} datapack-driven
- * loader so client-only systems (renderers, tooltips, poses, creative tabs,
- * projectile data...) resolve the exact same definitions the server loaded.
- */
+
+
 public class SyncModDataMessage {
     private final Map<String, Map<String, String>> sections;
 

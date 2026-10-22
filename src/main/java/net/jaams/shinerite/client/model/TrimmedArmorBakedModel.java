@@ -22,14 +22,8 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 
-/**
- * Baked model that renders the plain armor icon and then draws the armor trim sprite on top of it.
- *
- * <p>This is produced at runtime by {@link ArmorTrimModelGenerator}, so it works for <b>any</b> trimmable
- * item, including armor from other mods that never declared a trim model of their own. Nothing has to be
- * shipped as a JSON model: the trim quads are baked from the palette sprite
- * ({@code minecraft:trims/items/<slot>_trim_<material>}) at load time.
- */
+
+
 public class TrimmedArmorBakedModel implements BakedModel {
 
 	private final BakedModel base;
@@ -40,11 +34,8 @@ public class TrimmedArmorBakedModel implements BakedModel {
 		this.trimQuads = ImmutableList.copyOf(trimQuads);
 	}
 
-	/**
-	 * The trim is drawn as an unculled layer, exactly like a regular {@code item/generated} layer, so it may
-	 * only be returned for the "no culling" pass ({@code side == null}). Returning it for the per-direction
-	 * passes as well would draw it seven times.
-	 */
+
+
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
 		List<BakedQuad> quads = this.base.getQuads(state, side, rand);
@@ -85,10 +76,8 @@ public class TrimmedArmorBakedModel implements BakedModel {
 		return this.base.getModelData(level, pos, state, modelData);
 	}
 
-	/**
-	 * The overrides of the base model were already resolved before this model was built; returning them again
-	 * would let the model resolution loop forever.
-	 */
+
+
 	@Override
 	public ItemOverrides getOverrides() {
 		return ItemOverrides.EMPTY;
