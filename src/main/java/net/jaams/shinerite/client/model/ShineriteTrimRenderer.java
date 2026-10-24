@@ -86,7 +86,7 @@ public final class ShineriteTrimRenderer {
 	}
 
 	
-	private static int trimColor(ItemStack stack) {
+	public static int trimColor(ItemStack stack) {
 		int base = stack != null && stack.getItem() instanceof ShineriteArmorItem ? SHINERITE_ARMOR_TRIM_COLOR : SHINERITE_TRIM_COLOR;
 		CompoundTag tag = stack == null ? null : stack.getTag();
 		if (tag == null || !tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)) {
@@ -96,7 +96,6 @@ public final class ShineriteTrimRenderer {
 		return color == 0 || ShineriteTrimSupport.isPlainColor(color) ? base : color;
 	}
 
-	
 	public static TextureAtlasSprite findSprite(TextureAtlas atlas, ResourceLocation location) {
 		if (atlas == null || location == null) {
 			return null;
@@ -110,7 +109,7 @@ public final class ShineriteTrimRenderer {
 	}
 
 	
-	private static TextureAtlasSprite findAnyPalettedSprite(TextureAtlas atlas, ResourceLocation pattern, boolean inner) {
+	public static TextureAtlasSprite findAnyPalettedSprite(TextureAtlas atlas, ResourceLocation pattern, boolean inner) {
 		String baseSprite = "trims/models/armor/" + pattern.getPath() + (inner ? "_leggings" : "");
 		for (String suffix : PALETTE_SUFFIXES) {
 			TextureAtlasSprite sprite = findSprite(atlas, ResourceLocation.fromNamespaceAndPath(pattern.getNamespace(), baseSprite + "_" + suffix));

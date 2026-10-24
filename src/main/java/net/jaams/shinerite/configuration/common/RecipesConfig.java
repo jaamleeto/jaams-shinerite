@@ -78,7 +78,7 @@ public class RecipesConfig {
 		builder.pop();
 		builder.pop();
 		builder.push("Coat Item Recipe");
-		COAT_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite coating crafting recipe entirely").define("Coating Item Recipe", true);
+		COAT_ITEM_RECIPE = builder.comment("Master switch: Enable or disable the Shinerite coating crafting recipe entirely").define("Coat Item Recipe", true);
 		COAT_ITEM_RECIPE_3X3_MODE = builder.comment("Enable the 3x3 recipe").define("Coat Item Recipe Bulk Mode", true);
 		COAT_ITEM_RECIPE_FREE_MODE = builder.comment("Enable the free-form recipe").define("Coat Item Recipe Free Mode", true);
 		builder.pop();

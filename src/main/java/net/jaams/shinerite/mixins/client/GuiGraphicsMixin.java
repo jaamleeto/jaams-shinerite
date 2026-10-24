@@ -23,7 +23,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 public abstract class GuiGraphicsMixin {
 	@Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At("TAIL"))
 	public void renderImbuedUsesBar(Font font, ItemStack itemStack, int x, int y, @Nullable String customText, CallbackInfo ci) {
-		if (!ItemStatusBarConfig.IMBUED_BAR.get()) {
+		if (!ItemStatusBarConfig.SHOW_IMBUED_BAR.get()) {
 			return;
 		}
 		if (itemStack.isEmpty() || itemStack.getMaxStackSize() > 1) {
@@ -63,8 +63,8 @@ public abstract class GuiGraphicsMixin {
 		float pct = (float) uses / (float) maxUses;
 		int barWidth = 13;
 		int barHeight = 2;
-		int barX = x + ItemStatusBarConfig.IMBUED_BAR_POS_X.get();
-		int barY = y + ItemStatusBarConfig.IMBUED_BAR_POS_Y.get();
+		int barX = x + ItemStatusBarConfig.IMBUED_BAR_X.get();
+		int barY = y + ItemStatusBarConfig.IMBUED_BAR_Y.get();
 		int w = (int) (pct * barWidth);
 		if (w == 0 && pct > 0) {
 			w = 1;

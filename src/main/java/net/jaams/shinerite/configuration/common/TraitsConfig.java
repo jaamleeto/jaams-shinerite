@@ -16,6 +16,7 @@ public class TraitsConfig {
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE;
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_HIT;
 	public static ForgeConfigSpec.BooleanValue THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK;
+	public static ForgeConfigSpec.DoubleValue THROWBACK_SHINERANG_PROJECTILE_RETURN_SPEED;
 	public static ForgeConfigSpec.IntValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_MAX_ITEMS;
 	public static ForgeConfigSpec.BooleanValue RADIANT_COLLECTOR_SHINERANG_PROJECTILE_GLOW;
 
@@ -39,11 +40,12 @@ public class TraitsConfig {
 		builder.pop();
 		builder.push("Throwback");
 		builder.push("Shinerang Projectile");
-		THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE = builder.comment("Minimum distance before the Shinerang projectile starts returning").defineInRange("Min Range", 5, 1, 50);
-		THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE = builder.comment("Maximum distance the Shinerang projectile can travel before forced return").defineInRange("Max Range", 20, 3, 100);
-		THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE = builder.comment("Whether the Shinerang returns automatically at max distance").define("Return On Max Range", true);
-		THROWBACK_SHINERANG_PROJECTILE_ON_HIT = builder.comment("Whether the Shinerang returns immediately after hitting an entity").define("Return On Entity Hit", true);
-		THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK = builder.comment("Whether the Shinerang returns immediately after hitting a block").define("Return On Block Hit", true);
+		THROWBACK_SHINERANG_PROJECTILE_MIN_RANGE = builder.comment("Minimum range (blocks) before throwback activates").defineInRange("Min Range", 5, 1, 50);
+		THROWBACK_SHINERANG_PROJECTILE_MAX_RANGE = builder.comment("Maximum range (blocks) for throwback").defineInRange("Max Range", 20, 3, 100);
+		THROWBACK_SHINERANG_PROJECTILE_ON_MAX_RANGE = builder.comment("Return to owner when reaching max range").define("Return On Max Range", true);
+		THROWBACK_SHINERANG_PROJECTILE_ON_HIT = builder.comment("Return to owner after hitting an entity").define("Return On Entity Hit", true);
+		THROWBACK_SHINERANG_PROJECTILE_ON_BLOCK = builder.comment("Return to owner after hitting a block").define("Return On Block Hit", true);
+		THROWBACK_SHINERANG_PROJECTILE_RETURN_SPEED = builder.comment("How fast the projectile returns").defineInRange("Return Speed", 0.70D, 0.1D, 2.0D);
 		builder.pop();
 		builder.pop();
 		builder.push("Radiant Collector");

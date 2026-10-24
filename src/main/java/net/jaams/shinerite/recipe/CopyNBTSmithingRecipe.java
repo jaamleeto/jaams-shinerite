@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.RegistryAccess;
 
 import net.jaams.shinerite.init.ModRecipes;
+import net.jaams.shinerite.util.ModUtils;
 
 public class CopyNBTSmithingRecipe extends SmithingTransformRecipe {
 	public final Ingredient template;
@@ -51,6 +52,9 @@ public class CopyNBTSmithingRecipe extends SmithingTransformRecipe {
 			CompoundTag display = outputTag.getCompound("display");
 			display.putInt("color", color);
 			outputTag.put("display", display);
+		}
+		if (output.hasTag()) {
+			ModUtils.reduceImbuementForOutput(output, output.getCount());
 		}
 		return output;
 	}

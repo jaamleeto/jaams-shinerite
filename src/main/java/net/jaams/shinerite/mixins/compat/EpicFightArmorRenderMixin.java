@@ -22,8 +22,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,9 +30,8 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 
+import net.jaams.shinerite.client.model.ShineriteTrimRenderer;
 import net.jaams.shinerite.item.ShineriteArmorItem;
-import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
-import net.jaams.shinerite.util.ShineriteTrimSupport;
 
 import yesman.epicfight.api.client.model.Mesh;
 import yesman.epicfight.api.client.model.SkinnedMesh;
@@ -49,11 +46,6 @@ import yesman.epicfight.client.renderer.patched.layer.WearableItemLayer;
 public abstract class EpicFightArmorRenderMixin {
 
 	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
-	private static final String SHINERITE_TRIM = "jaams_shinerite:shinerite";
-
-	private static final int SHINERITE_TRIM_COLOR = 0xFFFFFF;
-
-	private static final int SHINERITE_ARMOR_TRIM_COLOR = 0x949494;
 
 	@Shadow
 	@Final
@@ -65,12 +57,16 @@ public abstract class EpicFightArmorRenderMixin {
 	@Unique
 	private EquipmentSlot jaams$shineriteArmorSlot;
 
+	@Unique
+	private LivingEntity jaams$entity;
+
 	@Inject(method = "getArmorModel", at = @At("HEAD"), remap = false)
 	private void jaams$captureArmorStack(HumanoidArmorLayer originalRenderer, HumanoidModel originalModel,
 			Model forgeHooksArmorModel, LivingEntity entityliving, ArmorItem armorItem, ItemStack itemstack,
 			EquipmentSlot slot, CallbackInfoReturnable<SkinnedMesh> cir) {
 		this.jaams$shineriteArmorStack = itemstack;
 		this.jaams$shineriteArmorSlot = slot;
+		this.jaams$entity = entityliving;
 	}
 
 	@Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true, remap = false)
@@ -83,7 +79,7 @@ public abstract class EpicFightArmorRenderMixin {
 		}
 		ShineriteArmorItem shineriteItem = stack.getItem() instanceof ShineriteArmorItem si ? si : null;
 		boolean isShineriteArmor = shineriteItem != null;
-		boolean isShineriteTrim = jaams$hasShineriteTrim(stack);
+		boolean isShineriteTrim = ShineriteTrimRenderer.hasShineriteTrim(stack);
 		if (!isShineriteArmor && !isShineriteTrim) {
 			return;
 		}
@@ -104,8 +100,8 @@ public abstract class EpicFightArmorRenderMixin {
 		model.draw(poseStack, bufferSource, RenderType.armorCutoutNoCull(armorTexture), light, cr, cg, cb, 1.0F,
 				OverlayTexture.NO_OVERLAY, armature, poses);
 
-		if (isShineriteTrim && !overlayPass) {
-			this.jaams$drawTrim(poseStack, bufferSource, packedLight, model, armature, stack,
+		if (!overlayPass) {
+			this.jaams$drawTrim(poseStack, bufferSource, packedLight, model, armature, this.jaams$entity, stack,
 					this.jaams$shineriteArmorSlot != null ? this.jaams$shineriteArmorSlot : EquipmentSlot.CHEST,
 					poses);
 		}
@@ -120,64 +116,43 @@ public abstract class EpicFightArmorRenderMixin {
 			SkinnedMesh model, Armature armature, ArmorMaterial material, ArmorTrim trim, EquipmentSlot slot,
 			OpenMatrix4f[] poses, CallbackInfo ci) {
 		ItemStack stack = this.jaams$shineriteArmorStack;
-		if (stack != null && jaams$hasShineriteTrim(stack)) {
+		if (stack == null) {
+			return;
+		}
+		if (stack.getItem() instanceof ShineriteArmorItem || ShineriteTrimRenderer.hasShineriteTrim(stack)) {
 			ci.cancel();
 		}
 	}
 
 	@Unique
-	private static boolean jaams$hasShineriteTrim(ItemStack stack) {
-		CompoundTag tag = stack.getTag();
-		if (tag == null || !tag.contains("Trim", Tag.TAG_COMPOUND)) {
-			return false;
-		}
-		return SHINERITE_TRIM.equals(tag.getCompound("Trim").getString("material"));
-	}
-
-	@Unique
 	private void jaams$drawTrim(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
-			SkinnedMesh model, Armature armature, ItemStack stack, EquipmentSlot slot, OpenMatrix4f[] poses) {
-		if (this.armorTrimAtlas == null) {
+			SkinnedMesh model, Armature armature, LivingEntity entity, ItemStack stack, EquipmentSlot slot,
+			OpenMatrix4f[] poses) {
+		if (this.armorTrimAtlas == null || !(stack.getItem() instanceof ArmorItem armorItem) || entity == null) {
 			return;
 		}
-		CompoundTag tag = stack.getTag();
-		if (tag == null || !tag.contains("Trim", Tag.TAG_COMPOUND)) {
-			return;
-		}
-		CompoundTag trimTag = tag.getCompound("Trim");
-		String materialId = trimTag.getString("material");
-		String patternId = trimTag.getString("pattern");
-		if (materialId.isEmpty() || patternId.isEmpty()) {
+		ArmorTrim trim = ArmorTrim.getTrim(entity.level().registryAccess(), stack).orElse(null);
+		if (trim == null) {
 			return;
 		}
 
-		boolean isShinerite = SHINERITE_TRIM.equals(materialId);
-		String materialName = jaams$idPath(materialId);
+		ArmorMaterial armorMaterial = armorItem.getMaterial();
 		boolean inner = slot == EquipmentSlot.LEGS;
-
-		String namespace = patternId.contains(":") ? patternId.substring(0, patternId.indexOf(':')) : "minecraft";
-		String baseSprite = "trims/models/armor/" + jaams$idPath(patternId) + (inner ? "_leggings" : "");
-		ResourceLocation spriteId = ResourceLocation.fromNamespaceAndPath(namespace, baseSprite + "_" + materialName);
-		TextureAtlasSprite sprite = jaams$findSprite(spriteId);
-		boolean palettedSprite = sprite != null;
-		if (!palettedSprite) {
-			sprite = jaams$findSprite(ResourceLocation.fromNamespaceAndPath(namespace, baseSprite));
+		TextureAtlasSprite sprite = jaams$findSprite(inner ? trim.innerTexture(armorMaterial) : trim.outerTexture(armorMaterial));
+		if (sprite == null) {
+			sprite = ShineriteTrimRenderer.findAnyPalettedSprite(this.armorTrimAtlas, trim.pattern().value().assetId(), inner);
 		}
 		if (sprite == null) {
 			return;
 		}
 
+		boolean isShinerite = ShineriteTrimRenderer.isShineriteMaterial(trim);
 		int renderLight = isShinerite ? FULL_BRIGHT_LIGHT : packedLight;
 		float r = 1.0F;
 		float g = 1.0F;
 		float b = 1.0F;
 		if (isShinerite) {
-			int trimColor = tag.contains(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR, Tag.TAG_INT)
-					? tag.getInt(ShineriteTrimSmithingRecipe.TAG_TRIM_COLOR)
-					: 0;
-			if (trimColor == 0 || ShineriteTrimSupport.isPlainColor(trimColor)) {
-				trimColor = stack.getItem() instanceof ShineriteArmorItem ? SHINERITE_ARMOR_TRIM_COLOR : SHINERITE_TRIM_COLOR;
-			}
+			int trimColor = ShineriteTrimRenderer.trimColor(stack);
 			r = (trimColor >> 16 & 255) / 255.0F;
 			g = (trimColor >> 8 & 255) / 255.0F;
 			b = (trimColor & 255) / 255.0F;
@@ -188,13 +163,6 @@ public abstract class EpicFightArmorRenderMixin {
 		model.drawPosed(poseStack, vertexConsumer, Mesh.DrawingFunction.NEW_ENTITY, renderLight, r, g, b, 1.0F,
 				OverlayTexture.NO_OVERLAY, armature, poses);
 	}
-
-	@Unique
-	private static String jaams$idPath(String id) {
-		int i = id.indexOf(':');
-		return i >= 0 ? id.substring(i + 1) : id;
-	}
-
 
 	@Unique
 	private TextureAtlasSprite jaams$findSprite(ResourceLocation location) {

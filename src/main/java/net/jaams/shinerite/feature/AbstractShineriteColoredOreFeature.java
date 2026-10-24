@@ -34,26 +34,27 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 			MobEffects.CONFUSION, MobEffects.GLOWING
 	};
 
-	private static final double ORE_IMBUEMENT_CHANCE = 0.005D;
-
 	private final BlockState oreBlock;
 	private final int[] palette;
 	private final Supplier<Boolean> enabled;
 	private final Supplier<Double> chance;
-
-	private final Supplier<Double> coloredChance;
+	private final Supplier<Double> colorChance;
+	private final Supplier<Double> imbuedChance;
+	private final Supplier<Boolean> coloredGeneration;
 	private final IntSupplier minSize;
 	private final IntSupplier maxSize;
 	private final IntSupplier spread;
 
 	protected AbstractShineriteColoredOreFeature(Codec<NoneFeatureConfiguration> codec, BlockState oreBlock, int[] palette, Supplier<Boolean> enabled,
-			Supplier<Double> chance, Supplier<Double> coloredChance, IntSupplier minSize, IntSupplier maxSize, IntSupplier spread) {
+			Supplier<Double> chance, double colorChance, Supplier<Double> imbuedChance, Supplier<Boolean> coloredGeneration, IntSupplier minSize, IntSupplier maxSize, IntSupplier spread) {
 		super(codec);
 		this.oreBlock = oreBlock;
 		this.palette = palette;
 		this.enabled = enabled;
 		this.chance = chance;
-		this.coloredChance = coloredChance;
+		this.colorChance = () -> coloredGeneration.get() ? colorChance : 0.0D;
+		this.imbuedChance = imbuedChance;
+		this.coloredGeneration = coloredGeneration;
 		this.minSize = minSize;
 		this.maxSize = maxSize;
 		this.spread = spread;
@@ -75,7 +76,7 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 		BlockPos origin = context.origin();
 		int attempts = rollInt(random, minSize.getAsInt(), maxSize.getAsInt());
 		int spread = this.spread.getAsInt();
-		boolean colored = random.nextDouble() < coloredChance.get();
+		boolean colored = random.nextDouble() < colorChance.get();
 		int color = colored ? palette[random.nextInt(palette.length)] : -1;
 		BlockPos.MutableBlockPos target = new BlockPos.MutableBlockPos();
 		target.set(origin);
@@ -175,7 +176,7 @@ public abstract class AbstractShineriteColoredOreFeature extends Feature<NoneFea
 			if (color != -1) {
 				shineriteBlockEntity.setColor(color);
 			}
-			ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, ORE_IMBUEMENT_EFFECTS, ORE_IMBUEMENT_CHANCE);
+			ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, ORE_IMBUEMENT_EFFECTS, imbuedChance.get());
 			shineriteBlockEntity.setChanged();
 			return true;
 		}

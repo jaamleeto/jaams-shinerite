@@ -71,14 +71,6 @@ public abstract class ItemStackMixin {
 	@Inject(method = "getTooltipLines", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/Component;literal(Ljava/lang/String;)Lnet/minecraft/network/chat/MutableComponent;", ordinal = 1, shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
 		private void addImbuedUses(Player player, TooltipFlag flag, CallbackInfoReturnable<List<Component>> cir, List<Component> list, MutableComponent nombre, int hideFlags) {
 		ItemStack stack = (ItemStack) (Object) this;
-		if (!flag.isAdvanced()) {
-			if (MechanicsConfig.COATING.get() && ModUtils.isCoatableItem(stack) && !ModUtils.isCoated(stack)) {
-				list.add(Component.translatable("tooltip.jaams_shinerite.coatable").withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
-			}
-			if (MechanicsConfig.IMBUING.get() && ModUtils.isImbueableItem(stack) && !ModUtils.isImbued(stack)) {
-				list.add(Component.translatable("tooltip.jaams_shinerite.imbuable").withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
-			}
-		}
 		if (!MechanicsConfig.IMBUING.get() || !ModUtils.isImbued(stack)) {
 			return;
 		}
@@ -100,6 +92,7 @@ public abstract class ItemStackMixin {
 	@Inject(method = "getTooltipLines", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shouldShowInTooltip(ILnet/minecraft/world/item/ItemStack$TooltipPart;)Z", ordinal = 4, shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
 	private void addImbuedTooltipDirecto(Player player, TooltipFlag flag, CallbackInfoReturnable<List<Component>> cir, List<Component> list, MutableComponent nombre, int hideFlags) {
 		ItemStack stack = (ItemStack) (Object) this;
+		addCapabilitiesSection(list, stack);
 		if (!MechanicsConfig.IMBUING.get() || !ModUtils.isImbued(stack)) {
 			return;
 		}
@@ -188,6 +181,22 @@ public abstract class ItemStackMixin {
 			if (lightstealLevel > 0) {
 				ShineriteAttackHandler.applyLightsteal(itemStack, target, attacker, world);
 			}
+		}
+	}
+
+	private void addCapabilitiesSection(List<Component> list, ItemStack stack) {
+		boolean coatable = MechanicsConfig.COATING.get() && ModUtils.isCoatableItem(stack) && TooltipsConfig.TOOLTIP_COATABLE_STATUS.get();
+		boolean imbuable = MechanicsConfig.IMBUING.get() && ModUtils.isImbueableItem(stack) && TooltipsConfig.TOOLTIP_IMBUABLE_STATUS.get();
+		if (!coatable && !imbuable) {
+			return;
+		}
+		list.add(CommonComponents.EMPTY);
+		list.add(Component.translatable("tooltip.jaams_shinerite.capability.header").withStyle(ChatFormatting.GRAY));
+		if (coatable) {
+			list.add(Component.literal(" ").append(Component.translatable("tooltip.jaams_shinerite.capability.coatable")).withStyle(ChatFormatting.BLUE));
+		}
+		if (imbuable) {
+			list.add(Component.literal(" ").append(Component.translatable("tooltip.jaams_shinerite.capability.imbuable")).withStyle(ChatFormatting.BLUE));
 		}
 	}
 }

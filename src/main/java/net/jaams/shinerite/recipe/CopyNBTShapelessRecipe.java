@@ -14,6 +14,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.NonNullList;
 
 import net.jaams.shinerite.init.ModRecipes;
+import net.jaams.shinerite.util.ModUtils;
 
 public class CopyNBTShapelessRecipe extends ShapelessRecipe {
 	public CopyNBTShapelessRecipe(ResourceLocation id, String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, ItemStack result) {
@@ -60,6 +61,9 @@ public class CopyNBTShapelessRecipe extends ShapelessRecipe {
 			int mixedColor = (mixedRed << 16) | (mixedGreen << 8) | mixedBlue;
 			CompoundTag resultTag = resultStack.getOrCreateTag();
 			resultTag.putInt("color", mixedColor);
+		}
+		if (resultStack.hasTag()) {
+			ModUtils.reduceImbuementForOutput(resultStack, resultStack.getCount());
 		}
 		return resultStack;
 	}

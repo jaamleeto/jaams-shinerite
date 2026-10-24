@@ -38,9 +38,9 @@ public class ProjectileCommonConfig {
 		SHINERANG_PROJECTILE_HITBOX_WIDTH = builder.comment("Hitbox width of the Shinerang projectile").defineInRange("Hitbox Width", 0.6, 0.1, 2.0);
 		SHINERANG_PROJECTILE_HITBOX_HEIGHT = builder.comment("Hitbox height of the Shinerang projectile").defineInRange("Hitbox Height", 0.6, 0.1, 2.0);
 		SHINERANG_PROJECTILE_DESPAWN_AS_ITEM = builder.comment("Whether the Shinerang projectile drops as an item when it despawns").define("Despawn As Item", false);
-		SHINERANG_PROJECTILE_DESPAWN_TIME = builder.comment("Despawn time in ticks for the Shinerang projectile").defineInRange("Despawn Time", 1200, 100, 72000);
+		SHINERANG_PROJECTILE_DESPAWN_TIME = builder.comment("Despawn time in ticks for the Shinerang projectile").defineInRange("Despawn Time", 1200, 0, 72000);
 		SHINERANG_PROJECTILE_SWOOSH_SOUND = builder.comment("Whether the Shinerang projectile plays a swoosh sound while flying").define("Swoosh Sound", true);
-		SHINERANG_PROJECTILE_SWOOSH_INTERVAL = builder.comment("Number of ticks between each swoosh sound played by the Shinerang projectile").defineInRange("Swoosh Interval", 5, 1, 200);
+		SHINERANG_PROJECTILE_SWOOSH_INTERVAL = builder.comment("Tick interval between swoosh sounds for Shinerang projectile").defineInRange("Swoosh Sound Interval", 5, 1, 20);
 		builder.pop();
 		builder.push("Shinerite Star Projectile");
 		SHINERITE_STAR_PROJECTILE_BASE_DAMAGE = builder.comment("Base damage dealt by the Shinerite Star projectile").defineInRange("Base Damage", 1.5, 0.5, 32.0);
@@ -52,7 +52,7 @@ public class ProjectileCommonConfig {
 		SHINERITE_STAR_PROJECTILE_HITBOX_WIDTH = builder.comment("Hitbox width of the Shinerite Star projectile").defineInRange("Hitbox Width", 0.25, 0.1, 1.0);
 		SHINERITE_STAR_PROJECTILE_HITBOX_HEIGHT = builder.comment("Hitbox height of the Shinerite Star projectile").defineInRange("Hitbox Height", 0.25, 0.1, 1.0);
 		SHINERITE_STAR_PROJECTILE_DESPAWN_AS_ITEM = builder.comment("Whether the Shinerite Star projectile drops as an item when it despawns").define("Despawn As Item", false);
-		SHINERITE_STAR_PROJECTILE_DESPAWN_TIME = builder.comment("Despawn time in ticks for the Shinerite Star projectile").defineInRange("Despawn Time", 800, 100, 72000);
+		SHINERITE_STAR_PROJECTILE_DESPAWN_TIME = builder.comment("Despawn time in ticks for the Shinerite Star projectile").defineInRange("Despawn Time", 800, 0, 72000);
 		builder.pop();
 		builder.pop();
 	}

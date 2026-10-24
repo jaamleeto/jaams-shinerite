@@ -26,6 +26,8 @@ import net.minecraft.nbt.CompoundTag;
 
 import net.jaams.shinerite.configuration.common.TraitsConfig;
 
+import net.jaams.shinerite.util.ModProjectiles;
+
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
@@ -300,7 +302,7 @@ public abstract class BaseReturningProjectileEntity extends BaseWeaponProjectile
 			}
 		}
 		Vec3 direction = toOwner.normalize();
-		double returnSpeed = this.isUnderWater() ? 0.55 : 0.70;
+		double returnSpeed = ModProjectiles.getThrowbackReturnSpeed(this.getWeaponItem(), this.isUnderWater() ? 0.55D : TraitsConfig.THROWBACK_SHINERANG_PROJECTILE_RETURN_SPEED.get());
 		Vec3 newMotion = direction.scale(returnSpeed);
 		this.setDeltaMovement(newMotion);
 		this.hurtMarked = true;

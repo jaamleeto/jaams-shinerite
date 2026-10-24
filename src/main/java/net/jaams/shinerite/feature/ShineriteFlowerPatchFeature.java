@@ -153,14 +153,16 @@ public class ShineriteFlowerPatchFeature extends Feature<NoneFeatureConfiguratio
 		}
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof BaseShineriteBlockEntity shineriteBlockEntity) {
-			double rate = WorldGenConfig.SHINERITIA_FLOWER_IMBUED_CHANCE.get() * palette.rate;
-			if (ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, palette.effects, rate)) {
-				shineriteBlockEntity.setChanged();
-				return true;
-			}
-			shineriteBlockEntity.setColor(palette.colors[random.nextInt(palette.colors.length)]);
+		double rate = WorldGenConfig.SHINERITIA_FLOWER_IMBUED_CHANCE.get() * palette.rate;
+		if (ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, palette.effects, rate)) {
 			shineriteBlockEntity.setChanged();
 			return true;
+		}
+		if (WorldGenConfig.SHINERITIA_FLOWER_COLORED_GENERATION.get()) {
+			shineriteBlockEntity.setColor(palette.colors[random.nextInt(palette.colors.length)]);
+			shineriteBlockEntity.setChanged();
+		}
+		return true;
 		}
 		return false;
 	}

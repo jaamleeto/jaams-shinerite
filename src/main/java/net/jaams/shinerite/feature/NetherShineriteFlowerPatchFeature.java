@@ -143,17 +143,18 @@ public class NetherShineriteFlowerPatchFeature extends Feature<NoneFeatureConfig
 			return false;
 		}
 
-		double imbuedChance = crimson ? WorldGenConfig.NETHER_CRIMSON_FLOWER_IMBUED_CHANCE.get()
-				: WorldGenConfig.NETHER_WARPED_FLOWER_IMBUED_CHANCE.get();
+		double imbuedChance = WorldGenConfig.NETHER_SHINERITIA_FLOWER_IMBUED_CHANCE.get();
 
 		if (ModUtils.applyNaturalImbuement(shineriteBlockEntity, random, crimson ? CRIMSON_IMBUEMENT_EFFECTS : WARPED_IMBUEMENT_EFFECTS, imbuedChance)) {
 			shineriteBlockEntity.setChanged();
 			return true;
 		}
 
-		int[] palette = crimson ? CRIMSON_COLORS : WARPED_COLORS;
-		shineriteBlockEntity.setColor(palette[random.nextInt(palette.length)]);
-		shineriteBlockEntity.setChanged();
+		if (WorldGenConfig.NETHER_SHINERITIA_FLOWER_COLORED_GENERATION.get()) {
+			int[] palette = crimson ? CRIMSON_COLORS : WARPED_COLORS;
+			shineriteBlockEntity.setColor(palette[random.nextInt(palette.length)]);
+			shineriteBlockEntity.setChanged();
+		}
 		return true;
 	}
 }

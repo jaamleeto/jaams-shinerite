@@ -22,6 +22,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ByteTag;
@@ -61,6 +62,7 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
     private volatile Map<ResourceLocation, List<EquipmentData>> entityCache = new ConcurrentHashMap<>();
     private volatile Map<String, String> sources = new ConcurrentHashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(EquipmentModifierLoader.class);
+    private static final String EQUIPMENT_CLAIMS_TAG = "jaams_equipment_claims";
 
     private EquipmentModifierLoader() {
         super(GSON, "jaams/equipment_modifier");
@@ -501,6 +503,12 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
         List<EquipmentData> mods = getForEntityType(mob.getType());
         if (mods.isEmpty()) return false;
 
+        CompoundTag persistentData = mob.getPersistentData();
+        CompoundTag claims = new CompoundTag();
+        if (persistentData.contains(EQUIPMENT_CLAIMS_TAG, Tag.TAG_COMPOUND)) {
+            claims = persistentData.getCompound(EQUIPMENT_CLAIMS_TAG);
+        }
+
         boolean anyApplied = false;
         for (EquipmentData data : mods) {
             try {
@@ -518,10 +526,7 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
                     if (!evaluateItemConditions(entry.conditions, data.condition_mode, stack)) continue;
 
                     net.minecraft.world.entity.EquipmentSlot slot = entry.getEquipmentSlot();
-                    if (!entry.replace_existing && !mob.getItemBySlot(slot).isEmpty()) continue;
-
-                    mob.setItemSlot(slot, stack);
-                    mob.setDropChance(slot, 0.0F);
+                    if (!tryClaimEquip(mob, data.priority, entry.replace_existing, slot, stack, claims, persistentData)) continue;
                     anyApplied = true;
 
                     if (entry.equipment != null) {
@@ -534,10 +539,7 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
                                 if (!evaluateItemConditions(equip.conditions, data.condition_mode, equipStack)) continue;
 
                                 net.minecraft.world.entity.EquipmentSlot equipSlot = equip.getEquipmentSlot();
-                                if (!equip.replace_existing && !mob.getItemBySlot(equipSlot).isEmpty()) continue;
-
-                                mob.setItemSlot(equipSlot, equipStack);
-                                mob.setDropChance(equipSlot, 0.0F);
+                                tryClaimEquip(mob, data.priority, equip.replace_existing, equipSlot, equipStack, claims, persistentData);
                             } catch (Exception e) {
                                 LOGGER.error("Error applying dual wield equipment to {}", mob.getType().toShortString(), e);
                             }
@@ -548,7 +550,22 @@ public class EquipmentModifierLoader extends SimpleJsonResourceReloadListener im
                 LOGGER.error("Error applying spawn equipment to {}", mob.getType().toShortString(), e);
             }
         }
-        return anyApplied;
+        return anyApplied || !claims.isEmpty();
+    }
+
+    private boolean tryClaimEquip(Mob mob, int priority, boolean replaceExisting, net.minecraft.world.entity.EquipmentSlot slot,
+            ItemStack stack, CompoundTag claims, CompoundTag persistentData) {
+        String slotKey = slot.getName();
+        int stored = claims.contains(slotKey, Tag.TAG_INT) ? claims.getInt(slotKey) : Integer.MIN_VALUE;
+        if (stored > priority) return false;
+        if (stored == priority && !replaceExisting) return false;
+        if (stored < priority && !replaceExisting && !mob.getItemBySlot(slot).isEmpty() && stored == Integer.MIN_VALUE) return false;
+
+        mob.setItemSlot(slot, stack);
+        mob.setDropChance(slot, 0.0F);
+        claims.putInt(slotKey, priority);
+        persistentData.put(EQUIPMENT_CLAIMS_TAG, claims);
+        return true;
     }
 
     @SubscribeEvent

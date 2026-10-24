@@ -234,38 +234,40 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 			return;
 		}
 
-		if (inheritedColor != -1 && !isBasaltDeltas(level, pos)) {
-			blockEntity.setColor(inheritedColor);
+		if (isColoredGeneration()) {
+			if (inheritedColor != -1 && !isBasaltDeltas(level, pos)) {
+				blockEntity.setColor(inheritedColor);
+				blockEntity.setChanged();
+				return;
+			}
+
+			int[] primary = nether ? NETHER_RED_COLORS : OVERWORLD_WHITE_COLORS;
+			int[] secondary = nether ? NETHER_CRIMSON_BURGUNDY_COLORS : OVERWORLD_GREY_COLORS;
+
+			if (nether && isWarpedForest(level, pos)) {
+				primary = NETHER_WARPED_CYAN_COLORS;
+				secondary = NETHER_WARPED_PURPLE_COLORS;
+			}
+
+			if (nether && isBasaltDeltas(level, pos)) {
+				primary = NETHER_ASH_GREY_COLORS;
+				secondary = NETHER_ASH_DARK_COLORS;
+			}
+
+			if (nether && isCrimsonForest(level, pos)) {
+				primary = NETHER_CRIMSON_RED_COLORS;
+				secondary = NETHER_CRIMSON_PINK_COLORS;
+			}
+
+			if (nether && isSoulSandValley(level, pos)) {
+				primary = NETHER_SPECTRAL_CYAN_COLORS;
+				secondary = NETHER_SPECTRAL_BLUE_COLORS;
+			}
+
+			int[] palette = random.nextBoolean() ? primary : secondary;
+			blockEntity.setColor(palette[random.nextInt(palette.length)]);
 			blockEntity.setChanged();
-			return;
 		}
-
-		int[] primary = nether ? NETHER_RED_COLORS : OVERWORLD_WHITE_COLORS;
-		int[] secondary = nether ? NETHER_CRIMSON_BURGUNDY_COLORS : OVERWORLD_GREY_COLORS;
-
-		if (nether && isWarpedForest(level, pos)) {
-			primary = NETHER_WARPED_CYAN_COLORS;
-			secondary = NETHER_WARPED_PURPLE_COLORS;
-		}
-
-		if (nether && isBasaltDeltas(level, pos)) {
-			primary = NETHER_ASH_GREY_COLORS;
-			secondary = NETHER_ASH_DARK_COLORS;
-		}
-
-		if (nether && isCrimsonForest(level, pos)) {
-			primary = NETHER_CRIMSON_RED_COLORS;
-			secondary = NETHER_CRIMSON_PINK_COLORS;
-		}
-
-		if (nether && isSoulSandValley(level, pos)) {
-			primary = NETHER_SPECTRAL_CYAN_COLORS;
-			secondary = NETHER_SPECTRAL_BLUE_COLORS;
-		}
-
-		int[] palette = random.nextBoolean() ? primary : secondary;
-		blockEntity.setColor(palette[random.nextInt(palette.length)]);
-		blockEntity.setChanged();
 	}
 
 
@@ -315,5 +317,9 @@ public class ShineriteRootsPatchFeature extends Feature<NoneFeatureConfiguration
 
 	private double getImbuedChance() {
 		return nether ? WorldGenConfig.NETHER_SHINERITE_ROOTS_IMBUED_CHANCE.get() : WorldGenConfig.SHINERITE_ROOTS_IMBUED_CHANCE.get();
+	}
+
+	private boolean isColoredGeneration() {
+		return nether ? WorldGenConfig.NETHER_SHINERITE_ROOTS_COLORED_GENERATION.get() : WorldGenConfig.SHINERITE_ROOTS_COLORED_GENERATION.get();
 	}
 }

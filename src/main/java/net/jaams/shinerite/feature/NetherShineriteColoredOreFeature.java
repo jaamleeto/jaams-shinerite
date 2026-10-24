@@ -22,13 +22,12 @@ public class NetherShineriteColoredOreFeature extends AbstractShineriteColoredOr
 
 	public NetherShineriteColoredOreFeature(Codec<NoneFeatureConfiguration> codec) {
 		super(codec, ModBlocks.NETHER_SHINERITE_ORE.get().defaultBlockState(), COLORS, WorldGenConfig.NETHER_SHINERITE_COLORED_ORE::get,
-				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_CHANCE::get, COLORED_CHANCE::get,
+				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_CHANCE::get, 0.5D,
+				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_IMBUED_CHANCE::get,
+				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_COLORED_GENERATION::get,
 				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_MIN_SIZE::get, WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_MAX_SIZE::get,
 				WorldGenConfig.NETHER_SHINERITE_COLORED_ORE_SPREAD::get);
 	}
-
-
-	private static final java.util.function.Supplier<Double> COLORED_CHANCE = () -> 0.5D;
 
 	@Override
 	protected boolean isValidGround(BlockState state) {

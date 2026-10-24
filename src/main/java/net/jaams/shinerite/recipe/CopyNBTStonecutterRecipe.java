@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.RegistryAccess;
 
 import net.jaams.shinerite.init.ModRecipes;
+import net.jaams.shinerite.util.ModUtils;
 
 public class CopyNBTStonecutterRecipe extends StonecutterRecipe {
 	public CopyNBTStonecutterRecipe(ResourceLocation id, String group, Ingredient ingredient, ItemStack result) {
@@ -41,6 +42,9 @@ public class CopyNBTStonecutterRecipe extends StonecutterRecipe {
 		if (color != -1) {
 			CompoundTag resultTag = resultStack.getOrCreateTag();
 			resultTag.putInt("color", color);
+		}
+		if (resultStack.hasTag()) {
+			ModUtils.reduceImbuementForOutput(resultStack, resultStack.getCount());
 		}
 		return resultStack;
 	}

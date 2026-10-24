@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="MIT"
+license="MIT License"
 
 [[mods]]
 modId="jaams_shinerite"

@@ -111,6 +111,8 @@ public class ModUtils {
 
 	public static final int IMBUE_FALLBACK_COLOR = 0xFFFFFF;
 
+	public static final int MIN_IMBUED_DURATION = 20;
+
 	public static final MobEffect[] NATURAL_IMBUE_EFFECTS = {
 		MobEffects.REGENERATION, MobEffects.LUCK, MobEffects.DIG_SPEED,
 		MobEffects.JUMP, MobEffects.POISON, MobEffects.HEAL,
@@ -1006,6 +1008,37 @@ public class ModUtils {
 
 	private static boolean isValidParticleColor(int color) {
 		return color != -1 && color >= 0 && color <= 0xFFFFFF;
+	}
+
+	public static void reduceImbuementForOutput(ItemStack stack, int outputCount) {
+		if (outputCount <= 1 || !stack.hasTag()) {
+			return;
+		}
+		CompoundTag tag = stack.getTag();
+		if (tag.contains("ImbuedEffects", Tag.TAG_LIST)) {
+			ListTag effects = tag.getList("ImbuedEffects", Tag.TAG_COMPOUND);
+			for (int i = 0; i < effects.size(); i++) {
+				CompoundTag effect = effects.getCompound(i);
+				if (effect.contains("Duration", Tag.TAG_ANY_NUMERIC)) {
+					int duration = effect.getInt("Duration");
+					if (duration > 0) {
+						effect.putInt("Duration", Math.max(MIN_IMBUED_DURATION, duration / outputCount));
+					} else {
+						effect.putInt("Duration", MIN_IMBUED_DURATION);
+					}
+				}
+			}
+		}
+		if (tag.contains("MaxImbuedUses", Tag.TAG_ANY_NUMERIC)) {
+			int maxUses = tag.getInt("MaxImbuedUses");
+			tag.putInt("MaxImbuedUses", Math.max(1, maxUses / outputCount));
+		}
+		if (tag.contains("ImbuedUses", Tag.TAG_ANY_NUMERIC)) {
+			int uses = tag.getInt("ImbuedUses");
+			int maxUses = tag.contains("MaxImbuedUses", Tag.TAG_ANY_NUMERIC) ? tag.getInt("MaxImbuedUses") : uses;
+			uses = Math.max(1, uses / outputCount);
+			tag.putInt("ImbuedUses", Math.min(uses, maxUses));
+		}
 	}
 
 	public static void removeImbuement(ItemStack stack) {

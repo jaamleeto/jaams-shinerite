@@ -297,6 +297,7 @@ public abstract class ItemTooltipHandler {
 		boolean shiftDown = Screen.hasShiftDown();
 		boolean altCtrl = altDown && ctrlDown;
 		TooltipContent content = detectContent(lines);
+		hideCapabilityBlock(lines, shiftDown);
 		removeLinesByKeyState(lines, altDown, ctrlDown, shiftDown, altCtrl, content);
 		if (altCtrl) {
 			reorganizeAltCtrl(lines);
@@ -407,7 +408,7 @@ public abstract class ItemTooltipHandler {
 	private static void addHintsOnlyIfMissing(List<Component> lines, TooltipContent content, TooltipVisibility visibility, boolean shiftDown) {
 		boolean advancedShown = visibility.visibleLongDesc || visibility.visiblePropertiesOrExtra;
 		List<Component> hintsToAdd = new ArrayList<>();
-		if (content.hasTrait && !shiftDown && !advancedShown && !hasAnyHintOfType(lines, "shift_details")) {
+		if ((content.hasTrait || content.hasCapability) && !shiftDown && !advancedShown && !hasAnyHintOfType(lines, "shift_details")) {
 			hintsToAdd.add(Component.translatable(SHIFT_HINT).withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
 		}
 		if (content.hasLongDesc && !visibility.visibleLongDesc && !hasAnyHintOfType(lines, "alt_desc")) {
@@ -465,7 +466,7 @@ public abstract class ItemTooltipHandler {
 	}
 
 	private static TooltipContent detectContent(List<Component> lines) {
-		boolean hasTrait = false, hasLongDesc = false, hasPropertiesOrExtra = false;
+		boolean hasTrait = false, hasLongDesc = false, hasPropertiesOrExtra = false, hasCapability = false;
 		for (Component line : lines) {
 			String key = getKey(line);
 			if (key == null || !isOurKey(key))
@@ -476,8 +477,28 @@ public abstract class ItemTooltipHandler {
 				hasLongDesc = true;
 			if (key.contains("properties") || key.contains("extra"))
 				hasPropertiesOrExtra = true;
+			if (key.contains(".capability."))
+				hasCapability = true;
 		}
-		return new TooltipContent(hasTrait, hasLongDesc, hasPropertiesOrExtra);
+		return new TooltipContent(hasTrait, hasLongDesc, hasPropertiesOrExtra, hasCapability);
+	}
+
+	private static void hideCapabilityBlock(List<Component> lines, boolean shiftDown) {
+		if (shiftDown)
+			return;
+		int i = 0;
+		while (i < lines.size()) {
+			String key = getKey(lines.get(i));
+			if (key != null && isOurKey(key) && key.contains(".capability.")) {
+				if (i > 0 && lines.get(i - 1).getString().isEmpty() && getKey(lines.get(i - 1)) == null) {
+					lines.remove(i - 1);
+					i--;
+				}
+				lines.remove(i);
+				continue;
+			}
+			i++;
+		}
 	}
 
 	private static void removeLinesByKeyState(List<Component> lines, boolean altDown, boolean ctrlDown, boolean shiftDown, boolean altCtrl, TooltipContent content) {
@@ -756,7 +777,7 @@ public abstract class ItemTooltipHandler {
 		return key.contains("trait.") || key.endsWith(".long_desc") || key.contains("properties") || key.contains("extra");
 	}
 
-	private record TooltipContent(boolean hasTrait, boolean hasLongDesc, boolean hasPropertiesOrExtra) {
+	private record TooltipContent(boolean hasTrait, boolean hasLongDesc, boolean hasPropertiesOrExtra, boolean hasCapability) {
 	}
 
 	private record TooltipVisibility(boolean visibleTrait, boolean visibleLongDesc, boolean visiblePropertiesOrExtra) {
