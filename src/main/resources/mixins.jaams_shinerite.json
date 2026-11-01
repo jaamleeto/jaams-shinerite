@@ -25,7 +25,8 @@
     "mob.VexMixin",
     "mob.PiglinMixin",
     "mob.PiglinBruteMixin",
-    "mob.PiglinAiMixin"
+    "mob.PiglinAiMixin",
+    "mob.ZombifiedPiglinMixin"
   ],
   "client": [
     "client.ParticleAccessor",

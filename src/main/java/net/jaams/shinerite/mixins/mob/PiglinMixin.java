@@ -18,7 +18,9 @@ public abstract class PiglinMixin {
         Piglin self = (Piglin) (Object) this;
         RandomSource random = self.getRandom();
         if (EquipmentModifierLoader.INSTANCE.applySpawnEquipment(self, random)) {
-            cir.setReturnValue(ItemStack.EMPTY);
+            if (!self.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).isEmpty()) {
+                cir.setReturnValue(self.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+            }
         }
     }
 }

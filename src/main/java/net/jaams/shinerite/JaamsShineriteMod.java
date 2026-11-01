@@ -39,6 +39,7 @@ import net.jaams.shinerite.init.ModParticles;
 import net.jaams.shinerite.packet.GlowColorPacket;
 import net.jaams.shinerite.packet.CustomJukeboxPacket;
 import net.jaams.shinerite.network.SyncModDataMessage;
+import net.jaams.shinerite.network.CommonConfigSyncMessage;
 
 import net.jaams.shinerite.init.ModSounds;
 import net.jaams.shinerite.init.ModItems;
@@ -108,6 +109,7 @@ public class JaamsShineriteMod {
 		addNetworkMessage(GlowColorPacket.class, GlowColorPacket::encode, GlowColorPacket::decode, GlowColorPacket::handle);
 		addNetworkMessage(CustomJukeboxPacket.class, CustomJukeboxPacket::encode, CustomJukeboxPacket::decode, CustomJukeboxPacket::handle);
 		addNetworkMessage(SyncModDataMessage.class, SyncModDataMessage::encode, SyncModDataMessage::decode, SyncModDataMessage::handle);
+		addNetworkMessage(CommonConfigSyncMessage.class, CommonConfigSyncMessage::encode, CommonConfigSyncMessage::decode, CommonConfigSyncMessage::handle);
 	}
 
 	private static final String PROTOCOL_VERSION = "1";
