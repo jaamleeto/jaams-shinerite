@@ -6,7 +6,9 @@
   "priority": 4,
   "condition_mode": "and",
   "global_chance": 0.15,
-  "conditions": [],
+  "conditions": [
+    { "type": "is_baby", "negate": true }
+  ],
   "items": [
     {
       "item": "jaams_shinerite:shinerite_sword",
