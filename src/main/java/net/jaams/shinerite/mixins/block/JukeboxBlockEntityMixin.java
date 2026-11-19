@@ -4,7 +4,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Mixin;
 
 
@@ -18,7 +17,6 @@ import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 
 import net.jaams.shinerite.packet.CustomJukeboxPacket;
@@ -30,13 +28,8 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 	private ItemStack syncedItem = ItemStack.EMPTY;
 	private long sequenceId = 0;
 	private long lastChangeTime = 0;
+	private long shinyRecordStartTick = -1L;
 	private static final long DEBOUNCE_TIME = 100;
-	@Shadow
-	private long tickCount;
-	@Shadow
-	private long recordStartedTick;
-	@Shadow
-	private NonNullList<ItemStack> items;
 
 	protected JukeboxBlockEntityMixin(BlockPos pos, BlockState state) {
 		super(null, pos, state);
@@ -52,13 +45,22 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 
 	@Inject(method = "shouldRecordStopPlaying", at = @At("HEAD"), cancellable = true)
 	private void customShinyDiscDuration(RecordItem recordItem, CallbackInfoReturnable<Boolean> cir) {
-		ItemStack stack = this.items.get(0);
-		if (!stack.isEmpty() && stack.getItem() instanceof MusicDiscShinyItem shinyDisc) {
+		JukeboxBlockEntity jukebox = (JukeboxBlockEntity) (Object) this;
+		ItemStack stack = jukebox.getItem(0);
+		if (!stack.isEmpty() && stack.getItem() instanceof MusicDiscShinyItem shinyDisc && this.level != null && this.shinyRecordStartTick >= 0L) {
 			int color = shinyDisc.getColor(stack);
 			String colorCategory = getColorCategory(color);
 			int customLengthTicks = getLengthForCategory(colorCategory);
-			boolean shouldStop = this.tickCount >= this.recordStartedTick + customLengthTicks + 20L;
+			long currentTick = this.level.getGameTime();
+			boolean shouldStop = currentTick >= this.shinyRecordStartTick + customLengthTicks + 20L;
 			cir.setReturnValue(shouldStop);
+		}
+	}
+
+	@Inject(method = "startPlaying", at = @At("TAIL"))
+	private void onStartPlaying(CallbackInfo ci) {
+		if (this.level != null) {
+			this.shinyRecordStartTick = this.level.getGameTime();
 		}
 	}
 
@@ -124,6 +126,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 	private void onSetItem(int index, ItemStack stack, CallbackInfo ci) {
 		if (index == 0 && this.level != null && !this.level.isClientSide) {
 			this.syncedItem = stack.copy();
+			this.shinyRecordStartTick = stack.isEmpty() ? -1L : this.level.getGameTime();
 			this.sequenceId++;
 			this.setChanged();
 			sendSyncPacket();
@@ -134,6 +137,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 	private void onRemoveItem(int index, int count, CallbackInfoReturnable<ItemStack> cir) {
 		if (index == 0 && this.level != null && !this.level.isClientSide) {
 			this.syncedItem = ItemStack.EMPTY;
+			this.shinyRecordStartTick = -1L;
 			this.sequenceId++;
 			this.setChanged();
 			sendSyncPacket();
@@ -150,6 +154,11 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 		if (tag.contains("SequenceId", 4)) {
 			this.sequenceId = tag.getLong("SequenceId");
 		}
+		if (tag.contains("ShinyRecordStartTick", 4)) {
+			this.shinyRecordStartTick = tag.getLong("ShinyRecordStartTick");
+		} else {
+			this.shinyRecordStartTick = this.syncedItem.isEmpty() ? -1L : this.level != null ? this.level.getGameTime() : -1L;
+		}
 		if (this.level != null && !this.level.isClientSide) {
 			sendSyncPacket();
 		}
@@ -158,6 +167,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 	@Inject(method = "saveAdditional(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("TAIL"))
 	private void onSaveAdditional(CompoundTag tag, CallbackInfo ci) {
 		tag.putLong("SequenceId", this.sequenceId);
+		tag.putLong("ShinyRecordStartTick", this.shinyRecordStartTick);
 	}
 
 	@Inject(method = "popOutRecord", at = @At("HEAD"), cancellable = true)

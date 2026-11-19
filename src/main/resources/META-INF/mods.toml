@@ -19,6 +19,13 @@ issueTrackerURL="https://github.com/jaamleeto/jaams-shinerite/issues"
     ordering="AFTER"
     side="BOTH"
 
+[[dependencies.jaams_shinerite]]
+    modId="v_slab_compat"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
 [modproperties."jaams_shinerite"]
 catalogueItemIcon="jaams_shinerite:shinerite_ingot"
 catalogueBackground="jaams_shinerite_background.png"
@@ -27,3 +34,11 @@ configuredBackground="minecraft:textures/block/deepslate.png"
 [[mixins]]
 config="mixins.jaams_shinerite.epicfight.json"
 requiredMods=["epicfight"]
+
+[[mixins]]
+config="mixins.jaams_shinerite.amendments.json"
+requiredMods=["amendments"]
+
+[[mixins]]
+config="mixins.jaams_shinerite.moonlight.json"
+requiredMods=["moonlight"]

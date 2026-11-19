@@ -1,17 +1,21 @@
 package net.jaams.shinerite.handler.event;
 
+import com.mojang.datafixers.util.Either;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.api.distmarker.Dist;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
@@ -302,12 +306,39 @@ public abstract class ItemTooltipHandler {
 		if (altCtrl) {
 			reorganizeAltCtrl(lines);
 		}
+		reorganizePropertiesByColor(lines);
 		removeOurHints(lines);
 		TooltipVisibility visibility = detectVisibility(lines);
+		collapseExtraBlankLines(lines);
 		addSpacingAfterLastSpecialLine(lines);
 		addHintsOnlyIfMissing(lines, content, visibility, shiftDown);
 		addSpacingBetweenInfoCategories(event);
 		addSpacingOnlyBetweenLongDescAndProperties(event);
+		collapseExtraBlankLines(lines);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onGatherTooltipComponents(RenderTooltipEvent.GatherComponents event) {
+		if (event.isCanceled())
+			return;
+		List<Either<FormattedText, TooltipComponent>> elements = event.getTooltipElements();
+		if (!(elements instanceof ArrayList<Either<FormattedText, TooltipComponent>>))
+			return;
+		int i = 1;
+		while (i < elements.size()) {
+			if (isBlankTooltipElement(elements.get(i)) && isBlankTooltipElement(elements.get(i - 1))) {
+				elements.remove(i);
+			} else {
+				i++;
+			}
+		}
+		while (!elements.isEmpty() && isBlankTooltipElement(elements.get(elements.size() - 1))) {
+			elements.remove(elements.size() - 1);
+		}
+	}
+
+	private static boolean isBlankTooltipElement(Either<FormattedText, TooltipComponent> element) {
+		return element.left().map(text -> text.getString().isEmpty()).orElse(false);
 	}
 
 	private static void restoreModTooltipsClearedByEpicFight(ItemTooltipEvent event, List<Component> lines) {
@@ -405,6 +436,17 @@ public abstract class ItemTooltipHandler {
 		});
 	}
 
+	private static void collapseExtraBlankLines(List<Component> lines) {
+		for (int i = lines.size() - 1; i > 0; i--) {
+			if (lines.get(i).getString().isEmpty() && lines.get(i - 1).getString().isEmpty()) {
+				lines.remove(i);
+			}
+		}
+		while (lines.size() > 1 && lines.get(lines.size() - 1).getString().isEmpty()) {
+			lines.remove(lines.size() - 1);
+		}
+	}
+
 	private static void addHintsOnlyIfMissing(List<Component> lines, TooltipContent content, TooltipVisibility visibility, boolean shiftDown) {
 		boolean advancedShown = visibility.visibleLongDesc || visibility.visiblePropertiesOrExtra;
 		List<Component> hintsToAdd = new ArrayList<>();
@@ -419,7 +461,8 @@ public abstract class ItemTooltipHandler {
 		}
 		if (!hintsToAdd.isEmpty()) {
 			long realLines = lines.stream().skip(1).filter(line -> getKey(line) == null || !isHintKey(getKey(line))).count();
-			if (realLines > 0) {
+			boolean lastLineIsBlank = !lines.isEmpty() && lines.get(lines.size() - 1).getString().isEmpty();
+			if (realLines > 0 && !lastLineIsBlank) {
 				lines.add(Component.literal(""));
 			}
 			lines.addAll(hintsToAdd);
@@ -561,6 +604,84 @@ public abstract class ItemTooltipHandler {
 		if (!block.isEmpty()) {
 			lines.addAll(1, block);
 		}
+	}
+
+	private static void reorganizePropertiesByColor(List<Component> lines) {
+		List<Integer> starts = new ArrayList<>();
+		List<Integer> ends = new ArrayList<>();
+		List<Integer> priorities = new ArrayList<>();
+		int i = 1;
+		while (i < lines.size()) {
+			String key = getKey(lines.get(i));
+			if (key == null || !isOurKey(key) || !isCategoryHeaderKey(key) || key.contains("trait.")) {
+				i++;
+				continue;
+			}
+			ChatFormatting headerColor = getDominantColor(lines.get(i));
+			if (headerColor != ChatFormatting.GOLD && headerColor != ChatFormatting.YELLOW && headerColor != ChatFormatting.RED) {
+				i++;
+				continue;
+			}
+			int start = i;
+			int end = start + 1;
+			while (end < lines.size()) {
+				Component line = lines.get(end);
+				String lineKey = getKey(line);
+				if (lineKey != null && isOurKey(lineKey)) {
+					if (lineKey.contains("trait.")) {
+						break;
+					}
+					if (isCategoryHeaderKey(lineKey)) {
+						ChatFormatting lineColor = getDominantColor(line);
+						if (lineColor == ChatFormatting.GOLD || lineColor == ChatFormatting.YELLOW || lineColor == ChatFormatting.RED) {
+							break;
+						}
+					} else {
+						break;
+					}
+				} else if (!line.getString().isEmpty()) {
+					break;
+				}
+				end++;
+			}
+			starts.add(start);
+			ends.add(end);
+			priorities.add(getPropertiesCategoryPriority(headerColor));
+			i = end;
+		}
+		if (starts.size() < 2)
+			return;
+		List<Integer> order = new ArrayList<>();
+		for (int b = 0; b < starts.size(); b++) {
+			order.add(b);
+		}
+		order.sort((a, b) -> Integer.compare(priorities.get(a), priorities.get(b)));
+		int insertIndex = Collections.min(starts);
+		List<List<Component>> blocks = new ArrayList<>();
+		for (int b = 0; b < starts.size(); b++) {
+			blocks.add(new ArrayList<>(lines.subList(starts.get(b), ends.get(b))));
+		}
+		for (int b = blocks.size() - 1; b >= 0; b--) {
+			lines.subList(starts.get(b), ends.get(b)).clear();
+		}
+		int offset = 0;
+		for (int b : order) {
+			List<Component> block = blocks.get(b);
+			lines.addAll(insertIndex + offset, block);
+			offset += block.size();
+		}
+	}
+
+	private static int getPropertiesCategoryPriority(ChatFormatting color) {
+		if (color == ChatFormatting.GOLD)
+			return 1;
+		if (color == ChatFormatting.YELLOW)
+			return 2;
+		if (color == ChatFormatting.AQUA)
+			return 3;
+		if (color == ChatFormatting.RED)
+			return 5;
+		return 4;
 	}
 
 	private static TooltipVisibility detectVisibility(List<Component> lines) {
@@ -735,18 +856,16 @@ public abstract class ItemTooltipHandler {
 	}
 
 	private static int getTraitPriority(int colorValue) {
-		if (colorValue == -1)
-			return 5;
 		if (colorValue == ChatFormatting.GOLD.getColor()) {
 			return 1;
 		}
-		if (colorValue == ChatFormatting.RED.getColor()) {
+		if (colorValue == ChatFormatting.YELLOW.getColor()) {
 			return 2;
 		}
-		if (colorValue == ChatFormatting.YELLOW.getColor()) {
+		if (colorValue == ChatFormatting.AQUA.getColor()) {
 			return 3;
 		}
-		if (colorValue == ChatFormatting.AQUA.getColor()) {
+		if (colorValue == ChatFormatting.RED.getColor()) {
 			return 5;
 		}
 		return 4;
