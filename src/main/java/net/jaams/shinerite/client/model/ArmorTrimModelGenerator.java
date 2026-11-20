@@ -33,7 +33,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.jaams.shinerite.JaamsShineriteMod;
 import net.jaams.shinerite.item.ShineriteArmorItem;
 import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
-import net.jaams.shinerite.util.ShineriteTrimSupport;
+import net.jaams.shinerite.trim.ShineriteTrimSupport;
 
 
 

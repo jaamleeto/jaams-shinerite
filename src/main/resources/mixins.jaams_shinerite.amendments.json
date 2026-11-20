@@ -4,10 +4,10 @@
     "compatibilityLevel": "JAVA_17",
     "refmap": "mixins.jaams_shinerite.refmap.json",
     "mixins": [
-        "compat.LiquidCauldronBlockTileMixin"
+        "compat.amendments.LiquidCauldronBlockTileMixin"
     ],
     "client": [
-        "compat.AmendmentsJukeboxTileRendererMixin"
+        "compat.amendments.AmendmentsJukeboxTileRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

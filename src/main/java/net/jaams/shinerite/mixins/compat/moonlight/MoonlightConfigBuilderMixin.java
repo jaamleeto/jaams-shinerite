@@ -1,4 +1,4 @@
-package net.jaams.shinerite.mixins.compat;
+package net.jaams.shinerite.mixins.compat.moonlight;
 
 import java.util.Map;
 

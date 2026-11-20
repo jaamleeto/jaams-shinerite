@@ -13,6 +13,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.NonNullList;
 
 import net.jaams.shinerite.util.ModUtils;
+import net.jaams.shinerite.compat.WaxedCompat;
 import net.jaams.shinerite.init.ModRecipes;
 import net.jaams.shinerite.configuration.common.RecipesConfig;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
@@ -48,7 +49,7 @@ public class CoatItemRecipe extends CustomRecipe {
 
 	private boolean matchesBulkMode(CraftingContainer container) {
 		ItemStack center = container.getItem(4);
-		if (!center.is(Items.HONEYCOMB)) {
+		if (!WaxedCompat.isCoatingAgent(center)) {
 			return false;
 		}
 		Item referenceItem = null;
@@ -77,7 +78,7 @@ public class CoatItemRecipe extends CustomRecipe {
 
 	private boolean matchesFreeMode(CraftingContainer container) {
 		ItemStack coatableItem = ItemStack.EMPTY;
-		int honeycombCount = 0;
+		int coatingCount = 0;
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 			if (stack.isEmpty())
@@ -88,13 +89,13 @@ public class CoatItemRecipe extends CustomRecipe {
 				if (!isValidCoatableStack(stack))
 					return false;
 				coatableItem = stack;
-			} else if (stack.is(Items.HONEYCOMB)) {
-				honeycombCount += stack.getCount();
+			} else if (WaxedCompat.isCoatingAgent(stack)) {
+				coatingCount += stack.getCount();
 			} else {
 				return false;
 			}
 		}
-		return !coatableItem.isEmpty() && honeycombCount >= 1;
+		return !coatableItem.isEmpty() && coatingCount >= 1;
 	}
 
 	private boolean isValidCoatableStack(ItemStack stack) {
@@ -150,21 +151,21 @@ public class CoatItemRecipe extends CustomRecipe {
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
 		NonNullList<ItemStack> remaining = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
 		if (RecipesConfig.COAT_ITEM_RECIPE_FREE_MODE.get() && matchesFreeMode(container)) {
-			int totalHoneycombCount = 0;
-			List<Integer> honeycombPositions = new ArrayList<>();
+			int totalCoatingCount = 0;
+			List<Integer> coatingPositions = new ArrayList<>();
 			for (int i = 0; i < container.getContainerSize(); i++) {
 				ItemStack stack = container.getItem(i);
-				if (stack.is(Items.HONEYCOMB)) {
-					totalHoneycombCount += stack.getCount();
+				if (WaxedCompat.isCoatingAgent(stack)) {
+					totalCoatingCount += stack.getCount();
 					if (stack.getCount() == 1) {
-						honeycombPositions.add(i);
+						coatingPositions.add(i);
 					}
 				}
 			}
-			int honeycombsToReturn = totalHoneycombCount - 1;
-			for (int i = 0; i < honeycombsToReturn && !honeycombPositions.isEmpty(); i++) {
-				int pos = honeycombPositions.remove(0);
-				remaining.set(pos, new ItemStack(Items.HONEYCOMB));
+			int coatingsToReturn = totalCoatingCount - 1;
+			for (int i = 0; i < coatingsToReturn && !coatingPositions.isEmpty(); i++) {
+				int pos = coatingPositions.remove(0);
+				remaining.set(pos, new ItemStack(container.getItem(pos).getItem()));
 			}
 		}
 		return remaining;

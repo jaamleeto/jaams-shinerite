@@ -1,4 +1,4 @@
-package net.jaams.shinerite.mixins.compat;
+package net.jaams.shinerite.mixins.compat.supplementaries;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

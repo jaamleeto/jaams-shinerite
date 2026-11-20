@@ -40,6 +40,20 @@ issueTrackerURL="https://github.com/jaamleeto/jaams-shinerite/issues"
     ordering="AFTER"
     side="CLIENT"
 
+[[dependencies.jaams_shinerite]]
+    modId="paintable"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.jaams_shinerite]]
+    modId="waxed"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
 [modproperties."jaams_shinerite"]
 catalogueItemIcon="jaams_shinerite:shinerite_ingot"
 catalogueBackground="jaams_shinerite_background.png"

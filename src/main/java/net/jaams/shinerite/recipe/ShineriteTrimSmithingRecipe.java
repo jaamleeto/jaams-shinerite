@@ -24,7 +24,7 @@ import net.minecraftforge.common.ForgeHooks;
 
 import net.jaams.shinerite.dyeable.IDyeableItem;
 import net.jaams.shinerite.init.ModRecipes;
-import net.jaams.shinerite.util.ShineriteTrimSupport;
+import net.jaams.shinerite.trim.ShineriteTrimSupport;
 
 public class ShineriteTrimSmithingRecipe implements SmithingRecipe {
 	public static final String TAG_TRIM_COLOR = "shinerite_trim_color";

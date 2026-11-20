@@ -1,107 +1,80 @@
 package net.jaams.shinerite.compat;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.ModList;
 
+import net.jaams.combat.capability.backitem.BackItemProvider;
+import net.jaams.combat.capability.backitem.IBackItem;
+import net.jaams.combat.keybind.BackItemSyncMessage;
+
+/**
+ * Jaam's Combat back-slot compatibility.
+ *
+ * <p>Bridge class following the same pattern as the other mods' compat classes:
+ * no reflection is used. All direct references to Jaam's Combat live in
+ * {@link BackItemImpl}, which is loaded lazily only after {@link #isAvailable()}
+ * succeeds, and every public entry point is wrapped in a {@code Throwable} catch
+ * so the mod can safely be absent or mismatched.</p>
+ */
 public final class BackItemCompat {
-	private static final String PROVIDER_CLASS = "net.jaams.combat.capability.backitem.BackItemProvider";
-	private static final String BACK_ITEM_CLASS = "net.jaams.combat.capability.backitem.IBackItem";
-	private static final String SYNC_CLASS = "net.jaams.combat.keybind.BackItemSyncMessage";
 
-	private static boolean resolved;
-	private static Capability<?> capability;
-	private static Method getBackItemMethod;
-	private static Method setBackItemMethod;
-	private static Method syncFullMethod;
+	public static final String MOD_ID = "jaams_combat";
+
+	private static Boolean loaded;
 
 	private BackItemCompat() {
 	}
 
+	/** Cheap presence check that never touches an optional class. */
 	public static boolean isAvailable() {
-		resolve();
-		return capability != null;
+		if (loaded == null) {
+			try {
+				loaded = ModList.get() != null && ModList.get().isLoaded(MOD_ID);
+			} catch (Throwable t) {
+				loaded = false;
+			}
+		}
+		return loaded;
 	}
 
 	public static ItemStack getBackItem(LivingEntity entity) {
-		if (entity == null) {
-			return ItemStack.EMPTY;
-		}
-		Object impl = getImpl(entity);
-		if (impl == null) {
+		if (!isAvailable() || entity == null) {
 			return ItemStack.EMPTY;
 		}
 		try {
-			Object result = getBackItemMethod.invoke(impl);
-			return result instanceof ItemStack stack ? stack : ItemStack.EMPTY;
-		} catch (ReflectiveOperationException e) {
+			return BackItemImpl.getBackItem(entity);
+		} catch (Throwable t) {
 			return ItemStack.EMPTY;
 		}
 	}
 
 	public static void setBackItem(LivingEntity entity, ItemStack stack) {
-		if (entity == null || stack == null) {
-			return;
-		}
-		Object impl = getImpl(entity);
-		if (impl == null) {
+		if (!isAvailable() || entity == null || stack == null) {
 			return;
 		}
 		try {
-			setBackItemMethod.invoke(impl, stack);
-			syncToClients(entity);
-		} catch (ReflectiveOperationException ignored) {
+			BackItemImpl.setBackItem(entity, stack);
+		} catch (Throwable t) {
+			// Optional compat: never break the caller when the back slot is unavailable.
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Object getImpl(LivingEntity entity) {
-		resolve();
-		if (capability == null) {
-			return null;
-		}
-		LazyOptional<Object> optional = entity.getCapability((Capability<Object>) capability);
-		return optional.orElse(null);
-	}
+	/** All direct Jaam's Combat references are isolated in this lazily loaded class. */
+	private static final class BackItemImpl {
 
-	private static void syncToClients(LivingEntity entity) {
-		if (syncFullMethod == null) {
-			return;
+		static ItemStack getBackItem(LivingEntity entity) {
+			return entity.getCapability(BackItemProvider.BACK_ITEM)
+					.map(IBackItem::getBackItem)
+					.orElse(ItemStack.EMPTY);
 		}
-		try {
-			syncFullMethod.invoke(null, entity);
-		} catch (ReflectiveOperationException ignored) {
-		}
-	}
 
-	private static void resolve() {
-		if (resolved) {
-			return;
-		}
-		resolved = true;
-		try {
-			Class<?> providerClass = Class.forName(PROVIDER_CLASS);
-			Field capabilityField = providerClass.getField("BACK_ITEM");
-			capability = (Capability<?>) capabilityField.get(null);
-
-			Class<?> backItemInterface = Class.forName(BACK_ITEM_CLASS);
-			getBackItemMethod = backItemInterface.getMethod("getBackItem");
-			setBackItemMethod = backItemInterface.getMethod("setBackItem", ItemStack.class);
-		} catch (ReflectiveOperationException | LinkageError e) {
-			capability = null;
-			getBackItemMethod = null;
-			setBackItemMethod = null;
-		}
-		try {
-			Class<?> syncClass = Class.forName(SYNC_CLASS);
-			syncFullMethod = syncClass.getMethod("syncFull", LivingEntity.class);
-		} catch (ReflectiveOperationException | LinkageError e) {
-			syncFullMethod = null;
+		static void setBackItem(LivingEntity entity, ItemStack stack) {
+			entity.getCapability(BackItemProvider.BACK_ITEM).ifPresent(backItem -> {
+				backItem.setBackItem(stack);
+				BackItemSyncMessage.syncFull(entity);
+			});
 		}
 	}
 }

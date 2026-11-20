@@ -15,6 +15,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,6 +33,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
+import net.jaams.shinerite.compat.PaintableCompat;
+import net.jaams.shinerite.compat.WaxedCompat;
 import net.jaams.shinerite.compat.SupplementariesCompat;
 import net.jaams.shinerite.util.ModTags;
 import net.jaams.shinerite.util.ModUtils;
@@ -75,10 +78,10 @@ public class InteractionHandler {
 			return;
 		}
 		if (MechanicsConfig.COATING.get() && InteractionsConfig.HAND_COATING.get()) {
-			if (isCoatableItemExtended(mainHandStack) && offHandStack.is(Items.HONEYCOMB)) {
+			if (isCoatableItemExtended(mainHandStack) && WaxedCompat.isCoatingAgent(offHandStack)) {
 				handleCoatedInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 				return;
-			} else if (isCoatableItemExtended(offHandStack) && mainHandStack.is(Items.HONEYCOMB)) {
+			} else if (isCoatableItemExtended(offHandStack) && WaxedCompat.isCoatingAgent(mainHandStack)) {
 				handleCoatedInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				return;
 			}
@@ -99,14 +102,16 @@ public class InteractionHandler {
 			boolean dyeWithBrush = InteractionsConfig.HAND_DYEING_BRUSH.get();
 			if ((dyeWithDyeItem || dyeWithBrush)) {
 				if (ModUtils.isDyeableItem(mainHandStack) && !ModUtils.isImbued(mainHandStack) && !ModUtils.isCoated(mainHandStack)) {
-					boolean validSecondary = (dyeWithDyeItem && offHandStack.getItem() instanceof DyeItem) || (dyeWithBrush && offHandStack.getItem() instanceof ShinyPaintBrushItem);
+					boolean validSecondary = (dyeWithDyeItem && offHandStack.getItem() instanceof DyeItem)
+							|| (dyeWithBrush && (offHandStack.getItem() instanceof ShinyPaintBrushItem || PaintableCompat.isPaintBrush(offHandStack)));
 					if (validSecondary) {
 						handleDyeingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
 						return;
 					}
 				}
 				if (ModUtils.isDyeableItem(offHandStack) && !ModUtils.isImbued(offHandStack) && !ModUtils.isCoated(offHandStack)) {
-					boolean validSecondary = (dyeWithDyeItem && mainHandStack.getItem() instanceof DyeItem) || (dyeWithBrush && mainHandStack.getItem() instanceof ShinyPaintBrushItem);
+					boolean validSecondary = (dyeWithDyeItem && mainHandStack.getItem() instanceof DyeItem)
+							|| (dyeWithBrush && (mainHandStack.getItem() instanceof ShinyPaintBrushItem || PaintableCompat.isPaintBrush(mainHandStack)));
 					if (validSecondary) {
 						handleDyeingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 						return;
@@ -171,12 +176,12 @@ public class InteractionHandler {
 		}
 	}
 
-	private static void handleCoatedInteraction(Level level, Player player, ItemStack shineriteStack, ItemStack honeycombStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
+	private static void handleCoatedInteraction(Level level, Player player, ItemStack shineriteStack, ItemStack coatingStack, InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
 		if (ModUtils.isCoated(shineriteStack)) {
 			return;
 		}
 		cancelEvent(event, level);
-		handleItemInteraction(level, player, shineriteStack, honeycombStack, hand, (targetItem) -> {
+		handleItemInteraction(level, player, shineriteStack, coatingStack, hand, (targetItem) -> {
 			targetItem.getOrCreateTag().putBoolean("Coated", true);
 			level.playSound(null, player.blockPosition(), SoundEvents.HONEYCOMB_WAX_ON, SoundSource.PLAYERS, 1.0F, 1.0F);
 			generateParticles(level, player, hand, ParticleTypes.WAX_ON, 5, 0.3, 0.3, 0.3, 0.05);
@@ -214,6 +219,15 @@ public class InteractionHandler {
 			if (ModUtils.getCurrentColor(shineriteStack) == dyeColor) {
 				return;
 			}
+		} else if (PaintableCompat.isPaintBrush(dyeStack)) {
+			DyeColor brushColor = PaintableCompat.getBrushColor(dyeStack);
+			if (brushColor == null) {
+				return;
+			}
+			dyeColor = ModUtils.calculateDyeColor(ModUtils.getCurrentColor(shineriteStack), brushColor);
+			if (ModUtils.getCurrentColor(shineriteStack) == dyeColor) {
+				return;
+			}
 		} else {
 			return;
 		}
@@ -226,6 +240,11 @@ public class InteractionHandler {
 		if (!player.isCreative()) {
 			if (dyeStack.getItem() instanceof ShinyPaintBrushItem) {
 				dyeStack.hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND));
+			} else if (PaintableCompat.isPaintBrush(dyeStack)) {
+				if (!level.isClientSide()) {
+					InteractionHand brushHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+					PaintableCompat.consumePaint(level, player, dyeStack, brushHand);
+				}
 			} else {
 				dyeStack.shrink(1);
 			}
@@ -401,7 +420,7 @@ public class InteractionHandler {
 				resultStack = targetStack.split(1);
 			}
 			processor.process(resultStack);
-			if (!player.isCreative() && !(secondaryStack.getItem() instanceof ShinyScraperItem) && !(secondaryStack.getItem() instanceof ShinyPaintBrushItem)) {
+			if (!player.isCreative() && !(secondaryStack.getItem() instanceof ShinyScraperItem) && !(secondaryStack.getItem() instanceof ShinyPaintBrushItem) && !PaintableCompat.isPaintBrush(secondaryStack)) {
 				secondaryStack.shrink(1);
 			}
 			handleResultStack(player, targetStack, resultStack, originalSlot, isSingleItem);

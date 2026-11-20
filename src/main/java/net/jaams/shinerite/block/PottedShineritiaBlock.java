@@ -48,6 +48,7 @@ import net.jaams.shinerite.init.ModItems;
 import net.jaams.shinerite.item.ShinyPaintBrushItem;
 import net.jaams.shinerite.item.ShinyScraperItem;
 import net.jaams.shinerite.util.ModUtils;
+import net.jaams.shinerite.compat.WaxedCompat;
 
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				ModUtils.generateCoatedRemovalParticles(world, pos, state, world.random);
 				return InteractionResult.SUCCESS;
 			}
-			if (item instanceof ShinyPaintBrushItem || item instanceof DyeItem || item == Items.HONEYCOMB || item == Items.INK_SAC || item == Items.GLOW_INK_SAC) {
+			if (item instanceof ShinyPaintBrushItem || item instanceof DyeItem || WaxedCompat.isCoatingAgent(itemstack) || item == Items.INK_SAC || item == Items.GLOW_INK_SAC) {
 				long currentTime = world.getGameTime();
 				if (currentTime - blockEntity.getLastCoatedParticleTime() >= 30) {
 					ModUtils.generateCoatedParticles(world, pos, state, world.random);
@@ -191,7 +192,7 @@ public class PottedShineritiaBlock extends FlowerPotBlock implements EntityBlock
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_COATING.get() && item == Items.HONEYCOMB) {
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_COATING.get() && WaxedCompat.isCoatingAgent(itemstack)) {
 			blockEntity.setCoated(true);
 			if (!player.isCreative()) {
 				ModUtils.reduceItemStack(player, itemstack);

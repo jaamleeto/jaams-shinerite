@@ -5,7 +5,7 @@
     "refmap": "mixins.jaams_shinerite.refmap.json",
     "mixins": [],
     "client": [
-        "compat.PunchyArmorRenderMixin"
+        "compat.punchy.PunchyArmorRenderMixin"
     ],
     "injectors": {
         "defaultRequire": 1

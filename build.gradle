@@ -76,6 +76,14 @@ dependencies {
 
     implementation fg.deobf("curse.maven:supplementaries-412082:9635391")
 
+    implementation fg.deobf("curse.maven:paintable-1535398:8047810")
+    implementation fg.deobf("curse.maven:waxed-and-shiny-1382972:7757455")
+
+    // Jaam's Combat is optional at runtime. BackItemCompat references its API only
+    // from a nested impl class that is loaded after the mod-presence check, so a
+    // compileOnly dependency is enough (and keeps the mod off the runtime classpath).
+    compileOnly fileTree(dir: "../jaams_combat_1.20.1/build/libs", include: "jaams_combat-*.jar")
+
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.8")
 }
 

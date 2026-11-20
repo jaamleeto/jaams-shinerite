@@ -22,8 +22,6 @@ public class EquipmentModifierHandler {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof Mob mob)) return;
 
-        if (EquipmentModifierLoader.INSTANCE.getForEntityType(mob.getType()).isEmpty()) return;
-
-        EquipmentModifierLoader.INSTANCE.applySpawnEquipment(mob, mob.getRandom());
+        EquipmentModifierLoader.INSTANCE.applySpawnEquipmentOnce(mob, mob.getRandom());
     }
 }

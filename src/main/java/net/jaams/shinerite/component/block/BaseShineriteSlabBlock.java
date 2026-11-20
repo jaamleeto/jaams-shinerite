@@ -49,6 +49,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 
 import net.jaams.shinerite.util.ModUtils;
+import net.jaams.shinerite.compat.WaxedCompat;
 import net.jaams.shinerite.particle.CustomEffectParticleData;
 import net.jaams.shinerite.item.ShinyScraperItem;
 import net.jaams.shinerite.item.ShinyPaintBrushItem;
@@ -188,7 +189,7 @@ public class BaseShineriteSlabBlock extends SlabBlock implements EntityBlock {
 				ModUtils.generateCoatedRemovalParticles(world, pos, state, world.random);
 				return InteractionResult.SUCCESS;
 			}
-			if (item instanceof ShinyPaintBrushItem || item instanceof DyeItem || item == Items.HONEYCOMB || item == Items.INK_SAC || item == Items.GLOW_INK_SAC) {
+			if (item instanceof ShinyPaintBrushItem || item instanceof DyeItem || WaxedCompat.isCoatingAgent(itemstack) || item == Items.INK_SAC || item == Items.GLOW_INK_SAC) {
 				long currentTime = world.getGameTime();
 				if (currentTime - blockEntity.getLastCoatedParticleTime() >= 30) {
 					ModUtils.generateCoatedParticles(world, pos, state, world.random);
@@ -302,7 +303,7 @@ public class BaseShineriteSlabBlock extends SlabBlock implements EntityBlock {
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_COATING.get() && item == Items.HONEYCOMB) {
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.BLOCK_COATING.get() && WaxedCompat.isCoatingAgent(itemstack)) {
 			blockEntity.setCoated(true);
 			if (!player.isCreative()) {
 				ModUtils.reduceItemStack(player, itemstack);
@@ -473,7 +474,7 @@ public class BaseShineriteSlabBlock extends SlabBlock implements EntityBlock {
 			for (Player player : players) {
 				ItemStack mainHandItem = player.getMainHandItem();
 				ItemStack offHandItem = player.getOffhandItem();
-				if (player.isCrouching() && (mainHandItem.getItem() == Items.HONEYCOMB || offHandItem.getItem() == Items.HONEYCOMB)) {
+				if (player.isCrouching() && (WaxedCompat.isCoatingAgent(mainHandItem) || WaxedCompat.isCoatingAgent(offHandItem))) {
 					if (blockEntity instanceof BaseShineriteBlockEntity shineriteBaseBlockEntity) {
 						long currentTime = level.getGameTime();
 						if (currentTime - shineriteBaseBlockEntity.getLastCoatedParticleTime() >= 45 && shineriteBaseBlockEntity.isCoated()) {

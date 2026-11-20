@@ -1,4 +1,4 @@
-package net.jaams.shinerite.mixins.compat;
+package net.jaams.shinerite.mixins.compat.epicfight;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

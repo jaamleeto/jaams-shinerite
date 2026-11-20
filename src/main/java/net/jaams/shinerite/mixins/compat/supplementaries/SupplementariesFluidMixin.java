@@ -1,4 +1,4 @@
-package net.jaams.shinerite.mixins.compat;
+package net.jaams.shinerite.mixins.compat.supplementaries;
 
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -26,7 +26,7 @@ import net.jaams.shinerite.component.block.BaseShineriteStairBlock;
 		BaseShineriteFlowerBlock.class,
 		PottedShineritiaBlock.class
 })
-public abstract class SupplementariesShineriteFluidMixin implements ISoftFluidConsumer {
+public abstract class SupplementariesFluidMixin implements ISoftFluidConsumer {
 
 	@Override
 	public boolean tryAcceptingFluid(Level level, BlockState state, BlockPos pos, SoftFluidStack fluid) {

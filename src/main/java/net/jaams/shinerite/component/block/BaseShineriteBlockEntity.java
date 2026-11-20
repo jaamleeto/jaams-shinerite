@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -338,10 +340,30 @@ public class BaseShineriteBlockEntity extends BlockEntity implements BlockEntity
 		return false;
 	}
 
+	/**
+	 * Checks every position that can put water in contact with this block.
+	 *
+	 * <p>Waterlogged blocks (including the horizontal and vertical shinerite
+	 * slabs and the roots) keep their water in their <em>own</em> block position:
+	 * {@code SimpleWaterloggedBlock#getFluidState} reports water for the block
+	 * itself while the {@code waterlogged} property is set. Only checking the
+	 * six neighbouring positions therefore missed exactly those blocks.
+	 * The block state property is checked as well so the mechanic still works
+	 * when the reported fluid state is temporarily out of sync (for example
+	 * right after a placement or a fluid update).</p>
+	 */
 	private boolean hasWaterNearby(Level level, BlockPos pos) {
-		BlockPos[] adjacentPositions = new BlockPos[]{pos.north(), pos.south(), pos.east(), pos.west(), pos.above(), pos.below()};
-		for (BlockPos adjacentPos : adjacentPositions) {
-			if (level.getFluidState(adjacentPos).is(FluidTags.WATER)) {
+		if (level.getFluidState(pos).is(FluidTags.WATER)) {
+			return true;
+		}
+		BlockState state = getBlockState();
+		if (!state.isAir()
+			&& state.hasProperty(BlockStateProperties.WATERLOGGED)
+			&& state.getValue(BlockStateProperties.WATERLOGGED)) {
+			return true;
+		}
+		for (Direction direction : Direction.values()) {
+			if (level.getFluidState(pos.relative(direction)).is(FluidTags.WATER)) {
 				return true;
 			}
 		}

@@ -47,8 +47,9 @@ import net.jaams.shinerite.init.ModEntities;
 import net.jaams.shinerite.init.ModEnchantments;
 
 import net.jaams.shinerite.dispenser.ShineriteBlockDispenser;
+import net.jaams.shinerite.compat.WaxedCompat;
 import net.jaams.shinerite.registry.ShineriteFeaturesRegister;
-import net.jaams.shinerite.util.ShineriteTrimCompat;
+import net.jaams.shinerite.trim.ShineriteTrimCompat;
 
 import java.util.function.Supplier;
 import java.util.function.Function;
@@ -101,6 +102,10 @@ public class JaamsShineriteMod {
 			DispenserBlock.registerBehavior(dyeItem, new ShineriteBlockDispenser());
 		}
 		DispenserBlock.registerBehavior(Items.HONEYCOMB, new ShineriteBlockDispenser());
+		Item waxedWax = WaxedCompat.getWaxItem();
+		if (waxedWax != null) {
+			DispenserBlock.registerBehavior(waxedWax, new ShineriteBlockDispenser());
+		}
 		DispenserBlock.registerBehavior(Items.GLOW_INK_SAC, new ShineriteBlockDispenser());
 		DispenserBlock.registerBehavior(Items.INK_SAC, new ShineriteBlockDispenser());
 		DispenserBlock.registerBehavior(ModItems.SHINY_SCRAPER.get(), new ShineriteBlockDispenser());

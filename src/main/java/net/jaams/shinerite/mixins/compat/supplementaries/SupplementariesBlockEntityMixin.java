@@ -1,4 +1,4 @@
-package net.jaams.shinerite.mixins.compat;
+package net.jaams.shinerite.mixins.compat.supplementaries;
 
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -18,9 +18,9 @@ import net.jaams.shinerite.component.block.BaseShineriteBlockEntity;
  * which is the hook Supplementaries soap uses when cleaning blocks.
  */
 @Mixin(BaseShineriteBlockEntity.class)
-public abstract class SupplementariesShineriteBlockEntityMixin extends BlockEntity implements IWashable {
+public abstract class SupplementariesBlockEntityMixin extends BlockEntity implements IWashable {
 
-	protected SupplementariesShineriteBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+	protected SupplementariesBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 	}
 

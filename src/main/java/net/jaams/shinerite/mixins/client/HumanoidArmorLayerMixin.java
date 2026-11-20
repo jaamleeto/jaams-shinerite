@@ -35,7 +35,7 @@ import net.minecraft.world.item.armortrim.ArmorTrim;
 
 import net.jaams.shinerite.client.model.ShineriteTrimRenderer;
 import net.jaams.shinerite.item.ShineriteArmorItem;
-import net.jaams.shinerite.util.ShineriteTrimCompat;
+import net.jaams.shinerite.trim.ShineriteTrimCompat;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack;

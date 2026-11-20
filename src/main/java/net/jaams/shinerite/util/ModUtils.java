@@ -35,6 +35,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.BowItem;
@@ -1572,6 +1573,10 @@ public class ModUtils {
 	}
 
 	public static int calculateDyeColor(int baseColor, DyeItem dyeItem) {
+		return calculateDyeColor(baseColor, dyeItem.getDyeColor());
+	}
+
+	public static int calculateDyeColor(int baseColor, DyeColor dyeColor) {
 		int[] combinedColors = new int[3];
 		int maxColor = 0;
 		int colorCount = 0;
@@ -1585,7 +1590,7 @@ public class ModUtils {
 			combinedColors[2] = (int) ((float) combinedColors[2] + b * 255f);
 			colorCount++;
 		}
-		float[] colorComponents = dyeItem.getDyeColor().getTextureDiffuseColors();
+		float[] colorComponents = dyeColor.getTextureDiffuseColors();
 		int r = (int) (colorComponents[0] * 255f);
 		int g = (int) (colorComponents[1] * 255f);
 		int b = (int) (colorComponents[2] * 255f);

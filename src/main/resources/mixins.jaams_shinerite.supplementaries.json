@@ -4,10 +4,10 @@
     "compatibilityLevel": "JAVA_17",
     "refmap": "mixins.jaams_shinerite.refmap.json",
     "mixins": [
-        "compat.SupplementariesShineriteBlockEntityMixin",
-        "compat.SupplementariesSoapClearRecipeMixin",
-        "compat.SupplementariesShineriteFluidMixin",
-        "compat.SupplementariesCannonBehaviorMixin"
+        "compat.supplementaries.SupplementariesBlockEntityMixin",
+        "compat.supplementaries.SupplementariesSoapClearRecipeMixin",
+        "compat.supplementaries.SupplementariesFluidMixin",
+        "compat.supplementaries.SupplementariesCannonBehaviorMixin"
     ],
     "client": [],
     "injectors": {

@@ -12,21 +12,12 @@
     "item.SuspiciousStewItemMixin",
     "block.JukeboxBlockEntityMixin",
     "common.ItemTooltipMixin",
+    "common.CrossbowItemMixin",
     "common.DispenseItemBehaviorMixin",
     "item.RecordItemMixin",
     "trait.TraitThrowableMixin",
     "trait.TraitFrailglowMixin",
-    "mob.ZombieMixin",
-    "mob.DrownedMixin",
-    "mob.SkeletonMixin",
-    "mob.WitherSkeletonMixin",
-    "mob.PillagerMixin",
-    "mob.VindicatorMixin",
-    "mob.VexMixin",
-    "mob.PiglinMixin",
-    "mob.PiglinBruteMixin",
-    "mob.PiglinAiMixin",
-    "mob.ZombifiedPiglinMixin"
+    "mob.PiglinAiMixin"
   ],
   "client": [
     "client.ParticleAccessor",

@@ -5,9 +5,9 @@
     "refmap": "mixins.jaams_shinerite.refmap.json",
     "mixins": [],
     "client": [
-        "compat.AbstractTrailParticleAccessor",
-        "compat.EpicFightArmorRenderMixin",
-        "compat.EpicFightTrailColorMixin"
+        "compat.epicfight.AbstractTrailParticleAccessor",
+        "compat.epicfight.EpicFightArmorRenderMixin",
+        "compat.epicfight.EpicFightTrailColorMixin"
     ],
     "injectors": {
         "defaultRequire": 1

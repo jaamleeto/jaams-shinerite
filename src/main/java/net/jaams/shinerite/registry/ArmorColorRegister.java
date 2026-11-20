@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 import net.jaams.shinerite.dyeable.IDyeableItem;
 import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
-import net.jaams.shinerite.util.ShineriteTrimSupport;
+import net.jaams.shinerite.trim.ShineriteTrimSupport;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ArmorColorRegister {

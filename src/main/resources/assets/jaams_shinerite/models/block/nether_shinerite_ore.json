@@ -2,9 +2,9 @@
   "parent": "minecraft:block/cube_all",
   "render_type": "cutout",
   "textures": {
-    "all": "jaams_shinerite:block/nether_shinerite_ore",
+    "all": "minecraft:block/netherrack",
     "overlay": "jaams_shinerite:block/nether_shinerite_ore_overlay",
-    "particle": "jaams_shinerite:block/nether_shinerite_ore"
+    "particle": "minecraft:block/netherrack"
   },
   "elements": [
     {

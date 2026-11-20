@@ -26,6 +26,7 @@ import net.minecraft.core.BlockSource;
 import net.minecraft.core.BlockPos;
 
 import net.jaams.shinerite.util.ModUtils;
+import net.jaams.shinerite.compat.WaxedCompat;
 import net.jaams.shinerite.item.ShinyScraperItem;
 import net.jaams.shinerite.item.ShinyPaintBrushItem;
 import net.jaams.shinerite.configuration.common.MechanicsConfig;
@@ -157,7 +158,7 @@ public class ShineriteBlockDispenser extends DefaultDispenseItemBehavior {
 				return ModUtils.reduceDispenserItemStack(source, stack);
 			}
 		}
-		if (MechanicsConfig.COATING.get() && InteractionsConfig.DISPENSER_BLOCK_COATING.get() && item == Items.HONEYCOMB) {
+		if (MechanicsConfig.COATING.get() && InteractionsConfig.DISPENSER_BLOCK_COATING.get() && WaxedCompat.isCoatingAgent(stack)) {
 			blockEntity.setCoated(true);
 			stack.shrink(1);
 			blockEntity.setChanged();

@@ -19,7 +19,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.jaams.shinerite.item.ShineriteArmorItem;
 import net.jaams.shinerite.recipe.ShineriteTrimSmithingRecipe;
-import net.jaams.shinerite.util.ShineriteTrimSupport;
+import net.jaams.shinerite.trim.ShineriteTrimSupport;
 
 
 

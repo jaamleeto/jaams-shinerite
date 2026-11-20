@@ -1,4 +1,4 @@
-package net.jaams.shinerite.util;
+package net.jaams.shinerite.trim;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
