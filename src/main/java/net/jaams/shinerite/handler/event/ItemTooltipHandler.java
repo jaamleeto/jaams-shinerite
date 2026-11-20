@@ -315,6 +315,7 @@ public abstract class ItemTooltipHandler {
 		addSpacingBetweenInfoCategories(event);
 		addSpacingOnlyBetweenLongDescAndProperties(event);
 		collapseExtraBlankLines(lines);
+		collapseBlanksBetweenHints(lines);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -447,6 +448,26 @@ public abstract class ItemTooltipHandler {
 		}
 	}
 
+	private static void collapseBlanksBetweenHints(List<Component> lines) {
+		for (int i = lines.size() - 1; i > 0; i--) {
+			String key = getKey(lines.get(i));
+			if (key == null || !isHintKey(key))
+				continue;
+			int prev = i - 1;
+			int blanks = 0;
+			while (prev >= 0 && lines.get(prev).getString().isEmpty()) {
+				blanks++;
+				prev--;
+			}
+			if (blanks == 0 || prev < 0)
+				continue;
+			String prevKey = getKey(lines.get(prev));
+			if (prevKey != null && isHintKey(prevKey)) {
+				lines.subList(i - blanks, i).clear();
+			}
+		}
+	}
+
 	private static void addHintsOnlyIfMissing(List<Component> lines, TooltipContent content, TooltipVisibility visibility, boolean shiftDown) {
 		boolean advancedShown = visibility.visibleLongDesc || visibility.visiblePropertiesOrExtra;
 		List<Component> hintsToAdd = new ArrayList<>();
@@ -462,7 +483,8 @@ public abstract class ItemTooltipHandler {
 		if (!hintsToAdd.isEmpty()) {
 			long realLines = lines.stream().skip(1).filter(line -> getKey(line) == null || !isHintKey(getKey(line))).count();
 			boolean lastLineIsBlank = !lines.isEmpty() && lines.get(lines.size() - 1).getString().isEmpty();
-			if (realLines > 0 && !lastLineIsBlank) {
+			boolean lastLineIsHint = !lines.isEmpty() && isHintKey(getKey(lines.get(lines.size() - 1)));
+			if (realLines > 0 && !lastLineIsBlank && !lastLineIsHint) {
 				lines.add(Component.literal(""));
 			}
 			lines.addAll(hintsToAdd);

@@ -72,9 +72,11 @@ public class ModTabs {
 						items.add(new ItemStack(ModItems.CUT_SHINERITE.get()));
 						items.add(new ItemStack(ModItems.CUT_SHINERITE_STAIRS.get()));
 						items.add(new ItemStack(ModItems.CUT_SHINERITE_SLAB.get()));
+						items.add(new ItemStack(ModItems.CUT_SHINERITE_VERTICAL_SLAB.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_TILES.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_TILE_STAIRS.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_TILE_SLAB.get()));
+						items.add(new ItemStack(ModItems.SHINERITE_TILE_VERTICAL_SLAB.get()));
 						items.add(new ItemStack(ModItems.SHINERITE_ROOTS.get()));
 						items.add(new ItemStack(ModItems.SHINERITIA.get()));
 						if (EnchantmentsConfig.LIGHTBRINGER.get()) {
@@ -293,9 +295,11 @@ public class ModTabs {
 			putAfter(entries, ModItems.SHINERITE_BLOCK.get(), ModItems.CUT_SHINERITE);
 			putAfter(entries, ModItems.CUT_SHINERITE.get(), ModItems.CUT_SHINERITE_STAIRS);
 			putAfter(entries, ModItems.CUT_SHINERITE_STAIRS.get(), ModItems.CUT_SHINERITE_SLAB);
-			putAfter(entries, ModItems.CUT_SHINERITE_SLAB.get(), ModItems.SHINERITE_TILES);
+			putAfter(entries, ModItems.CUT_SHINERITE_SLAB.get(), ModItems.CUT_SHINERITE_VERTICAL_SLAB);
+			putAfter(entries, ModItems.CUT_SHINERITE_VERTICAL_SLAB.get(), ModItems.SHINERITE_TILES);
 			putAfter(entries, ModItems.SHINERITE_TILES.get(), ModItems.SHINERITE_TILE_STAIRS);
 			putAfter(entries, ModItems.SHINERITE_TILE_STAIRS.get(), ModItems.SHINERITE_TILE_SLAB);
+			putAfter(entries, ModItems.SHINERITE_TILE_SLAB.get(), ModItems.SHINERITE_TILE_VERTICAL_SLAB);
 		}
 		if (tabData.getTabKey() == CreativeModeTabs.INGREDIENTS) {
 			putAfter(entries, Items.GOLD_INGOT, ModItems.SHINERITE_INGOT);

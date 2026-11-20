@@ -20,9 +20,11 @@ public class BlockColorRegister {
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.CUT_SHINERITE);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.CUT_SHINERITE_STAIRS);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.CUT_SHINERITE_SLAB);
+		BaseShineriteBlock.registerBlockColor(event, ModBlocks.CUT_SHINERITE_VERTICAL_SLAB);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITE_TILES);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITE_TILE_STAIRS);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITE_TILE_SLAB);
+		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITE_TILE_VERTICAL_SLAB);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITIA);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.POTTED_SHINERITIA);
 		BaseShineriteBlock.registerBlockColor(event, ModBlocks.SHINERITE_ROOTS);
@@ -38,9 +40,11 @@ public class BlockColorRegister {
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.CUT_SHINERITE);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.CUT_SHINERITE_STAIRS);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.CUT_SHINERITE_SLAB);
+		BaseShineriteBlock.registerItemColor(event, ModBlocks.CUT_SHINERITE_VERTICAL_SLAB);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITE_TILES);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITE_TILE_STAIRS);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITE_TILE_SLAB);
+		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITE_TILE_VERTICAL_SLAB);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITIA);
 		BaseShineriteBlock.registerItemColor(event, ModBlocks.SHINERITE_ROOTS);
 	}

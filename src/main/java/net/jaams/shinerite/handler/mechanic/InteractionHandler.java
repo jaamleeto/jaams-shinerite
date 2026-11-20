@@ -29,7 +29,11 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 
+import net.jaams.shinerite.compat.SupplementariesCompat;
+import net.jaams.shinerite.util.ModTags;
 import net.jaams.shinerite.util.ModUtils;
 import net.jaams.shinerite.particle.CustomEffectParticleData;
 import net.jaams.shinerite.item.ShinyScraperItem;
@@ -44,6 +48,8 @@ import java.util.ArrayList;
 public class InteractionHandler {
 	public static final int DEFAULT_COLOR = -1;
 	public static final int BASE_IMBUED_USES = 5;
+
+	private static final ResourceLocation SUPPLEMENTARIES_SOAP_ID = ResourceLocation.fromNamespaceAndPath("supplementaries", "soap");
 
 	private static boolean isCoatableItemExtended(ItemStack stack) {
 		return ModUtils.isCoatableItem(stack);
@@ -151,6 +157,16 @@ public class InteractionHandler {
 				if ((potion == Potions.WATER || potion == Potions.AWKWARD || potion == Potions.THICK || potion.getEffects().isEmpty()) && !ModUtils.isCoated(offHandStack)) {
 					handleWaterBottleInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
 				}
+			}
+		}
+		if (MechanicsConfig.WASHING.get() && InteractionsConfig.HAND_WASHING_SOAP.get()) {
+			if (isSupplementariesSoap(offHandStack) && canWashWithSoap(mainHandStack)) {
+				handleSoapWashingInteraction(level, player, mainHandStack, offHandStack, InteractionHand.MAIN_HAND, event);
+				return;
+			}
+			if (isSupplementariesSoap(mainHandStack) && canWashWithSoap(offHandStack)) {
+				handleSoapWashingInteraction(level, player, offHandStack, mainHandStack, InteractionHand.OFF_HAND, event);
+				return;
 			}
 		}
 	}
@@ -348,6 +364,29 @@ public class InteractionHandler {
 				waterBottleStack.shrink(1);
 				addOrDropItem(player, new ItemStack(Items.GLASS_BOTTLE));
 			}
+		});
+	}
+
+	private static boolean isSupplementariesSoap(ItemStack stack) {
+		return !stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(SUPPLEMENTARIES_SOAP_ID);
+	}
+
+	private static boolean canWashWithSoap(ItemStack stack) {
+		return !stack.isEmpty() && !stack.is(ModTags.SUPPLEMENTARIES_NON_CLEANABLE)
+				&& (ModUtils.isCoated(stack) || ModUtils.isImbued(stack) || ModUtils.getCurrentColor(stack) != DEFAULT_COLOR);
+	}
+
+	private static void handleSoapWashingInteraction(Level level, Player player, ItemStack targetStack, ItemStack soapStack,
+			InteractionHand hand, PlayerInteractEvent.RightClickItem event) {
+		cancelEvent(event, level);
+		handleItemInteraction(level, player, targetStack, soapStack, hand, (targetItem) -> {
+			CompoundTag tag = targetItem.getTag();
+			if (tag != null) {
+				tag.remove("Coated");
+				tag.remove("color");
+			}
+			ModUtils.removeImbuement(targetItem);
+			SupplementariesCompat.playHandSoapEffects(player);
 		});
 	}
 

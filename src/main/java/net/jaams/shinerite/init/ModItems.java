@@ -59,9 +59,11 @@ public class ModItems {
 	public static final RegistryObject<Item> CUT_SHINERITE = REGISTRY.register("cut_shinerite", () -> new BaseShineriteBlockItem(ModBlocks.CUT_SHINERITE.get(), new Item.Properties()));
 	public static final RegistryObject<Item> CUT_SHINERITE_STAIRS = REGISTRY.register("cut_shinerite_stairs", () -> new BaseShineriteBlockItem(ModBlocks.CUT_SHINERITE_STAIRS.get(), new Item.Properties()));
 	public static final RegistryObject<Item> CUT_SHINERITE_SLAB = REGISTRY.register("cut_shinerite_slab", () -> new BaseShineriteBlockItem(ModBlocks.CUT_SHINERITE_SLAB.get(), new Item.Properties()));
+	public static final RegistryObject<Item> CUT_SHINERITE_VERTICAL_SLAB = REGISTRY.register("cut_shinerite_vertical_slab", () -> new BaseShineriteBlockItem(ModBlocks.CUT_SHINERITE_VERTICAL_SLAB.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITE_TILES = REGISTRY.register("shinerite_tiles", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_TILES.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITE_TILE_STAIRS = REGISTRY.register("shinerite_tile_stairs", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_TILE_STAIRS.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITE_TILE_SLAB = REGISTRY.register("shinerite_tile_slab", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_TILE_SLAB.get(), new Item.Properties()));
+	public static final RegistryObject<Item> SHINERITE_TILE_VERTICAL_SLAB = REGISTRY.register("shinerite_tile_vertical_slab", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_TILE_VERTICAL_SLAB.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITE_ROOTS = REGISTRY.register("shinerite_roots", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITE_ROOTS.get(), new Item.Properties()));
 	public static final RegistryObject<Item> SHINERITIA = REGISTRY.register("shineritia", () -> new BaseShineriteBlockItem(ModBlocks.SHINERITIA.get(), new Item.Properties()));
 

@@ -27,6 +27,8 @@ public class ModTags {
 	public static final TagKey<Item> ENCHANTABLE_LIGHTSTEAL = create("enchantable/lightsteal");
 	public static final TagKey<Item> ENCHANTABLE_LIGHTGUARD = create("enchantable/lightguard");
 	public static final TagKey<Item> FRAILGLOW = create("trait/frailglow");
+	public static final TagKey<Item> SUPPLEMENTARIES_NON_CLEANABLE = TagKey.create(Registries.ITEM,
+			ResourceLocation.fromNamespaceAndPath("supplementaries", "non_cleanable"));
 
 	private static TagKey<Item> create(String path) {
 		return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("jaams_shinerite", path));

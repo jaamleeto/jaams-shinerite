@@ -33,6 +33,7 @@ public class InteractionsConfig {
 	public static ForgeConfigSpec.BooleanValue HAND_DARKENING;
 	public static ForgeConfigSpec.BooleanValue HAND_IMBUING;
 	public static ForgeConfigSpec.BooleanValue HAND_WASHING_WATER_BOTTLE;
+	public static ForgeConfigSpec.BooleanValue HAND_WASHING_SOAP;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_PROJECTILE_SHINERITE_STAR;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_DYEING;
 	public static ForgeConfigSpec.BooleanValue DISPENSER_BLOCK_LIGHTENING;
@@ -105,6 +106,7 @@ public class InteractionsConfig {
 		builder.pop();
 		builder.push("Washing");
 		HAND_WASHING_WATER_BOTTLE = builder.comment("Enable or disable washing color and imbuement off targets by right-clicking with a water bottle").define("Washing with Water Bottle", true);
+		HAND_WASHING_SOAP = builder.comment("Enable or disable washing coating, color and imbuement off items by right-clicking with Supplementaries soap").define("Washing with Supplementaries Soap", true);
 		builder.pop();
 		builder.pop();
 		builder.push("Dispenser Interactions");

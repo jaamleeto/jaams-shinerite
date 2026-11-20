@@ -1,0 +1,17 @@
+{
+    "required": true,
+    "package": "net.jaams.shinerite.mixins",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "mixins.jaams_shinerite.refmap.json",
+    "mixins": [
+        "compat.SupplementariesShineriteBlockEntityMixin",
+        "compat.SupplementariesSoapClearRecipeMixin",
+        "compat.SupplementariesShineriteFluidMixin",
+        "compat.SupplementariesCannonBehaviorMixin"
+    ],
+    "client": [],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "minVersion": "0.8"
+}

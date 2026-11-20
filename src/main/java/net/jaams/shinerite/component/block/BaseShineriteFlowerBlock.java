@@ -15,6 +15,10 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
@@ -64,6 +68,9 @@ import java.util.HashMap;
 import java.util.Collections;
 
 public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock {
+	private static final TagKey<Block> SUPPLEMENTARIES_PLANTERS =
+			TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("supplementaries", "planters"));
+
 	private final Map<BlockPos, CompoundTag> stateMap = new HashMap<>();
 	private final Supplier<BlockEntityType<?>> blockEntityType;
 
@@ -76,7 +83,8 @@ public class BaseShineriteFlowerBlock extends FlowerBlock implements EntityBlock
 	protected boolean mayPlaceOn(BlockState state, BlockGetter world, BlockPos pos) {
 		return state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND) || state.is(Blocks.NETHERRACK) || state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL)
 				|| state.is(Blocks.CRIMSON_NYLIUM) || state.is(Blocks.WARPED_NYLIUM) || state.is(Blocks.CRIMSON_ROOTS) || state.is(Blocks.WARPED_ROOTS)
-				|| state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM);
+				|| state.is(Blocks.GRASS_BLOCK) || state.is(Blocks.PODZOL) || state.is(Blocks.MYCELIUM)
+				|| state.is(SUPPLEMENTARIES_PLANTERS);
 	}
 
 	@Override

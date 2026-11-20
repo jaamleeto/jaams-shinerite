@@ -34,6 +34,10 @@
       "required": false
     },
     {
+      "id": "jaams_shinerite:cut_shinerite_vertical_slab",
+      "required": false
+    },
+    {
       "id": "jaams_shinerite:shinerite_tiles",
       "required": false
     },
@@ -43,6 +47,10 @@
     },
     {
       "id": "jaams_shinerite:shinerite_tile_slab",
+      "required": false
+    },
+    {
+      "id": "jaams_shinerite:shinerite_tile_vertical_slab",
       "required": false
     },
     {

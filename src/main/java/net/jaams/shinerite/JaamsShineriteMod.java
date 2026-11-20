@@ -110,7 +110,6 @@ public class JaamsShineriteMod {
 		addNetworkMessage(CustomJukeboxPacket.class, CustomJukeboxPacket::encode, CustomJukeboxPacket::decode, CustomJukeboxPacket::handle);
 		addNetworkMessage(SyncModDataMessage.class, SyncModDataMessage::encode, SyncModDataMessage::decode, SyncModDataMessage::handle);
 		addNetworkMessage(CommonConfigSyncMessage.class, CommonConfigSyncMessage::encode, CommonConfigSyncMessage::decode, CommonConfigSyncMessage::handle);
-		addNetworkMessage(net.jaams.shinerite.packet.VSlabCompatStatePacket.class, net.jaams.shinerite.packet.VSlabCompatStatePacket::encode, net.jaams.shinerite.packet.VSlabCompatStatePacket::decode, net.jaams.shinerite.packet.VSlabCompatStatePacket::handle);
 	}
 
 	private static final String PROTOCOL_VERSION = "1";

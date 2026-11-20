@@ -1,0 +1,19 @@
+{
+  "type": "jaams_shinerite:copy_nbt_shaped",
+  "group": "cut_slab",
+  "category": "building",
+  "pattern": [
+    "a",
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "jaams_shinerite:shinerite_tile_slab"
+    }
+  },
+  "result": {
+    "item": "jaams_shinerite:shinerite_tile_vertical_slab",
+    "count": 3
+  }
+}

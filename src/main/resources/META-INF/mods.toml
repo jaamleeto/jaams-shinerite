@@ -26,6 +26,20 @@ issueTrackerURL="https://github.com/jaamleeto/jaams-shinerite/issues"
     ordering="AFTER"
     side="BOTH"
 
+[[dependencies.jaams_shinerite]]
+    modId="supplementaries"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.jaams_shinerite]]
+    modId="punchy"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
 [modproperties."jaams_shinerite"]
 catalogueItemIcon="jaams_shinerite:shinerite_ingot"
 catalogueBackground="jaams_shinerite_background.png"
@@ -42,3 +56,15 @@ requiredMods=["amendments"]
 [[mixins]]
 config="mixins.jaams_shinerite.moonlight.json"
 requiredMods=["moonlight"]
+
+[[mixins]]
+config="mixins.jaams_shinerite.vslabcompat.json"
+requiredMods=["v_slab_compat"]
+
+[[mixins]]
+config="mixins.jaams_shinerite.supplementaries.json"
+requiredMods=["supplementaries"]
+
+[[mixins]]
+config="mixins.jaams_shinerite.punchy.json"
+requiredMods=["punchy"]

@@ -67,11 +67,14 @@ dependencies {
 
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:7476040")
     implementation fg.deobf("curse.maven:jaams-weaponry-1361012:9401851")
+    implementation fg.deobf("curse.maven:punchy-1374153:9575850")
 
     implementation fg.deobf("curse.maven:amendments-896746:8657397")
     implementation fg.deobf("curse.maven:selene-499980:9178412")
 
     implementation fg.deobf("curse.maven:vertical-slabs-compat-724387:6089569")
+
+    implementation fg.deobf("curse.maven:supplementaries-412082:9635391")
 
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.3.0.8")
 }
@@ -83,6 +86,9 @@ mixin {
     config 'mixins.jaams_shinerite.epicfight.json'
     config 'mixins.jaams_shinerite.amendments.json'
     config 'mixins.jaams_shinerite.moonlight.json'
+    config 'mixins.jaams_shinerite.vslabcompat.json'
+    config 'mixins.jaams_shinerite.supplementaries.json'
+    config 'mixins.jaams_shinerite.punchy.json'
 
     debug.verbose = true
     debug.export = true

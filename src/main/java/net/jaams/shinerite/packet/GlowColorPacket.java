@@ -25,6 +25,10 @@ public class GlowColorPacket {
 	}
 
 	public static void handle(GlowColorPacket msg, Supplier<NetworkEvent.Context> ctx) {
-		GlowColorPacketHandler.handle(msg, ctx);
+		if (ctx.get().getDirection().getReceptionSide().isClient()) {
+			GlowColorPacketHandler.handle(msg, ctx);
+		} else {
+			ctx.get().setPacketHandled(true);
+		}
 	}
 }
